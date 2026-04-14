@@ -14,6 +14,10 @@
 - `as-ai-ppt-and-quotation-templates.md`: PPT 10장 구성안 + 견적표 템플릿
 - `as-ai-5min-speech.md`: 대표 발표용 5분 스크립트
 
+## RAG 기술 문서
+- `rag-implementation-current.md`: 현재 RAG 구현 구조/동작/한계
+- `rag-improvement-design.md`: 정확도 개선 5개 축 설계 + 하이브리드/로컬 LLM 전환안
+
 ## 권장 활용 순서
 1. `as-ai-master-plan.md`로 전체 방향 정렬
 2. `as-ai-starting-member-summary.md`로 팀 실행 기준 맞춤
