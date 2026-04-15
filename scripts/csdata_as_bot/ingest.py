@@ -1,15 +1,22 @@
 """
 csData 폴더의 민원/AS 엑셀을 읽어 증상·조치 중심 텍스트 청크로 변환합니다.
 시트마다 헤더 행 위치가 달라 키워드 점수로 헤더 행을 추정합니다.
+
+환경변수:
+  INGEST_ONLY_SUBSTR — 경로에 이 문자열이 들어간 xlsx만 처리 (예: 품질회의).
+  INGEST_USE_LEGACY_FILE_SKIP=1 — 과거 파일명 제외 규칙(_SKIP_PATH_SUBSTR) 활성화.
 """
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+
+from normalizer import error_code_norm_field, normalize_symptom_text
 
 ROOT = Path(__file__).resolve().parents[2]
 CS_DIR = ROOT / "csData"
@@ -30,6 +37,16 @@ _HEADER_TOKENS = (
     "무상",
     "발주처",
     "파트",
+    # 품질회의·불량 이력 등 (월간 품질회의 현장 품질 불량건.xlsx)
+    "발생일자",
+    "운영사",
+    "고객사",
+    "장비",
+    "제조사",
+    "모델",
+    "품질",
+    "불량",
+    "개선",
 )
 
 # 의미 없는 짧은 행
@@ -121,8 +138,15 @@ def sheet_to_records(path: Path, sheet: str) -> list[dict[str, Any]]:
         or _pick_col(cols, "민원내용")
         or _pick_col(cols, "고장", "내역")
         or _pick_col(cols, "민원")
+        or _pick_col(cols, "품명", "품질")
+        or _pick_col(cols, "품질", "내역")
     )
-    col_action = _pick_col(cols, "상세조치") or _pick_col(cols, "수리", "내역")
+    col_action = (
+        _pick_col(cols, "상세조치")
+        or _pick_col(cols, "수리", "내역")
+        or _pick_col(cols, "불량", "개선")
+        or _pick_col(cols, "불량", "내역")
+    )
     col_parts = _pick_col(cols, "교체", "부품") or _pick_col(cols, "교체부품")
     col_type = _pick_col(cols, "유형")
     col_customer = (
@@ -168,6 +192,7 @@ def sheet_to_records(path: Path, sheet: str) -> list[dict[str, Any]]:
             f"교체 부품: {parts}\n"
             f"유형: {hw}\n"
         )
+        codes_src = f"{symptom}\n{action}\n{parts}\n{equip}"
         records.append(
             {
                 "page_content": page.strip(),
@@ -175,6 +200,8 @@ def sheet_to_records(path: Path, sheet: str) -> list[dict[str, Any]]:
                     "source": rel,
                     "sheet": sheet,
                     "row": _index_row(i),
+                    "symptom_norm": normalize_symptom_text(symptom),
+                    "error_code_norm": error_code_norm_field(codes_src),
                 },
             }
         )
@@ -182,9 +209,20 @@ def sheet_to_records(path: Path, sheet: str) -> list[dict[str, Any]]:
 
 
 def iter_all_records() -> list[dict[str, Any]]:
+    # 기본값은 전수 반영(True). 필요 시 환경변수로 기존 제외 정책을 켤 수 있음.
+    use_legacy_skip = os.environ.get("INGEST_USE_LEGACY_FILE_SKIP", "").strip().lower() in {
+        "1",
+        "true",
+        "y",
+        "yes",
+    }
+    # 경로에 이 문자열이 포함된 xlsx만 처리 (예: 특정 파일만 재인제스트)
+    only_substr = os.environ.get("INGEST_ONLY_SUBSTR", "").strip()
     all_recs: list[dict[str, Any]] = []
     for path in sorted(CS_DIR.rglob("*.xlsx")):
-        if any(s in path.name for s in _SKIP_PATH_SUBSTR):
+        if only_substr and only_substr not in path.as_posix():
+            continue
+        if use_legacy_skip and any(s in path.name for s in _SKIP_PATH_SUBSTR):
             continue
         try:
             xl = pd.ExcelFile(path, engine="openpyxl")

@@ -16,6 +16,7 @@
 - OpenAI Embedding: `text-embedding-3-small`
 - OpenAI Chat Model: `gpt-4o-mini`
 - pandas/openpyxl (엑셀 데이터 전처리)
+- 로컬 전환 시 모델·VRAM 대안: [local-llm-rag-models.md](local-llm-rag-models.md)
 
 ## 3. 디렉터리 및 주요 파일
 - `scripts/csdata_as_bot/ingest.py`

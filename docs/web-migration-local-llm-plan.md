@@ -14,6 +14,7 @@
 - 생성 LLM: `qwen2.5:14b-instruct` (Ollama)
 - 임베딩: `bge-m3`
 - Reranker: `bge-reranker-v2-m3`
+- VRAM별 대안·실무 메모·현재 PoC와의 연계: [local-llm-rag-models.md](local-llm-rag-models.md)
 
 ### 2.2 선정 이유
 - 한국어 및 기술 문맥(에러코드/정비 지시) 처리 안정성
