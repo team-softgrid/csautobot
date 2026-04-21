@@ -147,6 +147,31 @@ limitations under the License.
 
 본 튜토리얼을 시작하기 전에, LangChain과 관련된 기본적인 지식을 갖추는 것이 좋습니다. 위의 출처 링크를 통해 기본적인 정보를 얻을 수 있습니다.
 
+## ⚡ 로컬 실행 최소 가이드
+
+아래 명령어는 **프로젝트 루트**(`langchain-kr`) 기준입니다.
+
+```bash
+# 1) Poetry 설치(최초 1회)
+pip install poetry
+
+# 2) 의존성 설치
+poetry install
+
+# 3) 환경변수 파일 생성(.env) 후 OPENAI_API_KEY 설정
+# 예: OPENAI_API_KEY=sk-...
+
+# 4) 기본 템플릿 앱 실행(가장 빠른 확인 경로)
+poetry run streamlit run 19-Streamlit/00-Chat-Template/main.py
+
+# 5) csData AS 봇 실행(인덱스가 없는 경우)
+poetry run python apps/csdata-as-bot/ingest.py
+poetry run python apps/csdata-as-bot/build_index.py
+poetry run streamlit run apps/csdata-as-bot/streamlit_app.py
+```
+
+문제가 생기면 `apps/csdata-as-bot/streamlit_app.py` 상단 실행 주석의 안내를 먼저 확인하세요.
+
 ## Start History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=teddylee777/langchain-kr&type=Date)](https://star-history.com/#teddylee777/langchain-kr&Date)

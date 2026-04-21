@@ -8,6 +8,7 @@
 *.pdf
 *.pkl
 *.md
+!/PROJECT_STRUCTURE_PROPOSAL.md
 *.gguf
 *.faiss
 *.index
@@ -28,6 +29,26 @@
 */corpus/*
 */mlruns/*
 working/
+
+# Local data and generated artifacts
+csData/**/*.xlsx
+csData/**/*.xls
+csData/**/*.zip
+csData/**/*.pptx
+apps/csdata-as-bot/chroma_db/
+apps/csdata-as-bot/chroma_db_*/
+apps/csdata-as-bot/as_records.jsonl
+apps/csdata-as-bot/active_chroma_dir.txt
+apps/csdata-as-bot/column_report.txt
+apps/csdata-as-bot/missing_indexed_files.txt
+
+# Accidental numeric artifact files at repository root
+/0.1.59
+/0.2.2
+/0.3
+/0.3.51
+/0.3.8
+/1.0
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
