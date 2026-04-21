@@ -16,6 +16,7 @@ langchain-teddynote==0.3.44
 langchainhub==0.1.21
 langgraph==0.3.18
 langsmith==0.3.18
+claude-agent-sdk==0.1.59
 huggingface-hub==0.29.3
 openai==1.67.0
 deepl==1.21.1
