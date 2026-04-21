@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LangChain-KR | AI Technical Support Prototype</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --accent: #f093fb;
+            --bg: #0b0e14;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text: #e0e0e0;
+            --text-dim: #a0a0a0;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: radial-gradient(circle at top right, rgba(79, 172, 254, 0.15), transparent),
+                        radial-gradient(circle at bottom left, rgba(240, 147, 251, 0.1), transparent);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 1;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #fff, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-dim);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: #000;
+            border: none;
+            box-shadow: 0 10px 20px rgba(0, 242, 254, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 242, 254, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: #fff;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #fff;
+        }
+
+        /* Dashboard Section */
+        .dashboard {
+            padding: 100px 0;
+            background: rgba(11, 14, 20, 0.8);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            color: var(--text-dim);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary);
+        }
+
+        .kpi-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .kpi-label {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .kpi-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
+
+        /* Chat Demo Section */
+        .demo-section {
+            padding: 100px 0;
+            background: linear-gradient(180deg, var(--bg), #1a1f2c);
+        }
+
+        .chat-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #151922;
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            height: 700px;
+        }
+
+        .chat-header {
+            padding: 1.5rem 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .agent-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        .chat-body {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            font-size: 0.95rem;
+        }
+
+        .message-user {
+            align-self: flex-end;
+            background: var(--secondary);
+            color: #000;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-ai {
+            align-self: flex-start;
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-bottom-left-radius: 4px;
+        }
+
+        .structured-answer {
+            margin-top: 1rem;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 1rem;
+        }
+
+        .answer-tag {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .confidence-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .confidence-high { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .confidence-mid { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+
+        .chat-input {
+            padding: 1.5rem 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .input-box {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            color: #fff;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-box:focus {
+            border-color: var(--primary);
+        }
+
+        .send-btn {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Architecture Section */
+        .architecture-section {
+            padding: 100px 0;
+            background: #0b0e14;
+        }
+
+        .arch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .arch-visual {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            padding: 3rem;
+            border-radius: 24px;
+            position: relative;
+        }
+
+        .arch-step {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .arch-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 40px;
+            width: 2px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--primary), transparent);
+        }
+
+        .step-num {
+            width: 40px;
+            height: 40px;
+            background: var(--card-bg);
+            border: 1px solid var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .tech-tag {
+            padding: 0.4rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .tech-tag.highlight {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Feature Highlights */
+        .features {
+            padding: 100px 0;
+            background: #11151f;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #000;
+        }
+
+        .feature-text h3 {
+            margin-bottom: 0.75rem;
+            font-size: 1.4rem;
+        }
+
+        .feature-text p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem 0;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .floating-element {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: var(--primary);
+            filter: blur(80px);
+            opacity: 0.15;
+            z-index: 0;
+            border-radius: 50%;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .hero p { font-size: 1.1rem; }
+            .cta-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <div class="floating-element" style="top: 10%; right: 10%;"></div>
+        <div class="floating-element" style="bottom: 10%; left: 10%;"></div>
+        
+        <div class="container hero-content">
+            <span class="badge">Next Generation AI Support</span>
+            <h1>EV Infrastructure<br>Technical Copilot</h1>
+            <p>전기차 충전 인프라 장애 해결의 새로운 패러다임. <br>국내 최대 AS 데이터베이스와 로컬 LLM이 결합된 맞춤형 기술 지원 솔루션.</p>
+            <div class="cta-group">
+                <a href="#demo" class="btn btn-primary">실시간 데모 확인</a>
+                <a href="#" class="btn btn-outline">스타팅 멤버 참여 문의</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="dashboard">
+        <div class="container">
+            <div class="section-title">
+                <h2>Real-time Intelligence</h2>
+                <p>AI 도입 후 개선된 유지보수 효율 지표</p>
+            </div>
+            
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">FTFR (초기 수리 성공률)</div>
+                    <div class="kpi-value">84.2%</div>
+                    <div class="kpi-trend trend-up">▲ 22.5% vs 전분기</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">MTTR (평균 수리 시간)</div>
+                    <div class="kpi-value">42m</div>
+                    <div class="kpi-trend trend-up">▼ 15m vs 전분기</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">AI 답변 신뢰도</div>
+                    <div class="kpi-value">91.7%</div>
+                    <div class="kpi-trend trend-up">▲ 5.4% vs 전분기</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">미해결 티켓 감소</div>
+                    <div class="kpi-value">-35%</div>
+                    <div class="kpi-trend trend-up">지난 3개월간</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="demo-section" id="demo">
+        <div class="container">
+            <div class="section-title">
+                <h2>Interactive Demo</h2>
+                <p>기존 csData AS Bot 로직이 적용된 기술 지원 에이전트</p>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="agent-info">
+                        <div class="status-dot"></div>
+                        <div>
+                            <div style="font-weight: 700;">AS 지원 에이전트 v2.0</div>
+                            <div style="font-size: 0.8rem; color: var(--text-dim);">Local LLM (Qwen 2.5) + RAG Enabled</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.8rem; background: rgba(255,255,255,0.05); padding: 0.3rem 0.8rem; border-radius: 4px;">
+                        Enterprise Secure
+                    </div>
+                </div>
+                <div class="chat-body" id="chatBody">
+                    <div class="message message-ai">
+                        안녕하세요! 전기차 충전기 장애 증상이나 에러코드를 입력해 주세요. 유사 사례를 분석하여 조치 방법을 안내해 드립니다.
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" class="input-box" id="chatInput" placeholder="증상 또는 에러코드를 입력하세요 (예: 에러코드 23, RFID 인식 안됨)">
+                    <button class="send-btn" id="sendBtn">전송</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="architecture-section">
+        <div class="container">
+            <div class="arch-grid">
+                <div>
+                    <div class="badge" style="border-color: var(--accent); color: var(--accent); background: rgba(240, 147, 251, 0.1);">System Architecture</div>
+                    <h2 style="font-size: 2.5rem; margin-bottom: 1.5rem;">Secure RAG Pipeline</h2>
+                    <p style="color: var(--text-dim); margin-bottom: 2rem;">민감한 AS 데이터를 외부 유출 없이 처리하기 위해 로컬 LLM 환경을 최우선으로 설계했습니다. 하이브리드 검색과 재순위화 엔진을 통해 답변의 정확도를 극대화합니다.</p>
+                    <div class="tech-tags">
+                        <span class="tech-tag highlight">LangChain</span>
+                        <span class="tech-tag">Qwen 2.5 (14B)</span>
+                        <span class="tech-tag">Ollama</span>
+                        <span class="tech-tag">Chroma DB</span>
+                        <span class="tech-tag">FastAPI</span>
+                        <span class="tech-tag">Next.js</span>
+                        <span class="tech-tag">Docker</span>
+                    </div>
+                </div>
+                <div class="arch-visual">
+                    <div class="arch-step">
+                        <div class="step-num">1</div>
+                        <div>
+                            <div style="font-weight: 700;">Hybrid Retrieval</div>
+                            <div style="font-size: 0.85rem; color: var(--text-dim);">Dense(벡터) + Sparse(BM25) 동시 검색</div>
+                        </div>
+                    </div>
+                    <div class="arch-step">
+                        <div class="step-num">2</div>
+                        <div>
+                            <div style="font-weight: 700;">Embedding Rerank</div>
+                            <div style="font-size: 0.85rem; color: var(--text-dim);">상위 후보군에 대한 코사인 유사도 정밀 재순위화</div>
+                        </div>
+                    </div>
+                    <div class="arch-step">
+                        <div class="step-num">3</div>
+                        <div>
+                            <div style="font-weight: 700;">Confidence Scoring</div>
+                            <div style="font-size: 0.85rem; color: var(--text-dim);">검색 분포 기반 답변 신뢰도 등급 산출</div>
+                        </div>
+                    </div>
+                    <div class="arch-step">
+                        <div class="step-num">4</div>
+                        <div>
+                            <div style="font-weight: 700;">Structured Generation</div>
+                            <div style="font-size: 0.85rem; color: var(--text-dim);">Local LLM을 통한 정형화된 점검 가이드 생성</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Key Advantages</h2>
+                <p>전통적인 유지보수 방식의 한계를 뛰어넘는 AI만의 강점</p>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <div class="feature-text">
+                        <h3>데이터 보안성</h3>
+                        <p>사내 망 내 로컬 LLM 구동으로 민감한 고객 데이터 및 기술 기밀의 외부 유출을 원천 차단합니다.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    </div>
+                    <div class="feature-text">
+                        <h3>실시간 정확도</h3>
+                        <p>최신 AS 사례를 실시간으로 인덱싱하여, 신규 장애 유형에 대해서도 즉각적인 조치 가이드를 제공합니다.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    </div>
+                    <div class="feature-text">
+                        <h3>통합 대시보드</h3>
+                        <p>단순 답변을 넘어, 전체 인프라의 장애 트렌드와 수리 효율을 한눈에 파악할 수 있는 분석 환경을 제공합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 LangChain-KR (TeddyNote). All rights reserved.</p>
+            <p style="margin-top: 0.5rem; font-size: 0.8rem;">본 페이지는 스타팅 멤버 및 고객 제안을 위한 프로토타입입니다.</p>
+        </div>
+    </footer>
+
+    <script>
+        const chatBody = document.getElementById('chatBody');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        const scenarios = {
+            '에러코드 23': {
+                symptom: '충전 중 에러코드 23 발생 (전류 과부하 감지)',
+                causes: ['충전 케이블 내부 단락', '차량 OBC(On Board Charger) 통신 오류', '충전기 내부 파워모듈 과부하'],
+                steps: ['충전기 전원 차단 후 케이블 외관 점검', '다른 차량에서 동일 에러 발생 여부 확인', '파워모듈 출력 전압 테스트 및 캘리브레이션'],
+                parts: '충전 케이블 7핀 커넥터 어셈블리',
+                evidence: 'CS-Case-2024-0512 | 화성 동탄점',
+                confidence: 'High'
+            },
+            'RFID 인식 안됨': {
+                symptom: '회원 카드 및 신용카드 RFID 태그 시 반응 없음',
+                causes: ['RFID 리더기 보드 통신 케이블 탈거', '전면 패널 글라스 오염/스크래치', '리더기 펌웨어 멈춤'],
+                steps: ['내부 CAN/RS232 통신 케이블 접속 상태 확인', '리더기 보드 리셋 및 펌웨어 재설치', '전면 터치 패널 교체'],
+                parts: 'RFID Multi-Reader Board (V3.1)',
+                evidence: 'CS-Case-2023-1102 | 부산 서면 센터',
+                confidence: 'Mid'
+            },
+            '부팅 안됨': {
+                symptom: '전원 투입 후 메인 화면 및 LED 인디케이터 점등 안됨',
+                causes: ['SMPS(Switching Mode Power Supply) 출력 불량', '메인보드 입력 단자 휴즈 단선', 'AC 입력 전원 결상'],
+                steps: ['분전함 차단기 확인 및 입력 전압 측정', 'SMPS DC 12V/24V 출력 전압 체크', '메인보드 휴즈 상태 점검 및 교체'],
+                parts: 'Industrial SMPS 24V 150W',
+                evidence: 'CS-Case-2024-0215 | 서울 강남 주차장',
+                confidence: 'High'
+            }
+        };
+
+        function addMessage(content, isAi = false, data = null) {
+            const msg = document.createElement('div');
+            msg.className = `message ${isAi ? 'message-ai' : 'message-user'}`;
+            msg.innerText = content;
+            chatBody.appendChild(msg);
+
+            if (data) {
+                const structured = document.createElement('div');
+                structured.className = 'structured-answer';
+                structured.innerHTML = `
+                    <span class="answer-tag">🔍 증상 요약</span>
+                    <p style="margin-bottom: 1rem;">${data.symptom}</p>
+                    
+                    <span class="answer-tag">⚠️ 추정 원인</span>
+                    <ul style="margin-bottom: 1rem; padding-left: 1.2rem;">
+                        ${data.causes.map(c => `<li>${c}</li>`).join('')}
+                    </ul>
+                    
+                    <span class="answer-tag">🛠️ 점검/조치 순서</span>
+                    <ol style="margin-bottom: 1rem; padding-left: 1.2rem;">
+                        ${data.steps.map(s => `<li>${s}</li>`).join('')}
+                    </ol>
+                    
+                    <span class="answer-tag">📦 필요 부품</span>
+                    <p style="margin-bottom: 1rem;">${data.parts}</p>
+                    
+                    <div style="font-size: 0.8rem; color: var(--text-dim); margin-top: 1rem;">
+                        📚 근거 사례: ${data.evidence}
+                    </div>
+                    
+                    <div class="confidence-badge ${data.confidence === 'High' ? 'confidence-high' : 'confidence-mid'}">
+                        ● 신뢰도: ${data.confidence}
+                    </div>
+                `;
+                msg.appendChild(structured);
+            }
+
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function handleSend() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            addMessage(text, false);
+            chatInput.value = '';
+
+            // Simulate AI Thinking
+            setTimeout(() => {
+                const matched = Object.keys(scenarios).find(key => text.includes(key));
+                if (matched) {
+                    addMessage('유사 사례를 발견했습니다. 분석 결과는 다음과 같습니다:', true, scenarios[matched]);
+                } else {
+                    addMessage('죄송합니다. 입력하신 증상에 대한 직접적인 유사 사례를 찾지 못했습니다. 보다 상세한 증상이나 다른 키워드로 입력해 주시겠습니까?', true);
+                }
+            }, 1000);
+        }
+
+        sendBtn.addEventListener('click', handleSend);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+    </script>
+</body>
+</html>
