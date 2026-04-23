@@ -1,6 +1,6 @@
 # 전기차 충전소 AI 점검관리 서비스 기술설계 V1
 
-> 목적: 현재 `csdata-as-bot`을 검색형 PoC에서 데이터 기반 점검/AS 관리 서비스로 확장하기 위한 실제 구현 단위를 정의한다.
+> 목적: 현재 `csautobot`을 검색형 PoC에서 데이터 기반 점검/AS 관리 서비스로 확장하기 위한 실제 구현 단위를 정의한다.
 
 ## 1. 목표 아키텍처
 
@@ -30,7 +30,7 @@
 ```text
 langchain-kr/
   csData/                       # 원본
-  csdata-as-bot/
+  csautobot/
     app/
       streamlit_app.py
       pages/
@@ -182,7 +182,7 @@ langchain-kr/
 
 ## 기존 파일
 
-### [`csdata-as-bot/ingest.py`](C:\MyProject\langchain-kr\csdata-as-bot\ingest.py)
+### [`csautobot/ingest.py`](C:\MyProject\langchain-kr\csautobot\ingest.py)
 
 - 현재 역할:
   - 엑셀 -> 검색용 JSONL
@@ -194,7 +194,7 @@ langchain-kr/
   - 개인정보 마스킹
   - 예외 행 리포트
 
-### [`csdata-as-bot/build_index.py`](C:\MyProject\langchain-kr\csdata-as-bot\build_index.py)
+### [`csautobot/build_index.py`](C:\MyProject\langchain-kr\csautobot\build_index.py)
 
 - 현재 역할:
   - JSONL -> Chroma/BM25
@@ -203,7 +203,7 @@ langchain-kr/
   - 인덱스 버전 메타 추가
   - 인덱스 대상 tenant/site 범위 옵션 추가
 
-### [`csdata-as-bot/retrieval.py`](C:\MyProject\langchain-kr\csdata-as-bot\retrieval.py)
+### [`csautobot/retrieval.py`](C:\MyProject\langchain-kr\csautobot\retrieval.py)
 
 - 현재 역할:
   - 하이브리드 검색 + 재순위 + 신뢰도
@@ -212,7 +212,7 @@ langchain-kr/
   - `site_id`, `charger_id`, `manufacturer`, `inspection_cycle` 필터 추가
   - 향후 예지정비 feature 계산 입력으로 재사용
 
-### [`csdata-as-bot/streamlit_app.py`](C:\MyProject\langchain-kr\csdata-as-bot\streamlit_app.py)
+### [`csautobot/streamlit_app.py`](C:\MyProject\langchain-kr\csautobot\streamlit_app.py)
 
 - 현재 역할:
   - 단일 검색 UI
@@ -222,37 +222,37 @@ langchain-kr/
 
 ## 신규 권장 파일
 
-### `csdata-as-bot/storage/db.py`
+### `csautobot/storage/db.py`
 
 - 역할:
   - SQLite/Postgres 연결
   - 세션 관리
 
-### `csdata-as-bot/storage/schema.sql`
+### `csautobot/storage/schema.sql`
 
 - 역할:
   - 초기 테이블 생성
 
-### `csdata-as-bot/storage/repositories.py`
+### `csautobot/storage/repositories.py`
 
 - 역할:
   - `incident`, `inspection_log`, `usage_meter` CRUD
 
-### `csdata-as-bot/services/inspection_service.py`
+### `csautobot/services/inspection_service.py`
 
 - 역할:
   - 점검일지 저장
   - AI 초안 생성
   - 상태 변경(`draft`, `confirmed`)
 
-### `csdata-as-bot/services/billing_metering.py`
+### `csautobot/services/billing_metering.py`
 
 - 역할:
   - 질의 수
   - 토큰 사용량
   - tenant별 월 집계
 
-### `csdata-as-bot/app/pages/inspection_log.py`
+### `csautobot/app/pages/inspection_log.py`
 
 - 역할:
   - 체크리스트
@@ -260,7 +260,7 @@ langchain-kr/
   - 사진 경로 입력
   - AI 요약 생성
 
-### `csdata-as-bot/app/pages/dashboard.py`
+### `csautobot/app/pages/dashboard.py`
 
 - 역할:
   - 설비별 재발 현황
@@ -349,19 +349,19 @@ langchain-kr/
 ## 10. 바로 수정할 파일 목록
 
 - 수정:
-  - `csdata-as-bot/ingest.py`
-  - `csdata-as-bot/build_index.py`
-  - `csdata-as-bot/retrieval.py`
-  - `csdata-as-bot/streamlit_app.py`
-  - `csdata-as-bot/README.md`
+  - `csautobot/ingest.py`
+  - `csautobot/build_index.py`
+  - `csautobot/retrieval.py`
+  - `csautobot/streamlit_app.py`
+  - `csautobot/README.md`
 - 추가:
-  - `csdata-as-bot/storage/db.py`
-  - `csdata-as-bot/storage/schema.sql`
-  - `csdata-as-bot/storage/repositories.py`
-  - `csdata-as-bot/services/inspection_service.py`
-  - `csdata-as-bot/services/billing_metering.py`
-  - `csdata-as-bot/app/pages/inspection_log.py`
-  - `csdata-as-bot/app/pages/dashboard.py`
+  - `csautobot/storage/db.py`
+  - `csautobot/storage/schema.sql`
+  - `csautobot/storage/repositories.py`
+  - `csautobot/services/inspection_service.py`
+  - `csautobot/services/billing_metering.py`
+  - `csautobot/app/pages/inspection_log.py`
+  - `csautobot/app/pages/dashboard.py`
 
 ## 11. 권장 다음 액션
 

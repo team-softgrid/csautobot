@@ -85,7 +85,7 @@ def main() -> None:
         raise SystemExit(
             f"문서가 없습니다: {JSONL}\n"
             "먼저 프로젝트 루트에 csData 엑셀이 있는지 확인한 뒤:\n"
-            "  poetry run python csdata-as-bot/ingest.py"
+            "  poetry run python csautobot/ingest.py"
         )
 
     # Windows 파일 잠금 회피: 매 실행마다 새 폴더에 인덱스를 생성
@@ -97,7 +97,7 @@ def main() -> None:
     vs = Chroma(
         persist_directory=str(run_dir),
         embedding_function=emb,
-        collection_name="csdata_as",
+        collection_name="csautobot",
     )
 
     batch_size = 100

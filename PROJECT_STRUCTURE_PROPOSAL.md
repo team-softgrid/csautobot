@@ -16,7 +16,7 @@ langchain-kr/
     01-Basic/
     04-Model/
     ...
-  csdata-as-bot/              # 실행형 앱(메인 제품 코드)
+  csautobot/                  # 실행형 앱(메인 제품 코드, 구: csdata-as-bot)
     ingest.py
     build_index.py
     streamlit_app.py
@@ -36,13 +36,13 @@ langchain-kr/
 ### 1단계 (즉시)
 
 - **완료:** 학습용 폴더를 `tutorials/` 아래로 이동해 서비스 코드와 물리 분리
-- **완료:** 제품 코드 `csdata-as-bot/`를 루트로 승격
+- **완료:** 제품 코드 `csautobot/`를 루트로 승격 *(2026-04 에 `csdata-as-bot/` → `csautobot/` 리네임)*
 - **완료:** `.gitignore`로 데이터/인덱스 산출물 커밋 방지
 
 ### 2단계 (점진)
 
-- **완료:** `README.md` 실행 경로를 `tutorials/` 및 `csdata-as-bot/` 기준으로 정리
-- (선택) `csdata-as-bot` 내부를 `app/`·`pipeline/`로 더 쪼개기
+- **완료:** `README.md` 실행 경로를 `tutorials/` 및 `csautobot/` 기준으로 정리
+- (선택) `csautobot` 내부를 `app/`·`pipeline/`로 더 쪼개기
 - (선택) Streamlit UI를 API 서버 + 웹 프론트 구조로 분리
 
 ### 3단계 (안정화)

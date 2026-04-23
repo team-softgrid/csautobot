@@ -6,7 +6,7 @@
 
 ## 1. 개요
 이 문서는 현재 프로젝트에 구현된 전기차 충전기 AS RAG 프로토타입의 구조와 동작 방식을 정리합니다.  
-범위는 `scripts/csdata_as_bot` 기준입니다.
+범위는 `csautobot/` 기준입니다. *(구버전 경로 `scripts/csdata_as_bot/` → `csautobot/` → `csautobot/` 로 순차 이동 완료)*
 
 ## 2. 사용 기술 스택
 - Python 3.11
@@ -19,17 +19,23 @@
 - 로컬 전환 시 모델·VRAM 대안: [local-llm-rag-models.md](local-llm-rag-models.md)
 
 ## 3. 디렉터리 및 주요 파일
-- `scripts/csdata_as_bot/ingest.py`
+- `csautobot/ingest.py`
   - 엑셀 AS 이력 파싱/정규화
   - 검색 가능한 텍스트 레코드(JSONL) 생성
-- `scripts/csdata_as_bot/build_index.py`
+- `csautobot/build_index.py`
   - JSONL을 임베딩 후 Chroma 인덱스 생성
   - 배치 단위 진행률 로그 출력
-- `scripts/csdata_as_bot/streamlit_app.py`
-  - 질의 입력, 유사사례 검색, 답변 생성 UI
-- `scripts/csdata_as_bot/as_records.jsonl`
+- `csautobot/streamlit_app.py`
+  - 질의 입력, 유사사례 검색, 답변 생성 UI (+ 점검일지 MVP 연결)
+- `csautobot/app/pages/inspection_log.py`
+  - 점검일지 체크리스트 + 사진 + AI 초안 MVP UI
+- `csautobot/services/inspection_service.py`
+  - AI 요약 생성 · 점검일지 저장/조회
+- `csautobot/storage/db.py` · `schema.sql` · `repositories.py`
+  - SQLite 기반 점검일지/피드백 저장소
+- `csautobot/as_records.jsonl`
   - 인덱싱 입력 데이터(행 단위 사례 문서)
-- `scripts/csdata_as_bot/chroma_db_*`
+- `csautobot/chroma_db_*`
   - 생성된 로컬 벡터 인덱스
 
 ## 4. 데이터 파이프라인
@@ -48,7 +54,7 @@
 ### 4.2 Index Build 단계
 1. JSONL 로드
 2. 임베딩 생성(`text-embedding-3-small`)
-3. Chroma 컬렉션(`csdata_as`)에 배치 업서트
+3. Chroma 컬렉션(`csautobot`)에 배치 업서트
 4. 인덱싱 진행률 출력
 5. 타임스탬프 기반 인덱스 폴더 생성
 

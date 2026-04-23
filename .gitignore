@@ -10,6 +10,17 @@
 *.md
 !/PROJECT_STRUCTURE_PROPOSAL.md
 !/docs/*.md
+# 대외비 문서 (사업계획/견적/내부전략) — 공개 저장소 노출 금지
+/docs/as-ai-*.md
+/docs/PRICING_DRAFT.md
+/docs/*-internal-*.md
+/docs/*-business-*.md
+/docs/*-proposal*.md
+/docs/*-quotation*.md
+/docs/*-speech*.md
+/docs/*-starting-member-*.md
+/docs/*-customer-*.md
+/docs/*-master-plan*.md
 *.gguf
 *.faiss
 *.index
@@ -36,12 +47,19 @@ csData/**/*.xlsx
 csData/**/*.xls
 csData/**/*.zip
 csData/**/*.pptx
-csdata-as-bot/chroma_db/
-csdata-as-bot/chroma_db_*/
-csdata-as-bot/as_records.jsonl
-csdata-as-bot/active_chroma_dir.txt
-csdata-as-bot/column_report.txt
-csdata-as-bot/missing_indexed_files.txt
+csautobot/chroma_db/
+csautobot/chroma_db_*/
+csautobot/as_records.jsonl
+csautobot/active_chroma_dir.txt
+csautobot/column_report.txt
+csautobot/missing_indexed_files.txt
+# 로컬 SQLite DB (점검일지, 피드백)
+csautobot/storage/*.db
+csautobot/storage/*.db.bak-*
+csautobot/storage/*.sqlite
+csautobot/storage/*.sqlite3
+# 업로드된 사진(원본 로컬 보관, 저장소 업로드 금지)
+csautobot/uploads/
 
 # Accidental numeric artifact files at repository root
 /0.1.59
