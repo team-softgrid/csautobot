@@ -1,10 +1,10 @@
 """csautobot 공통 UI 테마.
 
-참조 프로토타입(``prototype.html``)의 디자인 토큰을 Streamlit 위에 적용한다.
-- 딥 다크 배경 (#0b0e14) + 시안/스카이/핑크 그라디언트 액센트
-- 글래스모피즘 카드 (반투명 + blur + 얇은 보더)
+ocppautomation 의 디자인 시스템(Tailwind v4 기반)을 Streamlit 위에 적용한다.
+- 딥 블루 배경 (#0a0e1a) + 블루/그린 그라디언트 액센트
+- 모던 Grid 배경 패턴
+- 글래스모피즘 카드 (반투명 네이비 + blur + 얇은 보더)
 - Inter (본문) / Outfit (헤딩) 폰트
-- floating blur orb 와 radial-gradient 배경 레이어
 
 모든 페이지는 진입 시 :func:`inject_global_css` 를 호출한다.
 """
@@ -16,21 +16,21 @@ BRAND_NAME = "csautobot"
 BRAND_TAGLINE = "EV Infrastructure Technical Copilot"
 BRAND_SUB = "전기차 충전소 AI 점검·AS 코파일럿"
 
-# --- 디자인 토큰 (prototype.html :root 와 동기화) ---
-COLOR_PRIMARY = "#00f2fe"    # 일렉트릭 시안
-COLOR_SECONDARY = "#4facfe"  # 스카이 블루
-COLOR_ACCENT = "#f093fb"     # 핑크 (하이라이트)
-COLOR_BG = "#0b0e14"
-COLOR_BG_SOFT = "#11151f"
-COLOR_TEXT = "#ECEFF5"
-COLOR_MUTED = "#B4BBCB"
-COLOR_MUTED_SOFT = "#8A93A8"
-COLOR_SUCCESS = "#10b981"
-COLOR_WARN = "#f59e0b"
+# --- 디자인 토큰 (ocppautomation Tailwind 기준) ---
+COLOR_PRIMARY = "#3478ff"    # 블루 (Brand-500)
+COLOR_SECONDARY = "#1442e1"  # 다크 블루 (Brand-700)
+COLOR_ACCENT = "#4ade80"     # 그린 (Accent-400)
+COLOR_BG = "#0a0e1a"         # Base Background
+COLOR_BG_SOFT = "#111827"    # Dark Soft
+COLOR_TEXT = "#f1f5f9"       # Text Main
+COLOR_MUTED = "#94a3b8"      # Text Muted
+COLOR_MUTED_SOFT = "#64748b" # Text Muted Soft
+COLOR_SUCCESS = "#22c55e"
+COLOR_WARN = "#f97316"
 COLOR_DANGER = "#ef4444"
-GLASS_BG = "rgba(255,255,255,0.05)"
-GLASS_BORDER = "rgba(255,255,255,0.10)"
-GLASS_BORDER_STRONG = "rgba(255,255,255,0.18)"
+GLASS_BG = "rgba(30, 41, 59, 0.6)"
+GLASS_BORDER = "#1e293b"
+GLASS_BORDER_STRONG = "#334155"
 
 _CSS = f"""<style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;600;700;800&display=swap');
@@ -44,6 +44,7 @@ _CSS = f"""<style>
   --text-dim: {COLOR_MUTED};
   --card-bg: {GLASS_BG};
   --glass-border: {GLASS_BORDER};
+  --glass-border-strong: {GLASS_BORDER_STRONG};
   --success: {COLOR_SUCCESS};
   --warn: {COLOR_WARN};
   --danger: {COLOR_DANGER};
@@ -51,10 +52,11 @@ _CSS = f"""<style>
 
 /* 전체 배경 + 기본 타이포 */
 html, body, [class*="stApp"] {{
-  background:
-    radial-gradient(900px 520px at 90% -10%, rgba(79,172,254,0.14), transparent 60%),
-    radial-gradient(800px 480px at 0% 110%, rgba(240,147,251,0.10), transparent 60%),
-    {COLOR_BG} !important;
+  background: var(--bg) !important;
+  background-image: 
+    linear-gradient(rgba(52, 120, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(52, 120, 255, 0.03) 1px, transparent 1px) !important;
+  background-size: 60px 60px !important;
   color: var(--text) !important;
   font-family: "Inter", "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR",
                -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
@@ -79,60 +81,50 @@ h4 {{ font-weight: 600; }}
 
 /* ---------- 사이드바 ---------- */
 section[data-testid="stSidebar"] > div {{
-  background: linear-gradient(180deg, #0a0d14 0%, #0d1220 100%) !important;
+  background: #060913 !important;
   border-right: 1px solid var(--glass-border);
 }}
 section[data-testid="stSidebar"] * {{ color: var(--text) !important; }}
-section[data-testid="stSidebar"] .stRadio label {{
-  padding: 6px 8px; border-radius: 8px;
-  transition: background-color 0.15s ease;
-}}
-section[data-testid="stSidebar"] .stRadio label:hover {{
-  background: rgba(255,255,255,0.04);
-}}
-section[data-testid="stSidebar"] .stRadio [data-baseweb="radio"] {{
-  margin-right: 6px;
-}}
 
 /* ---------- 버튼 ---------- */
-.stButton > button, .stDownloadButton > button, .stFormSubmitButton > button {{
+.stButton button, .stDownloadButton button, .stFormSubmitButton button {{
   background: rgba(255,255,255,0.06) !important;
   color: var(--text) !important;
   border: 1px solid rgba(255,255,255,0.18) !important;
   border-radius: 10px !important;
   font-weight: 600 !important;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }}
-.stButton > button p, .stDownloadButton > button p, .stFormSubmitButton > button p {{
+.stButton button p, .stDownloadButton button p, .stFormSubmitButton button p {{
   color: inherit !important;
   margin: 0 !important;
 }}
-.stButton > button:hover, .stDownloadButton > button:hover, .stFormSubmitButton > button:hover {{
+.stButton button:hover, .stDownloadButton button:hover, .stFormSubmitButton button:hover {{
   border-color: var(--primary) !important;
   color: var(--primary) !important;
-  background: rgba(0,242,254,0.07) !important;
+  background: rgba(52, 120, 255, 0.08) !important;
+  box-shadow: 0 0 15px rgba(52, 120, 255, 0.2);
 }}
 
-/* Primary: 진한 딥블루 → 시안 그라디언트 + 어두운 텍스트 강제 */
-.stButton > button[kind="primary"], button[data-testid="baseButton-primary"],
-.stFormSubmitButton > button[kind="primary"] {{
-  background: linear-gradient(135deg, #2260d8 0%, #3aa6f5 40%, #00d8e6 100%) !important;
-  color: #031A24 !important;
+/* Primary: Glow Button 느낌 */
+.stButton button[kind="primary"], button[data-testid="baseButton-primary"],
+.stFormSubmitButton button[kind="primary"] {{
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%) !important;
+  color: #ffffff !important;
   border: none !important;
-  font-weight: 800 !important;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.15);
-  box-shadow: 0 10px 24px -8px rgba(0,170,220,0.45);
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(52, 120, 255, 0.3);
 }}
-.stButton > button[kind="primary"] *,
-.stFormSubmitButton > button[kind="primary"] *,
+.stButton button[kind="primary"] *,
+.stFormSubmitButton button[kind="primary"] *,
 button[data-testid="baseButton-primary"] * {{
-  color: #031A24 !important;
+  color: #ffffff !important;
 }}
-.stButton > button[kind="primary"]:hover,
-.stFormSubmitButton > button[kind="primary"]:hover {{
+.stButton button[kind="primary"]:hover,
+.stFormSubmitButton button[kind="primary"]:hover {{
   transform: translateY(-1px);
-  box-shadow: 0 16px 32px -10px rgba(0,170,220,0.6);
-  filter: brightness(1.05);
+  box-shadow: 0 8px 20px rgba(52, 120, 255, 0.4);
+  filter: brightness(1.1);
 }}
 
 /* ---------- 입력 위젯 라벨 ---------- */
@@ -146,67 +138,78 @@ button[data-testid="baseButton-primary"] * {{
 }}
 
 /* ---------- 입력 위젯 박스 ---------- */
-.stTextInput > div > div,
-.stTextArea textarea,
-.stSelectbox > div > div,
-.stNumberInput > div > div,
-.stDateInput > div > div,
-.stMultiSelect > div > div,
-.stFileUploader > div {{
-  background: rgba(255,255,255,0.06) !important;
-  border: 1px solid rgba(255,255,255,0.22) !important;
-  border-radius: 12px !important;
-  color: var(--text) !important;
+/* 최상단 wrapper 및 base-input 의 기본 테두리 제거 */
+.stTextInput [data-baseweb="base-input"],
+.stTextArea [data-baseweb="base-input"],
+.stSelectbox [data-baseweb="select"],
+.stNumberInput [data-baseweb="base-input"],
+.stDateInput [data-baseweb="base-input"],
+.stMultiSelect [data-baseweb="select"] {{
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }}
+
+/* 실제 입력창(input/textarea)에만 흰색 배경과 단일 테두리 적용 */
 .stTextInput input, .stTextArea textarea, .stNumberInput input, .stDateInput input,
 .stMultiSelect input, .stSelectbox div[role="combobox"] {{
-  color: var(--text) !important;
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  color: #0f172a !important;
   caret-color: var(--primary);
+  font-weight: 500 !important;
+  box-shadow: none !important;
+  padding: 8px 12px !important;
 }}
+.stFileUploader [data-testid="stFileUploadDropzone"] {{
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  color: #0f172a !important;
+}}
+
 .stTextInput input::placeholder,
 .stTextArea textarea::placeholder,
 .stNumberInput input::placeholder,
 .stDateInput input::placeholder {{
-  color: var(--text-dim) !important;
-  opacity: 0.75 !important;
+  color: #94a3b8 !important;
+  opacity: 1 !important;
 }}
 
-/* 포커스 강조: 얇고 부드러운 시안 아웃라인만 사용 (주황 기본값 제거) */
-.stTextInput > div > div:focus-within,
-.stTextArea > div > div:focus-within,
-.stNumberInput > div > div:focus-within,
-.stDateInput > div > div:focus-within,
-.stMultiSelect > div > div:focus-within,
-.stSelectbox > div > div:focus-within {{
+/* 포커스 강조 */
+.stTextInput input:focus,
+.stTextArea textarea:focus,
+.stNumberInput input:focus,
+.stDateInput input:focus,
+.stMultiSelect input:focus,
+.stSelectbox div[role="combobox"]:focus-within {{
   border-color: var(--primary) !important;
-  box-shadow: 0 0 0 2px rgba(0,242,254,0.18) !important;
+  box-shadow: 0 0 0 2px rgba(52, 120, 255, 0.25) !important;
   outline: none !important;
 }}
 
-/* NumberInput ± 증감 버튼 — 주황 기본 테마 제거 */
+/* NumberInput ± 증감 버튼 */
 .stNumberInput button {{
-  background: rgba(255,255,255,0.06) !important;
-  color: var(--text) !important;
-  border-color: rgba(255,255,255,0.18) !important;
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
 }}
 .stNumberInput button:hover {{
-  background: rgba(0,242,254,0.1) !important;
+  background: rgba(52, 120, 255, 0.1) !important;
   color: var(--primary) !important;
 }}
 
 /* ---------- Slider ---------- */
-/* 트랙 — 기본 회색 → 시안 그라디언트 */
 .stSlider [data-baseweb="slider"] > div:nth-child(2),
 .stSlider [data-baseweb="slider"] > div:nth-child(3) {{
-  background: linear-gradient(90deg, #2260d8, #00d8e6) !important;
+  background: linear-gradient(90deg, var(--secondary), var(--primary)) !important;
 }}
-/* 썸(핸들) — 기본 분홍 → 흰 테두리 + 시안 원형 */
 .stSlider [role="slider"] {{
   background: #ffffff !important;
   border: 3px solid var(--primary) !important;
-  box-shadow: 0 4px 12px rgba(0,242,254,0.45) !important;
+  box-shadow: 0 4px 12px rgba(52, 120, 255, 0.35) !important;
 }}
-/* 슬라이더 현재값/min·max 라벨 */
 .stSlider [data-baseweb="slider"] + div,
 .stSlider [data-testid="stTickBar"] {{
   color: var(--text-dim) !important;
@@ -214,9 +217,47 @@ button[data-testid="baseButton-primary"] * {{
 .stSlider [data-testid="stThumbValue"] {{
   color: var(--text) !important;
   font-weight: 700 !important;
-  background: rgba(0,242,254,0.12) !important;
+  background: rgba(52, 120, 255, 0.15) !important;
   padding: 2px 8px !important;
   border-radius: 8px !important;
+}}
+
+/* ---------- Horizontal Radio (Tab Navigation) ---------- */
+div[data-testid="stRadio"] > div[role="radiogroup"][aria-orientation="horizontal"] {{
+  display: flex;
+  gap: 12px;
+  background: var(--card-bg);
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  width: fit-content;
+}}
+div[data-testid="stRadio"] > div[role="radiogroup"][aria-orientation="horizontal"] label[data-baseweb="radio"] {{
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 0;
+  transition: all 0.2s ease;
+}}
+div[data-testid="stRadio"] > div[role="radiogroup"][aria-orientation="horizontal"] label[data-baseweb="radio"] div:first-child {{
+  display: none; /* Hide the actual radio circle */
+}}
+div[data-testid="stRadio"] > div[role="radiogroup"][aria-orientation="horizontal"] label[data-baseweb="radio"] div:last-child {{
+  font-weight: 600;
+  color: var(--text-dim);
+  font-size: 14.5px;
+}}
+div[data-testid="stRadio"] > div[role="radiogroup"][aria-orientation="horizontal"] label[data-baseweb="radio"]:hover {{
+  background: rgba(255,255,255,0.06);
+}}
+div[data-testid="stRadio"] > div[role="radiogroup"][aria-orientation="horizontal"] label[data-baseweb="radio"]:has(input:checked) {{
+  background: rgba(52, 120, 255, 0.15);
+  border: 1px solid rgba(52, 120, 255, 0.3);
+  box-shadow: 0 4px 10px rgba(52, 120, 255, 0.15);
+}}
+div[data-testid="stRadio"] > div[role="radiogroup"][aria-orientation="horizontal"] label[data-baseweb="radio"]:has(input:checked) div:last-child {{
+  color: var(--primary) !important;
 }}
 
 /* ---------- 메트릭 카드 (KPI 느낌) ---------- */
@@ -225,12 +266,13 @@ button[data-testid="baseButton-primary"] * {{
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 18px 20px;
-  backdrop-filter: blur(10px);
-  transition: transform 0.25s ease, border-color 0.25s ease;
+  backdrop-filter: blur(16px);
+  transition: all 0.3s ease;
 }}
 [data-testid="stMetric"]:hover {{
   transform: translateY(-3px);
-  border-color: var(--secondary);
+  border-color: var(--glass-border-strong);
+  box-shadow: 0 8px 20px rgba(52, 120, 255, 0.15);
 }}
 [data-testid="stMetricLabel"] {{
   color: var(--text-dim) !important;
@@ -239,7 +281,7 @@ button[data-testid="baseButton-primary"] * {{
   font-size: 12px !important;
 }}
 [data-testid="stMetricValue"] {{
-  color: var(--primary) !important;
+  color: var(--text) !important;
   font-family: "Outfit", sans-serif !important;
   font-weight: 700 !important;
 }}
@@ -251,7 +293,7 @@ button[data-testid="baseButton-primary"] * {{
   border: 1px solid var(--glass-border) !important;
   border-radius: 12px !important;
   color: var(--text) !important;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(16px);
 }}
 [data-testid="stExpander"] {{ border: none; }}
 
@@ -259,7 +301,16 @@ button[data-testid="baseButton-primary"] * {{
 .stAlert {{
   border-radius: 12px !important;
   border: 1px solid var(--glass-border) !important;
-  background: rgba(255,255,255,0.03) !important;
+  background: rgba(30, 41, 59, 0.4) !important;
+}}
+.stAlert [data-testid="stMarkdownContainer"],
+.stAlert [data-testid="stMarkdownContainer"] p,
+.stAlert [data-testid="stMarkdownContainer"] div,
+.stAlert [data-testid="stMarkdownContainer"] span {{
+  color: var(--text) !important;
+}}
+.stAlert [data-testid="stMarkdownContainer"] strong {{
+  color: #ffffff !important;
 }}
 
 /* ---------- DataFrame ---------- */
@@ -267,6 +318,24 @@ button[data-testid="baseButton-primary"] * {{
   border: 1px solid var(--glass-border);
   border-radius: 14px;
   overflow: hidden;
+}}
+
+/* ---------- Code & Text Blocks ---------- */
+code {{
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: var(--accent) !important; /* 초록색 액센트로 가독성 확보 */
+  padding: 3px 6px !important;
+  border-radius: 6px !important;
+  font-family: "JetBrains Mono", Consolas, monospace !important;
+  font-size: 0.9em !important;
+  word-break: break-all !important;
+}}
+[data-testid="stText"], pre, pre code {{
+  color: var(--text-dim) !important;
+  background-color: transparent !important;
+  font-family: "Inter", "Pretendard", sans-serif !important;
+  white-space: pre-wrap !important;
+  line-height: 1.6 !important;
 }}
 
 /* ---------- Tabs ---------- */
@@ -288,36 +357,18 @@ button[data-testid="baseButton-primary"] * {{
   position: relative;
   padding: 72px 48px 64px 48px;
   border-radius: 28px;
-  background:
-    radial-gradient(circle at 85% -10%, rgba(79,172,254,0.18), transparent 60%),
-    radial-gradient(circle at 10% 120%, rgba(240,147,251,0.13), transparent 60%),
-    linear-gradient(180deg, #0d1220 0%, #0a0e18 100%);
+  background: var(--card-bg);
   border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px);
   overflow: hidden;
   margin-bottom: 28px;
   text-align: center;
-}}
-.csa-hero::before {{
-  content: "";
-  position: absolute; inset: 0;
-  background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-  opacity: 0.08;
-  pointer-events: none;
-}}
-.csa-hero .orb {{
-  position: absolute;
-  width: 180px; height: 180px;
-  border-radius: 50%;
-  background: var(--primary);
-  filter: blur(90px);
-  opacity: 0.22;
-  z-index: 0;
 }}
 .csa-hero .badge {{
   position: relative; z-index: 1;
   display: inline-block;
   padding: 0.45rem 1.2rem;
-  background: rgba(0,242,254,0.1);
+  background: rgba(52, 120, 255, 0.1);
   border: 1px solid var(--primary);
   color: var(--primary);
   border-radius: 50px;
@@ -334,9 +385,10 @@ button[data-testid="baseButton-primary"] * {{
   line-height: 1.1;
   margin: 0 auto 18px auto;
   max-width: 820px;
-  background: linear-gradient(to right, #fff, var(--secondary), var(--primary));
+  background: linear-gradient(135deg, #8ec1ff, #3478ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  color: transparent;
 }}
 .csa-hero p.lead {{
   position: relative; z-index: 1;
@@ -362,7 +414,7 @@ button[data-testid="baseButton-primary"] * {{
 .csa-chip .dot {{
   width: 6px; height: 6px; border-radius: 50%;
   background: var(--primary);
-  box-shadow: 0 0 8px 2px rgba(0,242,254,0.6);
+  box-shadow: 0 0 8px 2px rgba(52, 120, 255, 0.6);
 }}
 
 /* ---------- KPI grid ---------- */
@@ -377,12 +429,13 @@ button[data-testid="baseButton-primary"] * {{
   border: 1px solid var(--glass-border);
   padding: 22px 22px;
   border-radius: 18px;
-  backdrop-filter: blur(10px);
-  transition: transform 0.25s ease, border-color 0.25s ease;
+  backdrop-filter: blur(16px);
+  transition: all 0.3s ease;
 }}
 .csa-kpi-card:hover {{
   transform: translateY(-4px);
-  border-color: var(--secondary);
+  border-color: var(--glass-border-strong);
+  box-shadow: 0 8px 20px rgba(52, 120, 255, 0.15);
 }}
 .csa-kpi-card .label {{
   color: var(--text-dim);
@@ -395,7 +448,7 @@ button[data-testid="baseButton-primary"] * {{
   font-family: "Outfit", sans-serif;
   font-size: 34px;
   font-weight: 800;
-  color: var(--primary);
+  color: var(--text);
   line-height: 1.15;
 }}
 .csa-kpi-card .trend {{
@@ -418,20 +471,21 @@ button[data-testid="baseButton-primary"] * {{
   border: 1px solid var(--glass-border);
   border-radius: 18px;
   padding: 24px 22px;
-  backdrop-filter: blur(10px);
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  backdrop-filter: blur(16px);
+  transition: all 0.3s ease;
   display: flex; gap: 16px; align-items: flex-start;
 }}
 .csa-feature-card:hover {{
   transform: translateY(-3px);
-  border-color: var(--secondary);
+  border-color: var(--glass-border-strong);
+  box-shadow: 0 8px 20px rgba(52, 120, 255, 0.15);
 }}
 .csa-feature-card .icon {{
   width: 48px; height: 48px; flex-shrink: 0;
   border-radius: 14px;
   background: linear-gradient(135deg, var(--secondary), var(--primary));
   display: inline-flex; align-items: center; justify-content: center;
-  color: #00141a;
+  color: #ffffff;
   font-size: 22px;
   font-weight: 800;
 }}
@@ -474,11 +528,11 @@ button[data-testid="baseButton-primary"] * {{
 
 /* ---------- Architecture steps ---------- */
 .csa-arch-card {{
-  background: rgba(255,255,255,0.02);
+  background: var(--card-bg);
   border: 1px solid var(--glass-border);
   padding: 28px;
   border-radius: 22px;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(16px);
 }}
 .csa-arch-step {{
   display: flex; align-items: flex-start; gap: 18px;
@@ -494,7 +548,7 @@ button[data-testid="baseButton-primary"] * {{
 }}
 .csa-arch-step .num {{
   width: 40px; height: 40px;
-  background: rgba(0,242,254,0.08);
+  background: rgba(52, 120, 255, 0.1);
   border: 1px solid var(--primary);
   border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
@@ -538,7 +592,7 @@ button[data-testid="baseButton-primary"] * {{
   border-radius: 18px;
   padding: 22px 24px;
   margin-bottom: 18px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px);
 }}
 .csa-card-title {{
   display: flex; align-items: center; gap: 10px;
@@ -547,10 +601,10 @@ button[data-testid="baseButton-primary"] * {{
 }}
 .csa-card-title .num {{
   width: 26px; height: 26px; border-radius: 8px;
-  background: rgba(0,242,254,0.1); color: var(--primary);
+  background: rgba(52, 120, 255, 0.1); color: var(--primary);
   display: inline-flex; align-items: center; justify-content: center;
   font-weight: 800; font-size: 13px;
-  border: 1px solid rgba(0,242,254,0.3);
+  border: 1px solid rgba(52, 120, 255, 0.3);
 }}
 
 /* ---------- Footer note ---------- */
@@ -609,18 +663,21 @@ def render_sidebar_brand() -> None:
     st.markdown(
         f"""
         <div style="padding: 6px 4px 14px 4px; border-bottom: 1px solid {GLASS_BORDER}; margin-bottom: 14px;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <div style="width:36px;height:36px;border-radius:10px;
-                        background:linear-gradient(135deg,{COLOR_SECONDARY} 0%, {COLOR_PRIMARY} 100%);
-                        display:flex;align-items:center;justify-content:center;
-                        font-family:'Outfit',sans-serif;font-weight:800;color:#00141a;">cs</div>
-            <div>
-              <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:17px;letter-spacing:-0.02em;color:{COLOR_TEXT};">{BRAND_NAME}</div>
-              <div style="font-size:10.5px;color:{COLOR_MUTED};letter-spacing:0.12em;text-transform:uppercase;">
-                EV · Ops Copilot
+          <a href="/?page=home" target="_self" style="text-decoration: none;">
+            <div style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+              <div style="width:36px;height:36px;border-radius:10px;
+                          background:linear-gradient(135deg,{COLOR_PRIMARY} 0%, {COLOR_SECONDARY} 100%);
+                          display:flex;align-items:center;justify-content:center;
+                          font-family:'Outfit',sans-serif;font-weight:800;color:#ffffff;
+                          box-shadow: 0 4px 10px rgba(52,120,255,0.3);">cs</div>
+              <div>
+                <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:17px;letter-spacing:-0.02em;color:{COLOR_TEXT};">{BRAND_NAME}</div>
+                <div style="font-size:10.5px;color:{COLOR_MUTED};letter-spacing:0.12em;text-transform:uppercase;">
+                  EV · Ops Copilot
+                </div>
               </div>
             </div>
-          </div>
+          </a>
           <div style="font-size:12px;color:{COLOR_MUTED};margin-top:12px;line-height:1.6;">
             {BRAND_SUB}
           </div>

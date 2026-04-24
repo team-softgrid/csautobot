@@ -20,6 +20,7 @@ import streamlit as st
 from app.ui import page_header
 from services.inspection_service import (
     CHECKLIST_CYCLES,
+    INSPECTION_TARGETS,
     CHECKLIST_PRESETS,
     CHECKLIST_STATUS_OPTIONS,
     InspectionDraft,
@@ -49,24 +50,34 @@ def _ensure_state() -> None:
     """페이지 세션 상태 초기화."""
     if "insp_id" not in st.session_state:
         st.session_state.insp_id = f"ins-{uuid.uuid4().hex[:12]}"
+    if "insp_target" not in st.session_state:
+        st.session_state.insp_target = "충전기"
     if "insp_cycle" not in st.session_state:
         st.session_state.insp_cycle = "월간"
     if "insp_checklist" not in st.session_state:
-        st.session_state.insp_checklist = default_checklist()
+        st.session_state.insp_checklist = preset_checklist(
+            st.session_state.insp_target, st.session_state.insp_cycle
+        )
     if "insp_photos" not in st.session_state:
-        st.session_state.insp_photos = []  # list[str] paths
+        st.session_state.insp_photos = []
     if "insp_draft" not in st.session_state:
-        st.session_state.insp_draft = None  # InspectionDraft | None
+        st.session_state.insp_draft = None
     if "insp_draft_model" not in st.session_state:
         st.session_state.insp_draft_model = None
+    if "insp_web_res" not in st.session_state:
+        st.session_state.insp_web_res = ""
 
-
-def _reset_state() -> None:
-    for key in list(st.session_state.keys()):
-        if key.startswith("insp_"):
-            del st.session_state[key]
-    _ensure_state()
-
+def _on_preset_change() -> None:
+    """점검 대상이나 주기가 변경되면 점검 항목을 즉시 업데이트."""
+    t = st.session_state.get("insp_target", "충전기")
+    c = st.session_state.get("insp_cycle", "월간")
+    new_list = preset_checklist(t, c)
+    st.session_state.insp_checklist = new_list
+    # Streamlit 위젯 캐시를 강제로 덮어씌움
+    for idx, row in enumerate(new_list):
+        st.session_state[f"insp_item_{idx}"] = row.get("item", "")
+        st.session_state[f"insp_status_{idx}"] = row.get("status", "정상")
+        st.session_state[f"insp_note_{idx}"] = row.get("note", "")
 
 def _save_photos(uploaded_files, inspection_id: str) -> list[str]:
     """업로드된 사진을 로컬에 저장하고 경로 리스트 반환."""
@@ -83,8 +94,15 @@ def _save_photos(uploaded_files, inspection_id: str) -> list[str]:
     return saved
 
 
+def _reset_state() -> None:
+    for key in list(st.session_state.keys()):
+        if key.startswith("insp_"):
+            del st.session_state[key]
+    _ensure_state()
+
+
 def _render_checklist_editor() -> list[dict]:
-    st.markdown("#### 체크리스트")
+    st.markdown("#### 점검 항목")
     st.caption(
         "각 항목의 상태를 '정상 / 주의 / 이상 / N/A' 중에서 선택하세요. "
         "'주의·이상'으로 표시한 항목은 AI 초안에서 우선적으로 반영됩니다."
@@ -134,19 +152,14 @@ def _render_checklist_editor() -> list[dict]:
             )
             st.rerun()
     with btn_c2:
-        cur_cycle = st.session_state.get("insp_cycle", "월간")
-        if st.button(
-            f"'{cur_cycle}' 프리셋으로 초기화",
-            use_container_width=True,
-            help="현재 선택된 주기의 표준 체크리스트로 덮어씁니다.",
-        ):
-            st.session_state.insp_checklist = preset_checklist(cur_cycle)
+        if st.button("🔄 선택한 프리셋으로 리셋", use_container_width=True):
+            _on_preset_change()
             st.rerun()
 
     return new_checklist
 
 
-def _render_draft(draft: InspectionDraft, model_name: str) -> None:
+def _render_draft(draft: InspectionDraft, model_name: str, web_res: str = "") -> None:
     st.markdown("### AI 초안")
     st.caption(f"생성 모델: `{model_name}` · 최종 판단은 담당 엔지니어가 수행합니다.")
 
@@ -180,6 +193,10 @@ def _render_draft(draft: InspectionDraft, model_name: str) -> None:
 
     st.info(f"**엔지니어 요약 메모** — {draft.inspector_note}")
     st.caption(f"⚠ {draft.safety_notice}")
+
+    if web_res:
+        with st.expander("웹 리서치 결과 (Tavily)"):
+            st.markdown(web_res)
 
 
 def _render_feedback_form(target_id: str) -> None:
@@ -252,7 +269,7 @@ def _render_recent_logs() -> None:
                         if k not in {"checklist_json", "photo_paths_json", "ai_summary_json"}
                     }
                 )
-                st.markdown("**체크리스트**")
+                st.markdown("**점검 항목**")
                 st.json(log.get("checklist") or [])
                 st.markdown("**AI 초안**")
                 st.json(log.get("ai_summary") or {})
@@ -261,7 +278,7 @@ def _render_recent_logs() -> None:
 def render() -> None:
     page_header(
         "점검일지 AI 어시스턴트",
-        "체크리스트·사진·엔지니어 메모를 입력하면 AI가 위험도/조치 초안을 생성합니다. "
+        "점검 대상, 점검 주기, 점검 항목, 엔지니어 메모를 입력하면 AI가 위험도/조치 초안을 생성합니다. "
         "엔지니어가 확정하면 SQLite 에 저장되고, 팀원·고객 피드백도 함께 수집됩니다.",
         icon="📝",
     )
@@ -271,7 +288,7 @@ def render() -> None:
     st.markdown(f"**작성 중 ID**: `{insp_id}`")
 
     with st.expander("① 설비·점검 기본 정보", expanded=True):
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
             site_name = st.text_input("충전소명", "")
             charger_id = st.text_input("충전기 ID", "")
@@ -279,51 +296,30 @@ def render() -> None:
             manufacturer = st.text_input("제조사", "")
             model_name = st.text_input("모델명", "")
         with col3:
-            inspection_type = st.selectbox("점검 유형", INSPECTION_TYPES)
-            cycle_idx = (
-                INSPECTION_CYCLES.index(st.session_state.insp_cycle)
-                if st.session_state.insp_cycle in INSPECTION_CYCLES
-                else INSPECTION_CYCLES.index("월간")
+            inspection_target = st.selectbox(
+                "점검 대상", 
+                INSPECTION_TARGETS, 
+                key="insp_target",
+                on_change=_on_preset_change
             )
+            inspection_type = st.selectbox("점검 유형", INSPECTION_TYPES)
+        with col4:
             inspection_cycle = st.selectbox(
-                "점검 주기 (일간/주간/월간/분기/반기/연간/수시)",
+                "점검 주기",
                 INSPECTION_CYCLES,
-                index=cycle_idx,
+                key="insp_cycle",
+                on_change=_on_preset_change
             )
             engineer_name = st.text_input("작성 엔지니어", "")
 
-        # 주기 변경 감지 → 프리셋 안내 + 적용 버튼
-        preset_items = CHECKLIST_PRESETS.get(inspection_cycle, [])
-        pc1, pc2 = st.columns([3, 1])
-        with pc1:
-            st.info(
-                f"**{inspection_cycle}** 점검 프리셋 — {len(preset_items)}개 항목 "
-                f"(현재 체크리스트 {len(st.session_state.insp_checklist)}개 항목)"
-            )
-        with pc2:
-            apply_preset = st.button(
-                f"📋 '{inspection_cycle}' 프리셋 적용",
-                use_container_width=True,
-                help="현재 체크리스트를 선택한 주기의 표준 항목으로 교체합니다.",
-            )
-        if apply_preset:
-            st.session_state.insp_cycle = inspection_cycle
-            st.session_state.insp_checklist = preset_checklist(inspection_cycle)
-            st.success(f"'{inspection_cycle}' 프리셋({len(preset_items)}개 항목)이 적용되었습니다.")
-            st.rerun()
-
-        with st.expander(f"'{inspection_cycle}' 프리셋 미리보기 ({len(preset_items)}개)", expanded=False):
-            for i, name in enumerate(preset_items, 1):
-                st.markdown(f"{i}. {name}")
-
-    with st.expander("② 체크리스트", expanded=True):
+    with st.expander("② 점검 항목", expanded=True):
         checklist = _render_checklist_editor()
 
     with st.expander("③ 엔지니어 메모 / 특이사항", expanded=True):
         memo_text = st.text_area(
             "메모",
             height=140,
-            placeholder="예: '충전 시작 약 3초 뒤 EC23 팝업 발생, 건 분리 시 재시작됨'",
+            placeholder="예: '점검 중 팬 구동 소음 확인, 추가 분해 필요'",
             key="insp_memo",
         )
 
@@ -342,6 +338,8 @@ def render() -> None:
                     st.image(f, caption=f.name, use_container_width=True)
 
     st.markdown("---")
+    use_web_search = st.checkbox("🌐 웹 리서치 병행 (Tavily Search 연동, 약 3~5초 추가 소요)", value=False)
+    
     act_c1, act_c2, act_c3 = st.columns([2, 1, 1])
     with act_c1:
         generate_btn = st.button(
@@ -370,7 +368,7 @@ def render() -> None:
             if saved_paths:
                 st.session_state.insp_photos = saved_paths
 
-            draft, used_model = generate_inspection_draft(
+            draft, used_model, web_res = generate_inspection_draft(
                 site_name=site_name or None,
                 charger_id=charger_id or None,
                 manufacturer=manufacturer or None,
@@ -380,9 +378,11 @@ def render() -> None:
                 checklist=checklist,
                 memo_text=memo_text,
                 photo_count=len(st.session_state.insp_photos),
+                use_web_search=use_web_search,
             )
             st.session_state.insp_draft = draft
             st.session_state.insp_draft_model = used_model
+            st.session_state.insp_web_res = web_res
 
             # draft 단계: DB 에 status='draft' 로 upsert
             existing = get_inspection_log(insp_id)
@@ -408,7 +408,7 @@ def render() -> None:
         st.success("AI 초안이 생성되었습니다. 아래에서 확인 후 필요시 확정하세요.")
 
     if st.session_state.insp_draft:
-        _render_draft(st.session_state.insp_draft, st.session_state.insp_draft_model or "-")
+        _render_draft(st.session_state.insp_draft, st.session_state.insp_draft_model or "-", st.session_state.insp_web_res)
 
         if confirm_btn:
             # 확정 저장(없다면 생성) — 이전에 draft 로 저장된 건 상태만 변경

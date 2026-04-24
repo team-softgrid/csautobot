@@ -43,6 +43,7 @@ from app.pages import feedback as feedback_page  # noqa: E402
 from app.pages import home as home_page  # noqa: E402
 from app.pages import inspection_log as inspection_page  # noqa: E402
 from app.pages import search as search_page  # noqa: E402
+from app.pages import data_management as data_management_page  # noqa: E402
 from app.theme import (  # noqa: E402
     BRAND_NAME,
     BRAND_TAGLINE,
@@ -56,8 +57,9 @@ INSP_KEY = "📝 점검일지 AI 어시스턴트"
 SEARCH_KEY = "🔎 AS 유사 사례 검색"
 DASH_KEY = "📊 운영 대시보드"
 FEEDBACK_KEY = "📬 피드백 모음"
+DATA_KEY = "📂 학습 데이터 관리"
 
-PAGE_ORDER = [HOME_KEY, INSP_KEY, SEARCH_KEY, DASH_KEY, FEEDBACK_KEY]
+PAGE_ORDER = [DASH_KEY, INSP_KEY, SEARCH_KEY, DATA_KEY]
 
 
 def _set_page(key: str) -> None:
@@ -72,9 +74,11 @@ def _render_selected_page(key: str) -> None:
     elif key == SEARCH_KEY:
         search_page.render()
     elif key == DASH_KEY:
-        dashboard_page.render()
+        dashboard_page.render(on_navigate=_set_page)
     elif key == FEEDBACK_KEY:
         feedback_page.render()
+    elif key == DATA_KEY:
+        data_management_page.render()
     else:
         home_page.render(on_navigate=_set_page)
 
@@ -93,23 +97,28 @@ def main() -> None:
     if "csa_page" not in st.session_state:
         st.session_state["csa_page"] = HOME_KEY
 
+    # 로고 클릭 시 /?page=home 파라미터가 들어올 경우 홈으로 강제 라우팅
+    if hasattr(st, "query_params") and "page" in st.query_params:
+        if st.query_params["page"] == "home":
+            st.session_state["csa_page"] = HOME_KEY
+            st.query_params.clear()
+
     with st.sidebar:
         render_sidebar_brand()
         current = st.session_state["csa_page"]
-        try:
-            idx = PAGE_ORDER.index(current)
-        except ValueError:
-            idx = 0
-        page_key = st.radio(
-            "메뉴",
-            PAGE_ORDER,
-            index=idx,
-            label_visibility="collapsed",
-            key="csa_nav_radio",
-        )
-        if page_key != current:
-            st.session_state["csa_page"] = page_key
-            current = page_key
+        
+        if current != HOME_KEY:
+            st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
+            
+            for page in PAGE_ORDER:
+                is_active = (page == current)
+                # 선택된 메뉴는 primary 스타일로 강조
+                btn_type = "primary" if is_active else "secondary"
+                
+                if st.button(page, key=f"nav_{page}", use_container_width=True, type=btn_type):
+                    if current != page:
+                        st.session_state["csa_page"] = page
+                        st.rerun()
 
         st.markdown("---")
         st.caption(

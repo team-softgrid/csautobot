@@ -77,6 +77,23 @@ def _render_search_feedback(query_text: str) -> None:
             st.success("피드백이 저장되었습니다. 감사합니다.")
 
 
+def _run_tavily_search(query: str) -> list[dict]:
+    try:
+        from langchain_community.tools.tavily_search import TavilySearchResults
+        import os
+    except ImportError:
+        return []
+
+    if not os.environ.get("TAVILY_API_KEY"):
+        return []
+
+    try:
+        search = TavilySearchResults(max_results=3)
+        return search.invoke({"query": query})
+    except Exception:
+        return []
+
+
 def render() -> None:
     page_header(
         "AS 유사 사례 검색",
@@ -120,6 +137,10 @@ def render() -> None:
         height=120,
         key="search_query",
     )
+    
+    st.markdown("---")
+    use_web_search = st.checkbox("🌐 웹 리서치 포함 (Tavily 연동, 약 3~5초 추가 소요)", key="search_use_web", value=False)
+    
     c1, c2, c3 = st.columns(3)
     with c1:
         k_hybrid = st.slider("1차 하이브리드 후보 수", 15, 50, 30)
@@ -130,6 +151,10 @@ def render() -> None:
 
     if st.button("유사 사례 검색 및 답변", type="primary", use_container_width=True) and q.strip():
         with st.spinner("검색·재순위·생성 중…"):
+            web_results = []
+            if use_web_search:
+                web_results = _run_tavily_search(q.strip())
+
             rr = retrieve_reranked(
                 q.strip(), vs, bm25, emb,
                 k_dense=k_dense, k_sparse=k_sparse, k_hybrid=k_hybrid, k_final=5,
@@ -137,11 +162,22 @@ def render() -> None:
             docs = rr.documents
             ctx = "\n\n---\n\n".join(d.page_content for d in docs)
 
+            web_ctx = ""
+            if web_results:
+                lines = []
+                for res in web_results:
+                    if isinstance(res, dict):
+                        title = res.get('title', '')
+                        content = res.get('content', '')
+                        lines.append(f"- [{title}] {content}")
+                if lines:
+                    web_ctx = "[웹 리서치 참고 자료]\n" + "\n".join(lines) + "\n\n"
+
             guard = ""
             if rr.level == "low":
                 guard = (
                     "[운영 지침] 신뢰도 등급: low. 근거가 약할 수 있음을 사용자에게 명확히 알리고, "
-                    "현장 점검·추가 데이터 확인을 권고하세요. 참고 사례 밖 추측은 금지입니다.\n\n"
+                    "현장 점검·추가 데이터 확인을 권고하세요. 참고 사례 및 웹 리서치 밖의 추측은 금지입니다.\n\n"
                 )
             elif rr.level == "mid":
                 guard = (
@@ -158,12 +194,14 @@ def render() -> None:
                         + "[시스템 신뢰도]\n"
                         + f"- score: {rr.confidence:.3f}\n"
                         + f"- level: {rr.level}\n\n"
-                        + "[참고 사례]\n{context}\n\n---\n사용자 질문:\n{question}",
+                        + "[로컬 참고 사례]\n{context}\n\n"
+                        + "{web_context}"
+                        + "---\n사용자 질문:\n{question}",
                     ),
                 ]
             )
             chain = prompt | llm
-            structured: AnswerSchema = chain.invoke({"context": ctx, "question": q.strip()})
+            structured: AnswerSchema = chain.invoke({"context": ctx, "web_context": web_ctx, "question": q.strip()})
 
         m1, m2, m3 = st.columns(3)
         with m1:
@@ -190,9 +228,17 @@ def render() -> None:
                 st.markdown(f"- `{e}`")
         st.info(structured.confidence_note)
 
-        with st.expander("검색·재순위에 사용된 상위 청크 (원문)"):
+        with st.expander("검색·재순위에 사용된 상위 청크 (로컬 DB 원문)"):
             for i, d in enumerate(docs, 1):
                 st.markdown(f"**#{i}** `{d.metadata}`")
                 st.text(d.page_content)
+
+        if web_results:
+            with st.expander("웹 리서치 결과 (Tavily)"):
+                for i, res in enumerate(web_results, 1):
+                    if isinstance(res, dict):
+                        st.markdown(f"**[{i}] {res.get('title', '')}**")
+                        st.write(res.get('content', ''))
+                        st.caption(res.get('url', ''))
 
         _render_search_feedback(q.strip())

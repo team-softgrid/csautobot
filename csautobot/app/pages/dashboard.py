@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
-from typing import Any
+from typing import Any, Callable
 
 import altair as alt
 import pandas as pd
@@ -348,7 +348,7 @@ def _recent_feedback(fb_df: pd.DataFrame) -> None:
     st.dataframe(show, use_container_width=True, hide_index=True)
 
 
-def render() -> None:
+def render(on_navigate: Callable[[str], None] | None = None) -> None:
     page_header(
         "운영 대시보드",
         "점검일지 저장·확정·AI 위험도와 피드백을 한 화면에서 확인합니다. "

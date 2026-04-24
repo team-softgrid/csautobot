@@ -15,7 +15,7 @@ from storage.repositories import list_feedback, list_inspection_logs
 
 
 # ---------- Hero ----------
-def _hero() -> None:
+def _hero(on_navigate: Callable[[str], None] | None = None) -> None:
     st.markdown(
         """
         <div class="csa-hero">
@@ -40,6 +40,15 @@ def _hero() -> None:
         """,
         unsafe_allow_html=True,
     )
+
+    if on_navigate:
+        st.markdown("<div style='text-align: center; margin-top: -10px; margin-bottom: 40px;'>", unsafe_allow_html=True)
+        c1, c2, c3 = st.columns([1, 1, 1])
+        with c2:
+            if st.button("🚀 시작하기 (운영 대시보드 입장)", use_container_width=True, type="primary", key="hero_start"):
+                on_navigate("📊 운영 대시보드")
+                st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
 
 
 # ---------- KPI ----------
@@ -279,37 +288,6 @@ def _features_section() -> None:
     )
 
 
-# ---------- CTA ----------
-def _cta_section(on_navigate: Callable[[str], None]) -> None:
-    st.markdown(
-        """
-        <div class="csa-section-title">
-          <div class="eyebrow">Get Started</div>
-          <h2>바로 시작하기</h2>
-          <p>왼쪽 메뉴에서 이동하거나, 아래 버튼으로 기능 페이지로 바로 들어갈 수 있습니다.</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    c1, c2, c3, c4 = st.columns(4)
-    with c1:
-        if st.button("📝  점검일지 작성", use_container_width=True, type="primary", key="cta_insp"):
-            on_navigate("📝 점검일지 AI 어시스턴트")
-            st.rerun()
-    with c2:
-        if st.button("🔎  AS 유사 사례 검색", use_container_width=True, key="cta_search"):
-            on_navigate("🔎 AS 유사 사례 검색")
-            st.rerun()
-    with c3:
-        if st.button("📊  운영 대시보드", use_container_width=True, key="cta_dash"):
-            on_navigate("📊 운영 대시보드")
-            st.rerun()
-    with c4:
-        if st.button("📬  피드백 모음", use_container_width=True, key="cta_feedback"):
-            on_navigate("📬 피드백 모음")
-            st.rerun()
-
-
 # ---------- Footer ----------
 def _footer_note() -> None:
     st.markdown(
@@ -327,13 +305,19 @@ def _footer_note() -> None:
 # ---------- public entry ----------
 def render(on_navigate: Callable[[str], None] | None = None) -> None:
     """홈(랜딩) 페이지 렌더링."""
-    _hero()
+    # 랜딩 페이지에서는 사이드바를 완전히 숨김
+    st.markdown("""
+        <style>
+            section[data-testid="stSidebar"] { display: none !important; }
+            button[data-testid="collapsedControl"] { display: none !important; }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    _hero(on_navigate)
     _kpi_section()
     _workflow_section()
     _architecture_section()
     _features_section()
-    if on_navigate is not None:
-        _cta_section(on_navigate)
     _footer_note()
 
 
