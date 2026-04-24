@@ -195,8 +195,22 @@ def _render_draft(draft: InspectionDraft, model_name: str, web_res: str = "") ->
     st.caption(f"⚠ {draft.safety_notice}")
 
     if web_res:
-        with st.expander("웹 리서치 결과 (Tavily)"):
-            st.markdown(web_res)
+        with st.expander("🌐 웹 리서치 결과 (Tavily) — AI 초안 생성에 참조됨"):
+            for block in web_res.split("\n\n"):
+                block = block.strip()
+                if not block:
+                    continue
+                lines = block.split("\n")
+                if lines:
+                    st.markdown(f"**{lines[0].strip()}**")
+                for line in lines[1:]:
+                    line = line.strip()
+                    if line.startswith("출처:"):
+                        url = line.replace("출처:", "").strip()
+                        st.caption(f"🔗 {url}")
+                    elif line:
+                        st.write(line)
+                st.divider()
 
 
 def _render_feedback_form(target_id: str) -> None:
@@ -373,6 +387,7 @@ def render() -> None:
                 charger_id=charger_id or None,
                 manufacturer=manufacturer or None,
                 model_name=model_name or None,
+                inspection_target=inspection_target or None,
                 inspection_type=inspection_type,
                 inspection_cycle=inspection_cycle,
                 checklist=checklist,

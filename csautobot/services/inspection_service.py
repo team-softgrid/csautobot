@@ -91,6 +91,22 @@ def _format_similar_cases(similar_cases: list[dict[str, Any]] | None) -> str:
     return "\n".join(lines)
 
 
+def _clean_web_content(text: str, max_len: int = 300) -> str:
+    """Tavily 크롤링 내용에서 불필요한 문자/HTML 정리"""
+    import re
+    # HTML 태그 제거
+    text = re.sub(r'<[^>]+>', ' ', text)
+    # JSON 메타 블록 제거 ('{"' 로 시작하는 줄)
+    text = re.sub(r'\{"[^}]+}', '', text)
+    # 연속된 공백/줄바꼹/파이프 정리
+    text = re.sub(r'[|\n\r\t]+', ' ', text)
+    text = re.sub(r' {2,}', ' ', text).strip()
+    # 유의미한 타이틀을 제외한 짧은 조각은 스킵
+    if len(text) < 30:
+        return ""
+    return text[:max_len] + ("…" if len(text) > max_len else "")
+
+
 def _search_web_for_context(manufacturer: str, model_name: str, memo_text: str) -> str:
     try:
         from langchain_community.tools.tavily_search import TavilySearchResults
@@ -101,14 +117,20 @@ def _search_web_for_context(manufacturer: str, model_name: str, memo_text: str) 
     if not os.environ.get("TAVILY_API_KEY"):
         return "(TAVILY_API_KEY 누락으로 웹 검색 생략됨)"
 
-    safe_memo = (memo_text or "").replace("\n", " ")[:50]
-    query = f"전기차 충전기 {manufacturer or ''} {model_name or ''} {safe_memo} 고장 조치 방법"
-    query = " ".join(query.split())
+    safe_memo = (memo_text or "").replace("\n", " ")[:40]
+    parts = [p for p in [manufacturer, model_name, safe_memo] if p]
+    keyword = " ".join(parts) if parts else "충전기"
+    query = f"전기차 {keyword} 충전기 고장 점검 조치 수리 방법"
 
     try:
-        search = TavilySearchResults(max_results=3)
+        search = TavilySearchResults(max_results=5)
         results = search.invoke({"query": query})
         
+        if isinstance(results, str):
+            if "401" in results or "Unauthorized" in results:
+                return "(웹 검색 실패: Tavily API 키가 유효하지 않습니다. .env의 TAVILY_API_KEY를 확인하세요.)"
+            return f"(웹 검색 결과/오류: {results})"
+
         if not results:
             return "(웹 검색 결과 없음)"
             
@@ -116,10 +138,14 @@ def _search_web_for_context(manufacturer: str, model_name: str, memo_text: str) 
         for i, res in enumerate(results, 1):
             if isinstance(res, dict):
                 title = res.get("title", "(제목 없음)")
-                content = res.get("content", "")
-                lines.append(f"- [{title}] {content}")
-        return "\n".join(lines)
+                content = _clean_web_content(res.get("content", ""))
+                url = res.get("url", "")
+                if content:  # 내용이 있는 경우만 추가
+                    lines.append(f"[{i}] {title}\n   {content}\n   출처: {url}")
+        return "\n\n".join(lines) if lines else "(유효한 검색 결과 없음)"
     except Exception as e:
+        if "401" in str(e) or "Unauthorized" in str(e):
+            return "(웹 검색 실패: Tavily API 키가 유효하지 않습니다. .env의 TAVILY_API_KEY를 확인하세요.)"
         return f"(웹 검색 실패: {str(e)})"
 
 
@@ -129,8 +155,9 @@ def generate_inspection_draft(
     charger_id: str | None,
     manufacturer: str | None,
     model_name: str | None,
-    inspection_type: str,
-    inspection_cycle: str | None,
+    inspection_target: str | None = None,
+    inspection_type: str = "정기점검",
+    inspection_cycle: str | None = None,
     checklist: list[dict[str, Any]],
     memo_text: str | None,
     photo_count: int = 0,
@@ -149,6 +176,7 @@ def generate_inspection_draft(
         f"- 충전소: {site_name or '(미입력)'}\n"
         f"- 충전기ID: {charger_id or '(미입력)'}\n"
         f"- 제조사/모델: {manufacturer or '-'} / {model_name or '-'}\n"
+        f"- 점검 대상: {inspection_target or '-'}\n"
         f"- 점검 유형: {inspection_type}\n"
         f"- 점검 주기: {inspection_cycle or '-'}\n"
         f"- 첨부 사진 수: {photo_count}"
@@ -159,8 +187,10 @@ def generate_inspection_draft(
 
     web_block = ""
     web_res = ""
-    if use_web_search and (manufacturer or model_name or memo_text):
-        web_res = _search_web_for_context(manufacturer or "", model_name or "", memo_text or "")
+    # 제조사, 모델명, 메모가 모두 비어있어도 점검 대상을 키워드로 사용
+    search_keyword = manufacturer or model_name or memo_text or inspection_target or "전기차 충전기"
+    if use_web_search and search_keyword:
+        web_res = _search_web_for_context(manufacturer or "", model_name or "", memo_text or inspection_target)
         web_block = f"[웹 리서치 참고 자료]\n{web_res}\n\n"
 
     human_template = (

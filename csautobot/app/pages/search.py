@@ -77,7 +77,18 @@ def _render_search_feedback(query_text: str) -> None:
             st.success("피드백이 저장되었습니다. 감사합니다.")
 
 
-def _run_tavily_search(query: str) -> list[dict]:
+def _clean_web_content(text: str, max_len: int = 300) -> str:
+    import re
+    text = re.sub(r'<[^>]+>', ' ', text)
+    text = re.sub(r'\{"[^}]+}', '', text)
+    text = re.sub(r'[|\n\r\t]+', ' ', text)
+    text = re.sub(r' {2,}', ' ', text).strip()
+    if len(text) < 30:
+        return ""
+    return text[:max_len] + ("…" if len(text) > max_len else "")
+
+
+def _run_tavily_search(query: str) -> list | str:
     try:
         from langchain_community.tools.tavily_search import TavilySearchResults
         import os
@@ -87,11 +98,21 @@ def _run_tavily_search(query: str) -> list[dict]:
     if not os.environ.get("TAVILY_API_KEY"):
         return []
 
+    # 한국어 기술 키워드로 검색하여 국내 기술 문서/매뉴얼 위주로 결과 확보
+    technical_query = f"전기차 충전기 {query} 고장 점검 조치 수리"
+
     try:
-        search = TavilySearchResults(max_results=3)
-        return search.invoke({"query": query})
-    except Exception:
-        return []
+        search = TavilySearchResults(max_results=5)
+        res = search.invoke({"query": technical_query})
+        if isinstance(res, str):
+            if "401" in res or "Unauthorized" in res:
+                return "Tavily API 키가 유효하지 않습니다. .env의 TAVILY_API_KEY를 확인하세요."
+            return f"웹 검색 오류: {res}"
+        return res
+    except Exception as e:
+        if "401" in str(e) or "Unauthorized" in str(e):
+            return "Tavily API 키가 유효하지 않습니다. .env의 TAVILY_API_KEY를 확인하세요."
+        return f"웹 검색 오류: {str(e)}"
 
 
 def render() -> None:
@@ -164,14 +185,17 @@ def render() -> None:
 
             web_ctx = ""
             if web_results:
-                lines = []
-                for res in web_results:
-                    if isinstance(res, dict):
-                        title = res.get('title', '')
-                        content = res.get('content', '')
-                        lines.append(f"- [{title}] {content}")
-                if lines:
-                    web_ctx = "[웹 리서치 참고 자료]\n" + "\n".join(lines) + "\n\n"
+                if isinstance(web_results, str):
+                    web_ctx = f"[웹 리서치 오류]\n{web_results}\n\n"
+                else:
+                    lines = []
+                    for res in web_results:
+                        if isinstance(res, dict):
+                            title = res.get('title', '')
+                            content = res.get('content', '')
+                            lines.append(f"- [{title}] {content}")
+                    if lines:
+                        web_ctx = "[웹 리서치 참고 자료]\n" + "\n".join(lines) + "\n\n"
 
             guard = ""
             if rr.level == "low":
@@ -234,11 +258,24 @@ def render() -> None:
                 st.text(d.page_content)
 
         if web_results:
-            with st.expander("웹 리서치 결과 (Tavily)"):
-                for i, res in enumerate(web_results, 1):
-                    if isinstance(res, dict):
-                        st.markdown(f"**[{i}] {res.get('title', '')}**")
-                        st.write(res.get('content', ''))
-                        st.caption(res.get('url', ''))
+            with st.expander("🌐 웹 리서치 결과 (Tavily) — AI 답변 생성에 참조됨"):
+                if isinstance(web_results, str):
+                    st.error(web_results)
+                else:
+                    shown = 0
+                    for i, res in enumerate(web_results, 1):
+                        if isinstance(res, dict):
+                            title = res.get('title', '')
+                            content = _clean_web_content(res.get('content', ''))
+                            url = res.get('url', '')
+                            if not content:
+                                continue
+                            shown += 1
+                            st.markdown(f"**[{shown}] {title}**")
+                            st.write(content)
+                            st.caption(f"🔗 {url}")
+                            st.divider()
+                    if shown == 0:
+                        st.info("유효한 웹 검색 결과가 없습니다.")
 
         _render_search_feedback(q.strip())
