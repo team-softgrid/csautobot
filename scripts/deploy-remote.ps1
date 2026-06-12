@@ -144,6 +144,11 @@ finally {
 # ─── pip install ──────────────────────────────────────────────────────
 Push-Location $DeployRoot
 try {
+    Write-Host "Creating C:\tmp for short temp path to avoid Long Path errors..."
+    New-Item -ItemType Directory -Force -Path "C:\tmp" -ErrorAction SilentlyContinue | Out-Null
+    $env:TMP = "C:\tmp"
+    $env:TEMP = "C:\tmp"
+    
     Invoke-Checked $PythonExecutable @("-m", "pip", "install", "-r", "requirements-mini.txt")
 }
 finally {
