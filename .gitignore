@@ -49,6 +49,8 @@ csData/**/*.zip
 csData/**/*.pptx
 csautobot/chroma_db/
 csautobot/chroma_db_*/
+# 원격 배포용 ChromaDB zip은 추적
+!csautobot/chroma_db.zip
 csautobot/as_records.jsonl
 csautobot/active_chroma_dir.txt
 csautobot/column_report.txt
