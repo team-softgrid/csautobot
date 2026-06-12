@@ -149,7 +149,7 @@ try {
     $env:TMP = "C:\tmp"
     $env:TEMP = "C:\tmp"
     
-    Invoke-Checked $PythonExecutable @("-m", "pip", "install", "-r", "requirements-mini.txt")
+    Invoke-Checked $PythonExecutable @("-m", "pip", "install", "-r", "requirements.txt")
 }
 finally {
     Pop-Location

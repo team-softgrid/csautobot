@@ -39,10 +39,7 @@ streamlit==1.43.2
 jupyter==1.1.1
 notebook==7.3.3
 
-torch==2.6.0
-torchvision==0.21.0
 
-open-clip-torch==2.31.0
 
 python-dotenv==1.0.1
 pydantic==2.10.6
@@ -64,7 +61,7 @@ llama-index-readers-file==0.2.2
 flashrank==0.2.10
 docx2txt==0.8
 nest-asyncio==1.6.0
-rapidocr-onnxruntime==1.4.4
+
 seaborn==0.13.2
 grandalf==0.8
 rouge-score==0.1.2
