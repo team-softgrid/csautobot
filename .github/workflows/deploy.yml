@@ -43,14 +43,15 @@ jobs:
           port: 20022
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
+          envs: OPENAI_API_KEY,ANTHROPIC_API_KEY,GOOGLE_API_KEY,TAVILY_API_KEY,LANGSMITH_API_KEY
           script: |
             powershell -NoProfile -ExecutionPolicy Bypass -Command "
               $lines = @(
-                'OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}',
-                'ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}',
-                'GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}',
-                'TAVILY_API_KEY=${{ secrets.TAVILY_API_KEY }}',
-                'LANGSMITH_API_KEY=${{ secrets.LANGSMITH_API_KEY }}',
+                \"OPENAI_API_KEY=$($env:OPENAI_API_KEY)\",
+                \"ANTHROPIC_API_KEY=$($env:ANTHROPIC_API_KEY)\",
+                \"GOOGLE_API_KEY=$($env:GOOGLE_API_KEY)\",
+                \"TAVILY_API_KEY=$($env:TAVILY_API_KEY)\",
+                \"LANGSMITH_API_KEY=$($env:LANGSMITH_API_KEY)\",
                 'LANGSMITH_TRACING=true',
                 'LANGSMITH_ENDPOINT=https://api.smith.langchain.com',
                 'LANGSMITH_PROJECT=ragproject'
@@ -58,6 +59,12 @@ jobs:
               $utf8 = New-Object System.Text.UTF8Encoding `$False
               [System.IO.File]::WriteAllLines('C:\deploy\csautobot\.env', `$lines, `$utf8)
             "
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
 
       - name: Execute PM2 Deploy Command on Remote Server
         uses: appleboy/ssh-action@master
