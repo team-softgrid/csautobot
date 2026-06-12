@@ -1,5 +1,8 @@
+const path = require('path');
+
 const deployRoot = process.env.CSAUTOBOT_DEPLOY_ROOT || 'C:\\deploy\\csautobot';
-const pythonExecutable = process.env.CSAUTOBOT_PYTHON || 'C:\\PYTHON314\\PYTHON.EXE';
+const pythonExecutable =
+  process.env.CSAUTOBOT_PYTHON || path.join(deployRoot, '.venv', 'Scripts', 'python.exe');
 
 module.exports = {
   apps: [

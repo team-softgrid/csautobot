@@ -5,9 +5,9 @@ from pathlib import Path
 
 
 def repo_root(start: Path | None = None) -> Path:
-    """Return the project root (directory containing pyproject.toml)."""
+    """Return the project root for local development or production deploys."""
     here = (start or Path(__file__).resolve()).parent
     for p in [here, *here.parents]:
-        if (p / "pyproject.toml").is_file():
+        if (p / "pyproject.toml").is_file() or (p / "requirements-prod.txt").is_file():
             return p
-    raise RuntimeError("pyproject.toml not found when resolving repo root")
+    raise RuntimeError("project root marker not found when resolving repo root")
