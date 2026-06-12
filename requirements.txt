@@ -42,7 +42,7 @@ notebook==7.3.3
 
 torch==2.6.0
 torchvision==0.21.0
-faiss-cpu==1.10.0
+
 open-clip-torch==2.31.0
 
 python-dotenv==1.0.1

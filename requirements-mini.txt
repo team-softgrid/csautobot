@@ -37,7 +37,7 @@ dnspython==2.7.0
 email_validator==2.2.0
 exceptiongroup==1.2.2
 executing==2.2.0
-faiss-cpu==1.10.0
+
 fastapi==0.115.11
 fastapi-cli==0.0.4
 fastjsonschema==2.21.1
