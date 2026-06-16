@@ -194,6 +194,39 @@ finally {
     Pop-Location
 }
 
+# Clean up legacy mklogis PM2 app and directories if any exist
+Push-Location $DeployRoot
+try {
+    Write-Host "Cleaning up legacy mklogis service and folders..."
+    try {
+        $Pm2List = pm2 jlist | ConvertFrom-Json
+        foreach ($app in $Pm2List) {
+            if ($app.name -like "*mklogis*") {
+                Write-Host "Stopping and deleting PM2 app: $($app.name)"
+                & pm2 stop $app.name 2>&1 | Out-Null
+                & pm2 delete $app.name 2>&1 | Out-Null
+            }
+        }
+    } catch {
+        Write-Host "Failed to clean PM2 apps programmatically: $_"
+        try { & pm2 stop mklogis 2>&1 | Out-Null; & pm2 delete mklogis 2>&1 | Out-Null } catch {}
+    }
+
+    $DeployParent = "C:\deploy"
+    if (Test-Path -LiteralPath $DeployParent) {
+        Get-ChildItem -Path $DeployParent -Directory -Filter "*mklogis*" | ForEach-Object {
+            Write-Host "Deleting legacy mklogis folder: $($_.FullName)"
+            Remove-Item -Recurse -Force $_.FullName
+        }
+    }
+}
+catch {
+    Write-Host "Error occurred during mklogis cleanup: $_"
+}
+finally {
+    Pop-Location
+}
+
 Push-Location $DeployRoot
 try {
     Write-Host "Creating C:\tmp for short temp path to avoid Long Path errors..."
