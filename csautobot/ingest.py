@@ -251,8 +251,8 @@ def iter_all_records() -> list[dict[str, Any]]:
 
 def ingest_to_db(records: list[dict[str, Any]]) -> None:
     import hashlib
-    from csautobot.storage.db import init_db, get_db_context
-    from csautobot.storage.repositories import (
+    from storage.db import init_db, get_db_context
+    from storage.repositories import (
         TenantRepository,
         SiteRepository,
         ChargerRepository,

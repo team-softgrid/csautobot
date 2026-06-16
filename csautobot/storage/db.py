@@ -76,6 +76,6 @@ def init_db():
     Programmatically create all tables defined by SQLAlchemy models.
     """
     # Import repositories to ensure all SQLAlchemy models are registered on Base.metadata
-    from csautobot.storage import repositories  # noqa: F401
+    from storage import repositories  # noqa: F401
     Base.metadata.create_all(bind=engine)
 

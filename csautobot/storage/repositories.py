@@ -15,7 +15,7 @@ from sqlalchemy import (
     Index,
 )
 from sqlalchemy.orm import Session, relationship, joinedload
-from csautobot.storage.db import Base, get_db_context
+from storage.db import Base, get_db_context
 
 
 # ---------------------------------------------------------------------------

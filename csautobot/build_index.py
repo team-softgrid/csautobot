@@ -33,8 +33,8 @@ CHROMA_DIR = HERE / "chroma_db"
 
 
 def load_docs() -> list[Document]:
-    from csautobot.storage.db import get_db_context
-    from csautobot.storage.repositories import Incident
+    from storage.db import get_db_context
+    from storage.repositories import Incident
     from sqlalchemy.orm import joinedload
 
     docs: list[Document] = []
