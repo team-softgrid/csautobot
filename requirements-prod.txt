@@ -18,4 +18,6 @@ tavily-python>=0.7.10
 sqlalchemy>=2.0.0
 pymysql>=1.1.0
 cryptography>=42.0.0
+langchain-google-genai>=2.1.0
+google-generativeai>=0.8.0
 

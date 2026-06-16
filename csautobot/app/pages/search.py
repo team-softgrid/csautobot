@@ -180,6 +180,10 @@ def render() -> None:
                 q.strip(), vs, bm25, emb,
                 k_dense=k_dense, k_sparse=k_sparse, k_hybrid=k_hybrid, k_final=5,
             )
+            openai_error_occured = rr.details.get("openai_error", False)
+            if openai_error_occured:
+                st.warning("⚠️ OpenAI API Key 한도 초과(insufficient_quota)로 인해 현재 키워드 매칭(BM25)으로만 검색을 제공하고 있습니다. API 결제 정보를 확인해 주시기 바랍니다.")
+
             docs = rr.documents
             ctx = "\n\n---\n\n".join(d.page_content for d in docs)
 
@@ -208,7 +212,6 @@ def render() -> None:
                     "[운영 지침] 신뢰도 등급: mid. 답변은 보조용이며 필수 확인 사항을 빠짐없이 적으세요.\n\n"
                 )
 
-            llm = ChatOpenAI(model="gpt-4o-mini", temperature=0).with_structured_output(AnswerSchema)
             prompt = ChatPromptTemplate.from_messages(
                 [
                     ("system", SYS),
@@ -224,8 +227,37 @@ def render() -> None:
                     ),
                 ]
             )
-            chain = prompt | llm
-            structured: AnswerSchema = chain.invoke({"context": ctx, "web_context": web_ctx, "question": q.strip()})
+
+            # LLM Invocation with Fallback to Gemini
+            llm_success = False
+            structured = None
+
+            if not openai_error_occured:
+                try:
+                    from langchain_openai import ChatOpenAI
+                    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0).with_structured_output(AnswerSchema)
+                    chain = prompt | llm
+                    structured = chain.invoke({"context": ctx, "web_context": web_ctx, "question": q.strip()})
+                    llm_success = True
+                except Exception as e:
+                    print(f"ChatOpenAI failed, trying fallback: {e}")
+
+            if not llm_success:
+                try:
+                    from langchain_google_genai import ChatGoogleGenerativeAI
+                    # Check if GOOGLE_API_KEY is loaded in environment
+                    if not os.getenv("GOOGLE_API_KEY"):
+                        from dotenv import load_dotenv
+                        load_dotenv(index_dir.parent / ".env")
+                    
+                    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0).with_structured_output(AnswerSchema)
+                    chain = prompt | llm
+                    structured = chain.invoke({"context": ctx, "web_context": web_ctx, "question": q.strip()})
+                    llm_success = True
+                    st.info("💡 OpenAI API 장애 또는 한도 초과로 인해 Gemini-1.5-Flash 모델이 답변을 생성했습니다.")
+                except Exception as e2:
+                    st.error(f"❌ 검색 및 답변 생성에 실패했습니다. (OpenAI & Gemini API 모두 장애: {e2})")
+                    return
 
         m1, m2, m3 = st.columns(3)
         with m1:

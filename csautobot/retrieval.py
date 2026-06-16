@@ -87,16 +87,23 @@ def hybrid_candidate_indices(
     k_dense: int = 50,
     k_sparse: int = 50,
     k_merge: int = 30,
-) -> tuple[list[int], dict[int, float]]:
+) -> tuple[list[int], dict[int, float], bool]:
     """Dense+Sparse 결합 점수 상위 chunk_index 반환."""
     q_tok = tokenize_for_bm25(query)
     sparse_scores = np.asarray(bm25.get_scores(q_tok), dtype=np.float64)
     n = sparse_scores.shape[0]
     if n == 0:
-        return [], {}
+        return [], {}, False
 
     sparse_order = np.argsort(-sparse_scores)[:k_sparse]
-    dense_hits = vs.similarity_search_with_score(query, k=k_dense)
+    
+    dense_hits = []
+    openai_error = False
+    try:
+        dense_hits = vs.similarity_search_with_score(query, k=k_dense)
+    except Exception as e:
+        print(f"Warning: Dense retrieval failed, falling back to sparse. Error: {e}")
+        openai_error = True
 
     dense_raw: dict[int, float] = {}
     for doc, dist in dense_hits:
@@ -145,7 +152,7 @@ def hybrid_candidate_indices(
         hybrid[k] = hybrid.get(k, 0.0) + _code_bonus(query, meta)
 
     top_idx = sorted(hybrid.keys(), key=lambda x: hybrid[x], reverse=True)[:k_merge]
-    return top_idx, hybrid
+    return top_idx, hybrid, openai_error
 
 
 def get_documents_by_indices(vs: Chroma, indices: list[int]) -> list[Document]:
@@ -169,21 +176,27 @@ def rerank_by_embedding(
     docs: list[Document],
     top_k: int = 5,
     max_chars: int = 3500,
-) -> tuple[list[Document], list[float]]:
+) -> tuple[list[Document], list[float], bool]:
     """동일 임베딩 공간에서 코사인 유사도로 재순위 (FlashRank 미설치 환경 대비)."""
     if not docs:
-        return [], []
-    texts = [d.page_content[:max_chars] for d in docs]
-    qv = np.asarray(emb.embed_query(query), dtype=np.float64)
-    dvs = np.asarray(emb.embed_documents(texts), dtype=np.float64)
-    qn = qv / (np.linalg.norm(qv) + 1e-9)
-    dn = dvs / (np.linalg.norm(dvs, axis=1, keepdims=True) + 1e-9)
-    sims = dn @ qn
-    order = np.argsort(-sims)
-    top = order[:top_k]
-    reranked = [docs[int(i)] for i in top]
-    scores = [float(sims[int(i)]) for i in top]
-    return reranked, scores
+        return [], [], False
+    try:
+        texts = [d.page_content[:max_chars] for d in docs]
+        qv = np.asarray(emb.embed_query(query), dtype=np.float64)
+        dvs = np.asarray(emb.embed_documents(texts), dtype=np.float64)
+        qn = qv / (np.linalg.norm(qv) + 1e-9)
+        dn = dvs / (np.linalg.norm(dvs, axis=1, keepdims=True) + 1e-9)
+        sims = dn @ qn
+        order = np.argsort(-sims)
+        top = order[:top_k]
+        reranked = [docs[int(i)] for i in top]
+        scores = [float(sims[int(i)]) for i in top]
+        return reranked, scores, False
+    except Exception as e:
+        print(f"Warning: Rerank by embedding failed, using original order. Error: {e}")
+        top_docs = docs[:top_k]
+        scores = [max(0.0, 0.9 - 0.05 * i) for i in range(len(top_docs))]
+        return top_docs, scores, True
 
 
 def estimate_confidence(
@@ -232,12 +245,12 @@ def retrieve_reranked(
     k_hybrid: int = 30,
     k_final: int = 5,
 ) -> RetrievalResult:
-    cand_idx, hybrid_scores = hybrid_candidate_indices(
+    cand_idx, hybrid_scores, err_dense = hybrid_candidate_indices(
         query, vs, bm25, k_dense=k_dense, k_sparse=k_sparse, k_merge=k_hybrid
     )
     cand_docs = get_documents_by_indices(vs, cand_idx)
 
-    reranked, scores = rerank_by_embedding(emb, query, cand_docs, top_k=k_final)
+    reranked, scores, err_rerank = rerank_by_embedding(emb, query, cand_docs, top_k=k_final)
     conf, level = estimate_confidence(scores, query, reranked[0] if reranked else None)
     return RetrievalResult(
         documents=reranked,
@@ -249,5 +262,6 @@ def retrieve_reranked(
             if cand_idx
             else 0.0,
             "candidate_count": len(cand_docs),
+            "openai_error": err_dense or err_rerank,
         },
     )
