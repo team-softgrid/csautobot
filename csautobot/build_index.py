@@ -33,13 +33,61 @@ CHROMA_DIR = HERE / "chroma_db"
 
 
 def load_docs() -> list[Document]:
+    from csautobot.storage.db import get_db_context
+    from csautobot.storage.repositories import Incident
+    from sqlalchemy.orm import joinedload
+
     docs: list[Document] = []
-    if not JSONL.exists():
-        raise SystemExit(f"먼저 실행: python ingest.py  (없음: {JSONL})")
-    with JSONL.open(encoding="utf-8") as f:
-        for line in f:
-            o = json.loads(line)
-            docs.append(Document(page_content=o["page_content"], metadata=o.get("metadata") or {}))
+    print("Loading documents from database...")
+    with get_db_context() as db:
+        # Load incidents eagerly joining site, charger, and actions (with part_usages)
+        incidents = (
+            db.query(Incident)
+            .options(
+                joinedload(Incident.site),
+                joinedload(Incident.charger),
+                joinedload(Incident.actions).joinedload(Incident.actions.property.mapper.class_.part_usages)
+            )
+            .filter(Incident.tenant_id == "default_tenant")
+            .all()
+        )
+        
+        for inc in incidents:
+            customer = inc.site.site_name if inc.site else "Unknown Site"
+            equip = inc.charger.model_name if inc.charger else ""
+            symptom = inc.symptom_raw or ""
+            
+            action_detail = ""
+            parts_str = ""
+            if inc.actions:
+                act = inc.actions[0]
+                action_detail = act.action_detail or ""
+                parts_str = ", ".join(pu.part_name for pu in act.part_usages if pu.part_name)
+                
+            hw = inc.severity or ""
+            
+            page = (
+                f"[전기차 충전기 AS 사례]\n"
+                f"출처: {inc.source_file} | 시트: {inc.source_sheet} | 데이터행: {inc.source_row}\n"
+                f"고객/현장: {customer}\n"
+                f"장비: {equip}\n"
+                f"증상/접수: {symptom}\n"
+                f"조치/수리: {action_detail}\n"
+                f"교체 부품: {parts_str}\n"
+                f"유형: {hw}\n"
+            )
+            
+            metadata = {
+                "source": inc.source_file,
+                "sheet": inc.source_sheet,
+                "row": inc.source_row,
+                "symptom_norm": inc.symptom_norm,
+                "error_code_norm": inc.error_code_norm,
+            }
+            
+            docs.append(Document(page_content=page.strip(), metadata=metadata))
+            
+    print(f"Loaded {len(docs)} documents from database.")
     return docs
 
 

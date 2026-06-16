@@ -204,6 +204,12 @@ def sheet_to_records(path: Path, sheet: str) -> list[dict[str, Any]]:
                     "symptom_norm": normalize_symptom_text(symptom),
                     "error_code_norm": error_code_norm_field(codes_src),
                 },
+                "symptom_raw": symptom,
+                "action_detail": action,
+                "parts": parts,
+                "customer": customer,
+                "equip": equip,
+                "hw": hw
             }
         )
     return records
@@ -243,15 +249,141 @@ def iter_all_records() -> list[dict[str, Any]]:
     return all_recs
 
 
+def ingest_to_db(records: list[dict[str, Any]]) -> None:
+    import hashlib
+    from csautobot.storage.db import init_db, get_db_context
+    from csautobot.storage.repositories import (
+        TenantRepository,
+        SiteRepository,
+        ChargerRepository,
+        IncidentRepository,
+        ActionRepository,
+        Action,
+        PartUsage
+    )
+
+    print("Initializing DB...")
+    init_db()
+
+    def make_id(prefix: str, *args: str) -> str:
+        s = "_".join(str(a) for a in args)
+        return f"{prefix}-{hashlib.md5(s.encode('utf-8')).hexdigest()[:16]}"
+
+    print(f"Ingesting {len(records)} records to DB...")
+    tenant_id = "default_tenant"
+
+    with get_db_context() as db:
+        tenant_repo = TenantRepository(db)
+        if not tenant_repo.get_by_id(tenant_id):
+            tenant_repo.create(tenant_id, "Default Tenant", "PRO")
+
+        site_repo = SiteRepository(db)
+        charger_repo = ChargerRepository(db)
+        incident_repo = IncidentRepository(db)
+        action_repo = ActionRepository(db)
+
+        known_sites = {}
+        known_chargers = {}
+
+        for r in records:
+            customer_name = r.get("customer") or "Unknown Site"
+            equip_name = r.get("equip") or ""
+            symptom = r.get("symptom_raw") or ""
+            action = r.get("action_detail") or ""
+            parts = r.get("parts") or ""
+            hw = r.get("hw") or ""
+            
+            metadata = r.get("metadata") or {}
+            source_file = metadata.get("source") or ""
+            sheet = metadata.get("sheet") or ""
+            row_idx = metadata.get("row") or 0
+            
+            symptom_norm = metadata.get("symptom_norm") or ""
+            error_code_norm = metadata.get("error_code_norm") or ""
+
+            # Site
+            site_key = (tenant_id, customer_name)
+            if site_key not in known_sites:
+                site = site_repo.get_by_name(tenant_id, customer_name)
+                if not site:
+                    site_id = make_id("site", tenant_id, customer_name)
+                    site = site_repo.create(site_id, tenant_id, customer_name)
+                known_sites[site_key] = site.site_id
+            site_id = known_sites[site_key]
+
+            # Charger
+            charger_id = None
+            if equip_name:
+                charger_key = (tenant_id, site_id, equip_name)
+                if charger_key not in known_chargers:
+                    charger_id_candidate = make_id("charger", tenant_id, site_id, equip_name)
+                    charger = charger_repo.get_by_id(charger_id_candidate)
+                    if not charger:
+                        charger = charger_repo.create(charger_id_candidate, tenant_id, site_id, model_name=equip_name)
+                    known_chargers[charger_key] = charger.charger_id
+                charger_id = known_chargers[charger_key]
+
+            # Incident
+            incident_id = make_id("inc", source_file, sheet, str(row_idx))
+            incident = incident_repo.get_by_id(incident_id)
+            if not incident:
+                incident = incident_repo.create(
+                    incident_id=incident_id,
+                    tenant_id=tenant_id,
+                    site_id=site_id,
+                    charger_id=charger_id,
+                    occurred_at=None,
+                    reported_at=None,
+                    symptom_raw=symptom,
+                    symptom_norm=symptom_norm,
+                    error_code_raw=None,
+                    error_code_norm=error_code_norm,
+                    severity=hw,
+                    source_file=source_file,
+                    source_sheet=sheet,
+                    source_row=int(row_idx) if isinstance(row_idx, int) else None
+                )
+
+            # Action
+            if action:
+                action_id = make_id("act", source_file, sheet, str(row_idx))
+                existing_action = db.query(Action).filter(Action.action_id == action_id).first()
+                if not existing_action:
+                    action_obj = action_repo.create(
+                        action_id=action_id,
+                        incident_id=incident_id,
+                        action_type="REPAIR",
+                        action_detail=action
+                    )
+                    # If parts are present, create a PartUsage entry
+                    if parts:
+                        part_usage = PartUsage(
+                            part_usage_id=make_id("part", source_file, sheet, str(row_idx), parts),
+                            action_id=action_id,
+                            part_name=parts,
+                            qty=1
+                        )
+                        db.add(part_usage)
+
+
 def export_jsonl(path: Path = OUT_JSONL) -> int:
     recs = iter_all_records()
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as f:
         for r in recs:
-            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+            # Remove raw values when writing to jsonl to keep backward compatibility
+            jsonl_record = {
+                "page_content": r["page_content"],
+                "metadata": r["metadata"]
+            }
+            f.write(json.dumps(jsonl_record, ensure_ascii=False) + "\n")
+            
+    # Also write to Database
+    ingest_to_db(recs)
     return len(recs)
 
 
 if __name__ == "__main__":
     n = export_jsonl()
-    print(f"Exported {n} records -> {OUT_JSONL}")
+    print(f"Exported {n} records -> {OUT_JSONL} and ingested to database.")
+

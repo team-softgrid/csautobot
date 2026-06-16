@@ -1,45 +1,174 @@
--- csautobot MVP 스키마 (점검일지 + 피드백)
--- docs/TECHNICAL_DESIGN_V1.md 의 inspection_log / audit_log 를 MVP 수준으로 축약.
+-- MariaDB DDL Schema for csautobot
 
-CREATE TABLE IF NOT EXISTS inspection_log (
-    inspection_id     TEXT PRIMARY KEY,
-    site_name         TEXT,
-    charger_id        TEXT,
-    manufacturer      TEXT,
-    model_name        TEXT,
-    inspection_type   TEXT NOT NULL,           -- 정기점검/고장AS/긴급출동/설치후점검
-    inspection_cycle  TEXT,                    -- 월/분기/반기/년/수시
-    engineer_name     TEXT,
-    checklist_json    TEXT NOT NULL,           -- JSON array: [{item,status,note}]
-    memo_text         TEXT,
-    photo_paths_json  TEXT,                    -- JSON array of local paths
-    ai_summary_json   TEXT,                    -- AI 초안 JSON 직렬화
-    ai_model          TEXT,
-    status            TEXT NOT NULL DEFAULT 'draft',  -- draft / confirmed
-    created_at        TEXT NOT NULL,
-    updated_at        TEXT NOT NULL
-);
+-- Disable foreign key checks temporarily to drop tables in any order
+SET FOREIGN_KEY_CHECKS = 0;
 
-CREATE INDEX IF NOT EXISTS idx_inspection_log_created_at
-    ON inspection_log(created_at DESC);
+DROP TABLE IF EXISTS `audit_log`;
+DROP TABLE IF EXISTS `usage_meter`;
+DROP TABLE IF EXISTS `inspection_log`;
+DROP TABLE IF EXISTS `part_usage`;
+DROP TABLE IF EXISTS `action`;
+DROP TABLE IF EXISTS `incident`;
+DROP TABLE IF EXISTS `charger`;
+DROP TABLE IF EXISTS `site`;
+DROP TABLE IF EXISTS `app_user`;
+DROP TABLE IF EXISTS `tenant`;
 
-CREATE INDEX IF NOT EXISTS idx_inspection_log_charger
-    ON inspection_log(charger_id);
+SET FOREIGN_KEY_CHECKS = 1;
 
-CREATE TABLE IF NOT EXISTS feedback (
-    feedback_id    TEXT PRIMARY KEY,
-    target_type    TEXT NOT NULL,              -- 'inspection' | 'search' | 'general'
-    target_id      TEXT,                       -- inspection_id 등
-    role           TEXT NOT NULL,              -- 팀원 / 고객 / 엔지니어 / 기타
-    reviewer_name  TEXT,
-    rating         INTEGER,                    -- 1~5 (전반 만족도)
-    usefulness     INTEGER,                    -- 1~5 (업무 도움도)
-    comment        TEXT,
-    created_at     TEXT NOT NULL
-);
+-- 1. Tenant Table
+CREATE TABLE `tenant` (
+    `tenant_id` VARCHAR(50) NOT NULL,
+    `tenant_name` VARCHAR(100) NOT NULL,
+    `plan_code` VARCHAR(50) NOT NULL DEFAULT 'FREE',
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`tenant_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE INDEX IF NOT EXISTS idx_feedback_created_at
-    ON feedback(created_at DESC);
+-- 2. App User Table
+CREATE TABLE `app_user` (
+    `user_id` VARCHAR(50) NOT NULL,
+    `tenant_id` VARCHAR(50) NOT NULL,
+    `email` VARCHAR(100) NOT NULL,
+    `role` VARCHAR(30) NOT NULL DEFAULT 'USER',
+    `status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`user_id`),
+    CONSTRAINT `fk_user_tenant` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`tenant_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE INDEX IF NOT EXISTS idx_feedback_target
-    ON feedback(target_type, target_id);
+-- 3. Site Table
+CREATE TABLE `site` (
+    `site_id` VARCHAR(50) NOT NULL,
+    `tenant_id` VARCHAR(50) NOT NULL,
+    `site_name` VARCHAR(100) NOT NULL,
+    `operator_name` VARCHAR(100) DEFAULT NULL,
+    `address` VARCHAR(255) DEFAULT NULL,
+    `region` VARCHAR(50) DEFAULT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`site_id`),
+    CONSTRAINT `fk_site_tenant` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`tenant_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 4. Charger Table
+CREATE TABLE `charger` (
+    `charger_id` VARCHAR(50) NOT NULL,
+    `tenant_id` VARCHAR(50) NOT NULL,
+    `site_id` VARCHAR(50) NOT NULL,
+    `manufacturer` VARCHAR(100) DEFAULT NULL,
+    `model_name` VARCHAR(100) DEFAULT NULL,
+    `serial_no` VARCHAR(100) DEFAULT NULL,
+    `install_date` DATE DEFAULT NULL,
+    `status` VARCHAR(20) NOT NULL DEFAULT 'NORMAL',
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`charger_id`),
+    CONSTRAINT `fk_charger_tenant` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`tenant_id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_charger_site` FOREIGN KEY (`site_id`) REFERENCES `site` (`site_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 5. Incident Table
+CREATE TABLE `incident` (
+    `incident_id` VARCHAR(50) NOT NULL,
+    `tenant_id` VARCHAR(50) NOT NULL,
+    `site_id` VARCHAR(50) DEFAULT NULL,
+    `charger_id` VARCHAR(50) DEFAULT NULL,
+    `occurred_at` DATETIME DEFAULT NULL,
+    `reported_at` DATETIME DEFAULT NULL,
+    `symptom_raw` TEXT NOT NULL,
+    `symptom_norm` TEXT DEFAULT NULL,
+    `error_code_raw` VARCHAR(50) DEFAULT NULL,
+    `error_code_norm` VARCHAR(50) DEFAULT NULL,
+    `severity` VARCHAR(20) DEFAULT NULL,
+    `source_file` VARCHAR(255) DEFAULT NULL,
+    `source_sheet` VARCHAR(100) DEFAULT NULL,
+    `source_row` INT DEFAULT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`incident_id`),
+    CONSTRAINT `fk_incident_tenant` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`tenant_id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_incident_site` FOREIGN KEY (`site_id`) REFERENCES `site` (`site_id`) ON DELETE SET NULL,
+    CONSTRAINT `fk_incident_charger` FOREIGN KEY (`charger_id`) REFERENCES `charger` (`charger_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 6. Action Table (Action taken to resolve incident)
+CREATE TABLE `action` (
+    `action_id` VARCHAR(50) NOT NULL,
+    `incident_id` VARCHAR(50) NOT NULL,
+    `action_at` DATETIME DEFAULT NULL,
+    `action_type` VARCHAR(50) NOT NULL,
+    `action_detail` TEXT NOT NULL,
+    `result` VARCHAR(50) DEFAULT NULL,
+    `downtime_min` INT DEFAULT 0,
+    `engineer_name` VARCHAR(100) DEFAULT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`action_id`),
+    CONSTRAINT `fk_action_incident` FOREIGN KEY (`incident_id`) REFERENCES `incident` (`incident_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 7. Part Usage Table
+CREATE TABLE `part_usage` (
+    `part_usage_id` VARCHAR(50) NOT NULL,
+    `action_id` VARCHAR(50) NOT NULL,
+    `part_code` VARCHAR(50) DEFAULT NULL,
+    `part_name` VARCHAR(100) DEFAULT NULL,
+    `qty` INT DEFAULT 1,
+    `unit_cost` DECIMAL(15, 2) DEFAULT 0.00,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`part_usage_id`),
+    CONSTRAINT `fk_part_action` FOREIGN KEY (`action_id`) REFERENCES `action` (`action_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 8. Inspection Log Table
+CREATE TABLE `inspection_log` (
+    `inspection_id` VARCHAR(50) NOT NULL,
+    `tenant_id` VARCHAR(50) NOT NULL,
+    `site_id` VARCHAR(50) NOT NULL,
+    `charger_id` VARCHAR(50) DEFAULT NULL,
+    `inspection_cycle` VARCHAR(20) NOT NULL, -- 'DAILY', 'WEEKLY', 'MONTHLY', 'QUARTERLY'
+    `inspection_type` VARCHAR(30) NOT NULL,  -- 'REGULAR', 'EMERGENCY', 'INSTALLATION'
+    `checklist_json` JSON NOT NULL,          -- JSON of checklist answers
+    `memo_text` TEXT DEFAULT NULL,
+    `photo_urls_json` JSON DEFAULT NULL,     -- JSON array of photo URLs
+    `ai_summary` TEXT DEFAULT NULL,          -- AI generated summary/recommendations
+    `status` VARCHAR(20) NOT NULL DEFAULT 'DRAFT', -- 'DRAFT', 'CONFIRMED'
+    `confirmed_by` VARCHAR(50) DEFAULT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`inspection_id`),
+    CONSTRAINT `fk_inspection_tenant` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`tenant_id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_inspection_site` FOREIGN KEY (`site_id`) REFERENCES `site` (`site_id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_inspection_charger` FOREIGN KEY (`charger_id`) REFERENCES `charger` (`charger_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 9. Usage Meter Table (For billing/observability)
+CREATE TABLE `usage_meter` (
+    `usage_id` INT AUTO_INCREMENT NOT NULL,
+    `tenant_id` VARCHAR(50) NOT NULL,
+    `user_id` VARCHAR(50) DEFAULT NULL,
+    `feature_code` VARCHAR(50) NOT NULL, -- 'RAG_SEARCH', 'AI_SUMMARY', 'INSPECT_DRAFT'
+    `model_name` VARCHAR(50) DEFAULT NULL,
+    `input_tokens` INT DEFAULT 0,
+    `output_tokens` INT DEFAULT 0,
+    `request_count` INT NOT NULL DEFAULT 1,
+    `measured_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`usage_id`),
+    CONSTRAINT `fk_usage_tenant` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`tenant_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 10. Audit Log Table
+CREATE TABLE `audit_log` (
+    `audit_id` INT AUTO_INCREMENT NOT NULL,
+    `tenant_id` VARCHAR(50) NOT NULL,
+    `user_id` VARCHAR(50) DEFAULT NULL,
+    `action_code` VARCHAR(50) NOT NULL, -- 'LOGIN', 'SEARCH', 'CONFIRM_INSPECTION'
+    `resource_type` VARCHAR(50) NOT NULL, -- 'INSPECTION_LOG', 'CHARGER', 'USER'
+    `resource_id` VARCHAR(50) NOT NULL,
+    `payload_json` JSON DEFAULT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`audit_id`),
+    CONSTRAINT `fk_audit_tenant` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`tenant_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Indexing for performance optimization
+CREATE INDEX `idx_incident_search` ON `incident` (`tenant_id`, `site_id`, `error_code_norm`);
+CREATE INDEX `idx_inspection_site` ON `inspection_log` (`tenant_id`, `site_id`, `status`);
+CREATE INDEX `idx_usage_tenant_date` ON `usage_meter` (`tenant_id`, `measured_at`);

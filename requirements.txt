@@ -69,4 +69,7 @@ langchain-ollama==0.2.3
 mypy==1.15.0
 pinecone==5.4.2
 wikipedia==1.4.0
-scikit-learn==1.6.1 
+scikit-learn==1.6.1
+pymysql==1.1.1
+cryptography==42.0.8
+ 

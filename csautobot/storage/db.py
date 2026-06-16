@@ -1,45 +1,78 @@
-"""SQLite 커넥션 관리 + 스키마 초기화."""
-from __future__ import annotations
-
-import sqlite3
+import os
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterator
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-HERE = Path(__file__).resolve().parent
-DEFAULT_DB_PATH = HERE / "csautobot.db"
-SCHEMA_PATH = HERE / "schema.sql"
+# Load environment variables
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+load_dotenv(ROOT_DIR / ".env")
+
+# Base class for SQLAlchemy Declarative models
+Base = declarative_base()
+
+# DB Configuration
+# Defaults to local SQLite file for development/testing if no DATABASE_URL is set.
+# For MariaDB, set DATABASE_URL="mysql+pymysql://user:password@host:port/database"
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    # Build a fallback SQLite URL
+    sqlite_db_path = ROOT_DIR / "csautobot.db"
+    DATABASE_URL = f"sqlite:///{sqlite_db_path}"
+
+# Setup engine with appropriate connection parameters
+# pool_pre_ping=True prevents "MySQL server has gone away" errors
+if DATABASE_URL.startswith("mysql"):
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        pool_size=10,
+        max_overflow=20,
+        pool_recycle=3600,
+    )
+else:
+    # SQLite compatibility settings
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {},
+    )
+
+# Session factory
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-def get_db_path() -> Path:
-    DEFAULT_DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    return DEFAULT_DB_PATH
-
-
-def _connect(db_path: Path | None = None) -> sqlite3.Connection:
-    path = db_path or get_db_path()
-    conn = sqlite3.connect(str(path), isolation_level=None)  # autocommit
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON;")
-    conn.execute("PRAGMA journal_mode = WAL;")
-    return conn
-
-
-def init_db(db_path: Path | None = None) -> None:
-    """스키마가 없으면 생성. 여러 번 호출해도 안전 (IF NOT EXISTS)."""
-    schema = SCHEMA_PATH.read_text(encoding="utf-8")
-    with _connect(db_path) as conn:
-        conn.executescript(schema)
+def get_db():
+    """
+    FastAPI dependency that provides a transactional database session.
+    Automatically closes the session after the request is finished.
+    """
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 @contextmanager
-def get_conn(db_path: Path | None = None) -> Iterator[sqlite3.Connection]:
-    """컨텍스트 매니저: 최초 호출 시 스키마 자동 생성."""
-    path = db_path or get_db_path()
-    if not path.exists():
-        init_db(path)
-    conn = _connect(path)
+def get_db_context():
+    """
+    Context manager for database sessions, useful in scripts and background workers.
+    """
+    db = SessionLocal()
     try:
-        yield conn
+        yield db
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
     finally:
-        conn.close()
+        db.close()
+
+
+def init_db():
+    """
+    Programmatically create all tables defined by SQLAlchemy models.
+    """
+    Base.metadata.create_all(bind=engine)
