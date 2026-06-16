@@ -25,7 +25,7 @@ module.exports = {
       cwd: path.join(deployRoot, 'frontend'),
       interpreter: 'none',
       env: {
-        PORT: '3000',
+        PORT: '5000',
       },
       log_date_format: 'YYYY-MM-DD HH:mm Z',
     }

@@ -334,9 +334,9 @@ try {
         throw
     }
 
-    # 2. Frontend Health Check (Port 3000)
+    # 2. Frontend Health Check (Port 5000)
     try {
-        $Response = Invoke-WebRequest -UseBasicParsing -TimeoutSec 30 -Uri "http://127.0.0.1:3000/"
+        $Response = Invoke-WebRequest -UseBasicParsing -TimeoutSec 30 -Uri "http://127.0.0.1:5000/"
         Write-Host "Next.js Frontend health check status: $($Response.StatusCode)"
     }
     catch {
