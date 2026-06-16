@@ -199,21 +199,39 @@ Push-Location $DeployRoot
 try {
     Write-Host "Cleaning up legacy mklogis service and folders..."
     try {
+        # 1. Direct cleanup for known mklogis app names (independent of json parsing)
+        $KnownApps = @("mklogis", "mklogis-admin-web", "mklogis-backend")
+        foreach ($app in $KnownApps) {
+            Write-Host "Stopping and deleting PM2 app: $app"
+            & pm2 stop $app 2>&1 | Out-Null
+            & pm2 delete $app 2>&1 | Out-Null
+        }
+
+        # 2. Dynamic cleanup using jlist as fallback
         $Pm2List = pm2 jlist | ConvertFrom-Json
         foreach ($app in $Pm2List) {
             if ($app.name -like "*mklogis*") {
-                Write-Host "Stopping and deleting PM2 app: $($app.name)"
+                Write-Host "Stopping and deleting dynamically found PM2 app: $($app.name)"
                 & pm2 stop $app.name 2>&1 | Out-Null
                 & pm2 delete $app.name 2>&1 | Out-Null
             }
         }
     } catch {
-        Write-Host "Failed to clean PM2 apps programmatically: $_"
-        try { & pm2 stop mklogis 2>&1 | Out-Null; & pm2 delete mklogis 2>&1 | Out-Null } catch {}
+        Write-Host "Non-critical: PM2 programmatic cleanup ended with error: $_"
     }
 
     $DeployParent = "C:\deploy"
     if (Test-Path -LiteralPath $DeployParent) {
+        # Delete specific known folders first
+        $SpecificFolders = @("mklogis", "mklogis-admin-web", "mklogis-backend", "mklogistics")
+        foreach ($folder in $SpecificFolders) {
+            $FullPath = Join-Path $DeployParent $folder
+            if (Test-Path -LiteralPath $FullPath) {
+                Write-Host "Deleting legacy folder: $FullPath"
+                Remove-Item -Recurse -Force $FullPath
+            }
+        }
+        # Wildcard deletion as fallback
         Get-ChildItem -Path $DeployParent -Directory -Filter "*mklogis*" | ForEach-Object {
             Write-Host "Deleting legacy mklogis folder: $($_.FullName)"
             Remove-Item -Recurse -Force $_.FullName
