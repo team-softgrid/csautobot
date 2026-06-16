@@ -184,7 +184,11 @@ Push-Location $DeployRoot
 try {
     $Pm2Command = Get-Command pm2 -ErrorAction SilentlyContinue
     if ($null -eq $Pm2Command) {
-        Invoke-Checked "npm" @("install", "-g", "pm2")
+        Write-Host "Installing PM2 globally..."
+        cmd.exe /c "npm install -g pm2"
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to install PM2 globally."
+        }
     }
     else {
         Write-Host "PM2 found: $($Pm2Command.Source)"
@@ -208,7 +212,7 @@ try {
         }
 
         # 2. Dynamic cleanup using jlist as fallback
-        $Pm2List = pm2 jlist | ConvertFrom-Json
+        $Pm2List = cmd.exe /c "pm2 jlist" | ConvertFrom-Json
         foreach ($app in $Pm2List) {
             if ($app.name -like "*mklogis*") {
                 Write-Host "Stopping and deleting dynamically found PM2 app: $($app.name)"
@@ -270,10 +274,16 @@ if (Test-Path -LiteralPath $FrontendDir) {
     Push-Location $FrontendDir
     try {
         Write-Host "Installing frontend dependencies..."
-        Invoke-Checked "npm" @("install")
+        cmd.exe /c "npm install"
+        if ($LASTEXITCODE -ne 0) {
+            throw "npm install failed with exit code $LASTEXITCODE."
+        }
         
         Write-Host "Building frontend application..."
-        Invoke-Checked "npm" @("run", "build")
+        cmd.exe /c "npm run build"
+        if ($LASTEXITCODE -ne 0) {
+            throw "npm run build failed with exit code $LASTEXITCODE."
+        }
     }
     finally {
         Pop-Location
@@ -316,7 +326,10 @@ try {
 
     Remove-Item -Recurse -Force (Join-Path $DeployRoot "csautobot\__pycache__") -ErrorAction SilentlyContinue
 
-    Invoke-Checked "pm2" @("startOrReload", "ecosystem.config.js", "--update-env")
+    cmd.exe /c "pm2 startOrReload ecosystem.config.js --update-env"
+    if ($LASTEXITCODE -ne 0) {
+        throw "pm2 startOrReload failed."
+    }
 
     Start-Sleep -Seconds 15
     
@@ -345,8 +358,11 @@ try {
         throw
     }
 
-    Invoke-Checked "pm2" @("save")
-    pm2 status
+    cmd.exe /c "pm2 save"
+    if ($LASTEXITCODE -ne 0) {
+        throw "pm2 save failed."
+    }
+    cmd.exe /c "pm2 status"
 }
 finally {
     Pop-Location
