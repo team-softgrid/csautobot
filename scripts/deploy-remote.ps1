@@ -248,6 +248,18 @@ finally {
 
 Push-Location $DeployRoot
 try {
+    $DbPath = Join-Path $DeployRoot "csautobot.db"
+    $InitialDbPath = Join-Path $DeployRoot "csautobot_initial.db"
+
+    if (-not (Test-Path -LiteralPath $DbPath) -and (Test-Path -LiteralPath $InitialDbPath)) {
+        Write-Output "csautobot.db not found. Copying from csautobot_initial.db..."
+        Copy-Item -Path $InitialDbPath -Destination $DbPath -Force
+        Write-Output "csautobot.db initialized successfully."
+    }
+    elseif (Test-Path -LiteralPath $DbPath) {
+        Write-Output "csautobot.db already exists; skipping initialization to preserve existing user data."
+    }
+
     $ChromaZip = Join-Path $DeployRoot "csautobot\chroma_db.zip"
     $ChromaDir = Join-Path $DeployRoot "csautobot\chroma_db"
 
