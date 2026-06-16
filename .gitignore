@@ -4,7 +4,8 @@
 # 파일
 .DS_Store
 *.env
-# *.db
+csautobot.db
+active_chroma_dir.txt
 *.pdf
 *.pkl
 *.md

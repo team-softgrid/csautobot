@@ -199,8 +199,8 @@ Push-Location $DeployRoot
 try {
     Write-Host "Cleaning up legacy mklogis service and folders..."
     try {
-        # 1. Direct cleanup for known mklogis app names (independent of json parsing) using cmd.exe
-        $KnownApps = @("mklogis", "mklogis-admin-web", "mklogis-backend")
+        # 1. Direct cleanup for known legacy app names (independent of json parsing) using cmd.exe
+        $KnownApps = @("mklogis", "mklogis-admin-web", "mklogis-backend", "csautobot")
         foreach ($app in $KnownApps) {
             Write-Host "Stopping and deleting PM2 app: $app"
             cmd.exe /c "pm2 stop $app"
@@ -264,6 +264,24 @@ finally {
     Pop-Location
 }
 
+# Install Node.js dependencies and build frontend
+$FrontendDir = Join-Path $DeployRoot "frontend"
+if (Test-Path -LiteralPath $FrontendDir) {
+    Push-Location $FrontendDir
+    try {
+        Write-Host "Installing frontend dependencies..."
+        Invoke-Checked "npm" @("install")
+        
+        Write-Host "Building frontend application..."
+        Invoke-Checked "npm" @("run", "build")
+    }
+    finally {
+        Pop-Location
+    }
+} else {
+    Write-Host "Warning: Frontend directory not found at $FrontendDir"
+}
+
 Push-Location $DeployRoot
 try {
     $DbPath = Join-Path $DeployRoot "csautobot.db"
@@ -301,13 +319,29 @@ try {
     Invoke-Checked "pm2" @("startOrReload", "ecosystem.config.js", "--update-env")
 
     Start-Sleep -Seconds 15
+    
+    # 1. Backend Health Check (Port 8000)
     try {
-        $Response = Invoke-WebRequest -UseBasicParsing -TimeoutSec 30 -Uri "http://127.0.0.1:5000/"
-        Write-Host "Streamlit health check status: $($Response.StatusCode)"
+        $Response = Invoke-WebRequest -UseBasicParsing -TimeoutSec 30 -Uri "http://127.0.0.1:8000/"
+        Write-Host "FastAPI Backend health check status: $($Response.StatusCode)"
+        if ($Response.Content -notlike "*online*") {
+            throw "Backend returned unexpected response: $($Response.Content)"
+        }
     }
     catch {
-        Write-Host "Streamlit health check failed. Recent PM2 logs:"
-        pm2 logs csautobot --lines 80 --nostream
+        Write-Host "FastAPI Backend health check failed. Recent PM2 logs:"
+        cmd.exe /c "pm2 logs csautobot-backend --lines 80 --nostream"
+        throw
+    }
+
+    # 2. Frontend Health Check (Port 3000)
+    try {
+        $Response = Invoke-WebRequest -UseBasicParsing -TimeoutSec 30 -Uri "http://127.0.0.1:3000/"
+        Write-Host "Next.js Frontend health check status: $($Response.StatusCode)"
+    }
+    catch {
+        Write-Host "Next.js Frontend health check failed. Recent PM2 logs:"
+        cmd.exe /c "pm2 logs csautobot-frontend --lines 80 --nostream"
         throw
     }
 
