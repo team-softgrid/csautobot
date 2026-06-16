@@ -239,7 +239,7 @@ try {
 
     Start-Sleep -Seconds 15
     try {
-        $Response = Invoke-WebRequest -UseBasicParsing -TimeoutSec 30 -Uri "http://127.0.0.1:8501/"
+        $Response = Invoke-WebRequest -UseBasicParsing -TimeoutSec 30 -Uri "http://127.0.0.1:5000/"
         Write-Host "Streamlit health check status: $($Response.StatusCode)"
     }
     catch {

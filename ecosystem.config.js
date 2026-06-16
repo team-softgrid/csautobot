@@ -9,7 +9,7 @@ module.exports = {
     {
       name: 'csautobot',
       script: pythonExecutable,
-      args: '-m streamlit run csautobot/streamlit_app.py --server.port 8501 --server.headless true --server.address 0.0.0.0',
+      args: '-m streamlit run csautobot/streamlit_app.py --server.port 5000 --server.headless true --server.address 0.0.0.0',
       cwd: deployRoot,
       interpreter: 'none',
       env: {
