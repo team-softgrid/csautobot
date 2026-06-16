@@ -199,12 +199,12 @@ Push-Location $DeployRoot
 try {
     Write-Host "Cleaning up legacy mklogis service and folders..."
     try {
-        # 1. Direct cleanup for known mklogis app names (independent of json parsing)
+        # 1. Direct cleanup for known mklogis app names (independent of json parsing) using cmd.exe
         $KnownApps = @("mklogis", "mklogis-admin-web", "mklogis-backend")
         foreach ($app in $KnownApps) {
             Write-Host "Stopping and deleting PM2 app: $app"
-            & pm2 stop $app 2>&1 | Out-Null
-            & pm2 delete $app 2>&1 | Out-Null
+            cmd.exe /c "pm2 stop $app"
+            cmd.exe /c "pm2 delete $app"
         }
 
         # 2. Dynamic cleanup using jlist as fallback
@@ -212,8 +212,8 @@ try {
         foreach ($app in $Pm2List) {
             if ($app.name -like "*mklogis*") {
                 Write-Host "Stopping and deleting dynamically found PM2 app: $($app.name)"
-                & pm2 stop $app.name 2>&1 | Out-Null
-                & pm2 delete $app.name 2>&1 | Out-Null
+                cmd.exe /c "pm2 stop $($app.name)"
+                cmd.exe /c "pm2 delete $($app.name)"
             }
         }
     } catch {
