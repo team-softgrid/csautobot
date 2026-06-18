@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -82,14 +85,16 @@ jobs:
           script: |
             powershell -NoProfile -ExecutionPolicy Bypass -File "C:\deploy\csautobot\scripts\deploy-remote.ps1"
 
-      - name: Print PM2 logs on failure
+      - name: Fetch Remote PM2 Logs and Push to Git
         if: always()
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          port: 20022
-          username: ${{ secrets.SERVER_USER }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          script: |
-            powershell -Command "cmd.exe /c pm2 status"
-            powershell -Command "cmd.exe /c pm2 logs csautobot-backend --lines 60 --nostream"
+        run: |
+          sudo apt-get update && sudo apt-get install -y sshpass
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cmd.exe /c pm2 logs csautobot-backend --lines 100 --nostream" > pm2_logs.txt
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cmd.exe /c pm2 logs csautobot-frontend --lines 100 --nostream" > pm2_frontend_logs.txt
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cmd.exe /c pm2 status" > pm2_status.txt
+          
+          git config --global user.name "deploy-bot"
+          git config --global user.email "deploy-bot@softgrid.kr"
+          git add pm2_logs.txt pm2_frontend_logs.txt pm2_status.txt || exit 0
+          git commit -m "chore: update remote pm2 logs [skip ci]" || exit 0
+          git push origin main || exit 0

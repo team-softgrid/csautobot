@@ -65,6 +65,8 @@ csautobot/storage/*.sqlite
 csautobot/storage/*.sqlite3
 # 업로드된 사진(원본 로컬 보관, 저장소 업로드 금지)
 csautobot/uploads/
+# 로컬 복사 전용 assets 폴더 (원격 SCP 충돌 방지)
+csautobot/assets/
 
 # Accidental numeric artifact files at repository root
 /0.1.59
