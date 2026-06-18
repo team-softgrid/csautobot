@@ -344,9 +344,12 @@ try {
 
     Remove-Item -Recurse -Force (Join-Path $DeployRoot "csautobot\__pycache__") -ErrorAction SilentlyContinue
 
-    cmd.exe /c "pm2 startOrReload ecosystem.config.js --update-env"
-    if ($LASTEXITCODE -ne 0) {
-        throw "pm2 startOrReload failed."
+    Write-Host "Launching PM2 startOrReload via WMI to prevent SSH session termination..."
+    $WmiResult = wmic process call create "cmd.exe /c pm2 startOrReload C:\deploy\csautobot\ecosystem.config.js --update-env"
+    if ($WmiResult -match "ReturnValue = 0;") {
+        Write-Host "WMI Process creation succeeded."
+    } else {
+        Write-Host "Warning: WMI Process creation returned non-zero code or failed: $WmiResult"
     }
 
     Start-Sleep -Seconds 15
