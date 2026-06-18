@@ -92,6 +92,7 @@ jobs:
           sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cmd.exe /c pm2 logs csautobot-backend --lines 100 --nostream" > pm2_logs.txt
           sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cmd.exe /c pm2 logs csautobot-frontend --lines 100 --nostream" > pm2_frontend_logs.txt
           sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cmd.exe /c pm2 status" > pm2_status.txt
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "powershell -Command \"echo '--- PROCESSES ---'; Get-Process -Name node,python,excel -ErrorAction SilentlyContinue | Format-Table -AutoSize; echo '--- USERS ---'; Get-ChildItem C:\Users | Format-Table -AutoSize; echo '--- PM2 PATHS ---'; echo 'User .pm2 exists:'; Test-Path C:\Users\User\.pm2; echo 'Admin .pm2 exists:'; Test-Path C:\Users\Administrator\.pm2; echo '--- PM2 SERVICES ---'; Get-Service | Where-Object { \$_.Name -like '*pm2*' }\"" >> pm2_status.txt
           
           git config --global user.name "deploy-bot"
           git config --global user.email "deploy-bot@softgrid.kr"
