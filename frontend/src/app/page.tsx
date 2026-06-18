@@ -10,7 +10,7 @@ export default function LandingPage() {
     data: any;
   }
 
-  const [chatInput, setChatInput] = useState("");
+  const [isPlaying, setIsPlaying] = useState(false);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
     {
       sender: "ai",
@@ -19,66 +19,101 @@ export default function LandingPage() {
     },
   ]);
 
-  const mockScenarios: Record<string, any> = {
-    "에러코드 23": {
-      symptom: "충전 중 에러코드 23 발생 (전류 과부하 감지)",
-      causes: ["충전 케이블 내부 단락", "차량 OBC(On Board Charger) 통신 오류", "충전기 내부 파워모듈 과부하"],
-      steps: ["충전기 전원 차단 후 케이블 외관 점검", "다른 차량에서 동일 에러 발생 여부 확인", "파워모듈 출력 전압 테스트 및 캘리브레이션"],
-      parts: "충전 케이블 7핀 커넥터 어셈블리",
-      evidence: "CS-Case-2024-0512 | 화성 동탄점",
-      confidence: "High",
-    },
-    "RFID 인식 안됨": {
-      symptom: "회원 카드 및 신용카드 RFID 태그 시 반응 없음",
-      causes: ["RFID 리더기 보드 통신 케이블 탈거", "전면 패널 글라스 오염/스크래치", "리더기 펌웨어 멈춤"],
-      steps: ["내부 CAN/RS232 통신 케이블 접속 상태 확인", "리더기 보드 리셋 및 펌웨어 재설치", "전면 터치 패널 교체"],
-      parts: "RFID Multi-Reader Board (V3.1)",
-      evidence: "CS-Case-2023-1102 | 부산 서면 센터",
-      confidence: "Mid",
-    },
-    "부팅 안됨": {
-      symptom: "전원 투입 후 메인 화면 및 LED 인디케이터 점등 안됨",
-      causes: ["SMPS(Switching Mode Power Supply) 출력 불량", "메인보드 입력 단자 휴즈 단선", "AC 입력 전원 결상"],
-      steps: ["분전함 차단기 확인 및 입력 전압 측정", "SMPS DC 12V/24V 출력 전압 체크", "메인보드 휴즈 상태 점검 및 교체"],
-      parts: "Industrial SMPS 24V 150W",
-      evidence: "CS-Case-2024-0215 | 서울 강남 주차장",
-      confidence: "High",
-    },
-  };
+  const timeoutIdsRef = React.useRef<NodeJS.Timeout[]>([]);
 
-  const handleSend = () => {
-    const text = chatInput.trim();
-    if (!text) return;
+  const startDemo = () => {
+    // 기존 타이머 클리어
+    timeoutIdsRef.current.forEach((id) => clearTimeout(id));
+    timeoutIdsRef.current = [];
 
-    // User message
-    const updatedHistory = [...chatHistory, { sender: "user", text, data: null }];
-    setChatHistory(updatedHistory);
-    setChatInput("");
+    // 초기화
+    setChatHistory([
+      {
+        sender: "ai",
+        text: "안녕하세요! 전기차 충전기 장애 증상이나 에러코드를 입력해 주세요. 유사 사례를 분석하여 조치 방법을 안내해 드립니다.",
+        data: null,
+      },
+    ]);
+    setIsPlaying(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const matchedKey = Object.keys(mockScenarios).find((key) => text.includes(key));
-      if (matchedKey) {
+    const steps = [
+      {
+        sender: "user",
+        text: "RFID 인식 안됨",
+        data: null,
+        delay: 1500,
+      },
+      {
+        sender: "ai",
+        text: "유사 사례를 발견했습니다. 분석 결과는 다음과 같습니다:",
+        data: {
+          symptom: "회원 카드 및 신용카드 RFID 태그 시 반응 없음",
+          causes: ["RFID 리더기 보드 통신 케이블 탈거", "전면 패널 글라스 오염/스크래치", "리더기 펌웨어 멈춤"],
+          steps: ["내부 CAN/RS232 통신 케이블 접속 상태 확인", "리더기 보드 리셋 및 펌웨어 재설치", "전면 터치 패널 교체"],
+          parts: "RFID Multi-Reader Board (V3.1)",
+          evidence: "CS-Case-2023-1102 | 부산 서면 센터",
+          confidence: "Mid",
+        },
+        delay: 3000,
+      },
+      {
+        sender: "user",
+        text: "에러코드 23",
+        data: null,
+        delay: 6500,
+      },
+      {
+        sender: "ai",
+        text: "유사 사례를 발견했습니다. 분석 결과는 다음과 같습니다:",
+        data: {
+          symptom: "충전 중 에러코드 23 발생 (전류 과부하 감지)",
+          causes: ["충전 케이블 내부 단락", "차량 OBC(On Board Charger) 통신 오류", "충전기 내부 파워모듈 과부하"],
+          steps: ["충전기 전원 차단 후 케이블 외관 점검", "다른 차량에서 동일 에러 발생 여부 확인", "파워모듈 출력 전압 테스트 및 캘리브레이션"],
+          parts: "충전 케이블 7핀 커넥터 어셈블리",
+          evidence: "CS-Case-2024-0512 | 화성 동탄점",
+          confidence: "High",
+        },
+        delay: 8000,
+      },
+    ];
+
+    steps.forEach((step) => {
+      const timeoutId = setTimeout(() => {
         setChatHistory((prev) => [
           ...prev,
           {
-            sender: "ai",
-            text: "유사 사례를 발견했습니다. 분석 결과는 다음과 같습니다:",
-            data: mockScenarios[matchedKey],
+            sender: step.sender,
+            text: step.text,
+            data: step.data,
           },
         ]);
-      } else {
-        setChatHistory((prev) => [
-          ...prev,
-          {
-            sender: "ai",
-            text: "죄송합니다. 입력하신 증상에 대한 직접적인 유사 사례를 찾지 못했습니다. 보다 상세한 증상이나 다른 키워드로 입력해 주시겠습니까? (예: 에러코드 23, RFID 인식 안됨, 부팅 안됨)",
-            data: null,
-          },
-        ]);
-      }
-    }, 800);
+        
+        if (step.delay === 8000) {
+          setIsPlaying(false);
+        }
+      }, step.delay);
+      timeoutIdsRef.current.push(timeoutId);
+    });
   };
+
+  const stopDemo = () => {
+    timeoutIdsRef.current.forEach((id) => clearTimeout(id));
+    timeoutIdsRef.current = [];
+    setIsPlaying(false);
+    setChatHistory([
+      {
+        sender: "ai",
+        text: "안녕하세요! 전기차 충전기 장애 증상이나 에러코드를 입력해 주세요. 유사 사례를 분석하여 조치 방법을 안내해 드립니다.",
+        data: null,
+      },
+    ]);
+  };
+
+  React.useEffect(() => {
+    return () => {
+      timeoutIdsRef.current.forEach((id) => clearTimeout(id));
+    };
+  }, []);
 
   return (
     <div style={{ background: "#0b0e14", color: "#e0e0e0", fontFamily: "'Inter', sans-serif", minHeight: "100vh" }}>
@@ -280,23 +315,60 @@ export default function LandingPage() {
               borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-between"
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "1rem"
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                 <div style={{
                   width: "10px",
                   height: "10px",
-                  background: "#10b981",
+                  background: isPlaying ? "#3b82f6" : "#10b981",
                   borderRadius: "50%",
-                  boxShadow: "0 0 10px #10b981"
+                  boxShadow: isPlaying ? "0 0 10px #3b82f6" : "0 0 10px #10b981"
                 }}></div>
                 <div>
                   <div style={{ fontWeight: 700, color: "#f8fafc" }}>AS 지원 에이전트 v2.0</div>
                   <div style={{ fontSize: "0.8rem", color: "#94a3b8" }}>Local LLM (Qwen 2.5) + RAG Enabled</div>
                 </div>
               </div>
-              <div style={{ fontSize: "0.8rem", background: "rgba(255,255,255,0.05)", padding: "0.3rem 0.8rem", borderRadius: "4px", color: "#94a3b8" }}>
-                Enterprise Secure
+              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                {!isPlaying ? (
+                  <button
+                    onClick={startDemo}
+                    style={{
+                      fontSize: "0.8rem",
+                      background: "linear-gradient(135deg, #3b82f6, #06b6d4)",
+                      border: "none",
+                      padding: "0.4rem 1rem",
+                      borderRadius: "6px",
+                      color: "#000",
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                    }}
+                  >
+                    ▶ 데모 시작
+                  </button>
+                ) : (
+                  <button
+                    onClick={stopDemo}
+                    style={{
+                      fontSize: "0.8rem",
+                      background: "rgba(239, 68, 68, 0.2)",
+                      border: "1px solid #ef4444",
+                      padding: "0.4rem 1rem",
+                      borderRadius: "6px",
+                      color: "#ef4444",
+                      fontWeight: "bold",
+                      cursor: "pointer"
+                    }}
+                  >
+                    ■ 정지 및 리셋
+                  </button>
+                )}
+                <div style={{ fontSize: "0.8rem", background: "rgba(255,255,255,0.05)", padding: "0.4rem 0.8rem", borderRadius: "6px", color: "#94a3b8" }}>
+                  시뮬레이션 모드
+                </div>
               </div>
             </div>
 
@@ -391,33 +463,29 @@ export default function LandingPage() {
             }}>
               <input
                 type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                placeholder="증상 또는 에러코드를 입력하세요 (예: 에러코드 23, RFID 인식 안됨, 부팅 안됨)"
+                disabled={true}
+                placeholder={isPlaying ? "데모 자동 시뮬레이션이 진행 중입니다..." : "상단의 '데모 시작' 버튼을 누르면 대화 시나리오가 재생됩니다."}
                 style={{
                   flex: 1,
-                  background: "rgba(255, 255, 255, 0.05)",
-                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  background: "rgba(255, 255, 255, 0.03)",
+                  border: "1px solid rgba(255, 255, 255, 0.05)",
                   padding: "0.75rem 1.5rem",
                   borderRadius: "12px",
-                  color: "#fff",
+                  color: "#64748b",
                   outline: "none",
-                  transition: "border-color 0.3s"
+                  cursor: "not-allowed"
                 }}
-                onFocus={(e) => e.currentTarget.style.borderColor = "#06b6d4"}
-                onBlur={(e) => e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.08)"}
               />
               <button
-                onClick={handleSend}
+                disabled={true}
                 style={{
-                  background: "#06b6d4",
-                  color: "#000",
+                  background: "rgba(255,255,255,0.03)",
+                  color: "#64748b",
                   border: "none",
                   padding: "0 1.5rem",
                   borderRadius: "12px",
                   fontWeight: 700,
-                  cursor: "pointer"
+                  cursor: "not-allowed"
                 }}
               >
                 전송
