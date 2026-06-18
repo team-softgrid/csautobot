@@ -44,6 +44,7 @@ from app.pages import home as home_page  # noqa: E402
 from app.pages import inspection_log as inspection_page  # noqa: E402
 from app.pages import search as search_page  # noqa: E402
 from app.pages import data_management as data_management_page  # noqa: E402
+from app.pages import quotation_generator as quotation_page  # noqa: E402
 from app.theme import (  # noqa: E402
     BRAND_NAME,
     BRAND_TAGLINE,
@@ -58,8 +59,9 @@ SEARCH_KEY = "🔎 AS 유사 사례 검색"
 DASH_KEY = "📊 운영 대시보드"
 FEEDBACK_KEY = "📬 피드백 모음"
 DATA_KEY = "📂 학습 데이터 관리"
+QUOTE_KEY = "💡 AI 견적서 생성기"
 
-PAGE_ORDER = [DASH_KEY, INSP_KEY, SEARCH_KEY, DATA_KEY]
+PAGE_ORDER = [DASH_KEY, INSP_KEY, SEARCH_KEY, QUOTE_KEY, DATA_KEY]
 
 
 def _set_page(key: str) -> None:
@@ -79,6 +81,8 @@ def _render_selected_page(key: str) -> None:
         feedback_page.render()
     elif key == DATA_KEY:
         data_management_page.render()
+    elif key == QUOTE_KEY:
+        quotation_page.render()
     else:
         home_page.render(on_navigate=_set_page)
 

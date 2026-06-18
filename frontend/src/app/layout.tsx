@@ -9,6 +9,7 @@ const PAGE_ORDER = [
   { name: "📊 운영 대시보드", path: "/dashboard" },
   { name: "📝 점검일지 AI 어시스턴트", path: "/inspection" },
   { name: "🔎 AS 유사 사례 검색", path: "/search" },
+  { name: "💡 AI 견적서 생성기", path: "/quotation" },
   { name: "📂 학습 데이터 관리", path: "/data-management" },
   { name: "📬 피드백 모음", path: "/feedback" },
 ];
