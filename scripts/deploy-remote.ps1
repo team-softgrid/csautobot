@@ -322,6 +322,26 @@ try {
         Write-Output "chroma_db and sparse_index.pkl already exist; skipping zip extraction to preserve production data."
     }
 
+    $TplDir = Join-Path $DeployRoot "csautobot\assets_template"
+    $DestDir = Join-Path $DeployRoot "csautobot\assets"
+    if (Test-Path -LiteralPath $TplDir) {
+        Write-Output "Copying excel assets from template..."
+        if (-not (Test-Path -LiteralPath $DestDir)) {
+            New-Item -ItemType Directory -Force -Path $DestDir | Out-Null
+        }
+        try {
+            Copy-Item -Path "$TplDir\*" -Destination $DestDir -Force -ErrorAction Stop
+            Write-Output "Excel assets copied successfully."
+        }
+        catch {
+            Write-Output "Warning: Direct copy failed: $_. Attempting to kill excel and retry..."
+            Stop-Process -Name excel -ErrorAction SilentlyContinue
+            Start-Sleep -Seconds 2
+            Copy-Item -Path "$TplDir\*" -Destination $DestDir -Force
+            Write-Output "Excel assets copied successfully after retry."
+        }
+    }
+
     Remove-Item -Recurse -Force (Join-Path $DeployRoot "csautobot\__pycache__") -ErrorAction SilentlyContinue
 
     cmd.exe /c "pm2 startOrReload ecosystem.config.js --update-env"
