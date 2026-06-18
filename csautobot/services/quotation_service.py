@@ -149,6 +149,18 @@ def _generate_offline_quotation_draft(query: str, charger_type: str) -> Quotatio
         total_amount=total_amount
     )
 
+def is_valid_openai_key(key: str | None) -> bool:
+    if not key:
+        return False
+    key = key.strip()
+    return key.startswith("sk-") and len(key) > 20
+
+def is_valid_google_key(key: str | None) -> bool:
+    if not key:
+        return False
+    key = key.strip()
+    return key.startswith("AIza") and len(key) > 20
+
 def generate_quotation_draft(
     query: str,
     charger_type: str = "급속",
@@ -158,12 +170,15 @@ def generate_quotation_draft(
     RAG similarity search and LLM invocation to generate a quotation draft.
     """
     # Try loading keys from dotenv first
-    if not os.environ.get("OPENAI_API_KEY") and not os.environ.get("GOOGLE_API_KEY"):
-        from dotenv import load_dotenv
-        load_dotenv(BOT_DIR / ".env")
+    from dotenv import load_dotenv
+    load_dotenv(BOT_DIR / ".env")
         
-    # Check if keys are still missing - if so, run offline fallback
-    if not os.environ.get("OPENAI_API_KEY") and not os.environ.get("GOOGLE_API_KEY"):
+    openai_key = os.environ.get("OPENAI_API_KEY")
+    google_key = os.environ.get("GOOGLE_API_KEY")
+        
+    # Check if keys are missing or invalid - if so, run offline fallback immediately
+    if not is_valid_openai_key(openai_key) and not is_valid_google_key(google_key):
+        print("No valid API keys found (missing, placeholder, or invalid format). Running offline quotation draft.")
         return _generate_offline_quotation_draft(query, charger_type)
         
     index_dir = resolve_chroma_dir(BOT_DIR)
