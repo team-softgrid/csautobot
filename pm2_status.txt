@@ -12,7 +12,7 @@
 
 Mode            LastWriteTime Length Name         
 ----            ------------- ------ ----         
-d----- 2026-06-18   오후 8:23        Administrator
+d----- 2026-06-18   오후 9:30        Administrator
 d-r--- 2026-05-14   오전 8:27        Public       
 
 
