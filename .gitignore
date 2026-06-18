@@ -48,6 +48,8 @@ csData/**/*.xlsx
 csData/**/*.xls
 csData/**/*.zip
 csData/**/*.pptx
+docs/**/*.xlsx
+docs/**/*.xls
 csautobot/chroma_db/
 csautobot/chroma_db_*/
 # 원격 배포용 ChromaDB zip은 추적

@@ -361,3 +361,4 @@ try {
 finally {
     Pop-Location
 }
+exit 0
