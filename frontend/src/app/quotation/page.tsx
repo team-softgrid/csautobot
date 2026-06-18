@@ -149,36 +149,46 @@ export default function QuotationPage() {
   const vat = Math.floor(supplyValue * 0.1);
   const grandTotal = supplyValue + vat;
 
-  // CSV Generator and Downloader (Client-side)
-  const handleDownloadCSV = () => {
+  // Excel Generator and Downloader (Server-side)
+  const handleDownloadExcel = async () => {
     if (!draft) return;
 
-    let csvContent = "\ufeff"; // UTF-8 BOM
-    csvContent += "=== AI 자동 생성 견적서 ===\n";
-    csvContent += `고장 증상 요약,${query.replace(/,/g, " ")},\n`;
-    csvContent += `예상 고장 원인,${draft.likely_cause.replace(/,/g, " ")},\n\n`;
-    
-    csvContent += "구분,품명,규격,단가(원),수량,금액(원)\n";
-    draft.parts.forEach(p => {
-      const total = p.unit_price * p.qty;
-      csvContent += `${p.category},${p.part_name},${p.spec.replace(/,/g, " ")},${p.unit_price},${p.qty},${total}\n`;
-    });
+    try {
+      const res = await fetch(`${getApiUrl()}/api/v1/quotation/export`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: query.trim(),
+          symptom_summary: draft.symptom_summary,
+          likely_cause: draft.likely_cause,
+          parts: draft.parts.map(p => ({
+            part_name: p.part_name,
+            spec: p.spec,
+            qty: p.qty,
+            unit_price: p.unit_price,
+            category: p.category
+          })),
+          dispatch_fee: draft.dispatch_fee,
+          labor_fee: draft.labor_fee
+        }),
+      });
 
-    csvContent += `기술료,출장 교통비,-,${dispatchFee},1,${dispatchFee}\n`;
-    csvContent += `기술료,작업 공임비,-,${laborFee},1,${laborFee}\n\n`;
-
-    csvContent += `공급가액 합계,,,,,\u200b${supplyValue}\n`;
-    csvContent += `부가세 (VAT 10%),,,,,\u200b${vat}\n`;
-    csvContent += `최종 견적 합계,,,,,\u200b${grandTotal}\n`;
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `견적서_${query.substring(0, 10).replace(/\s+/g, "_")}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      if (!res.ok) throw new Error("엑셀 파일 생성 요청에 실패했습니다.");
+      
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      
+      const filenameSymptom = query.substring(0, 10).replace(/\s+/g, "_");
+      link.setAttribute("download", `견적서_${filenameSymptom}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "엑셀 다운로드 도중 에러가 발생했습니다.");
+    }
   };
 
   return (
@@ -535,9 +545,9 @@ export default function QuotationPage() {
                 </div>
               </section>
 
-              {/* Download CSV button */}
+              {/* Download Excel button */}
               <button
-                onClick={handleDownloadCSV}
+                onClick={handleDownloadExcel}
                 style={{
                   width: "100%",
                   padding: "16px",
@@ -554,7 +564,7 @@ export default function QuotationPage() {
                 onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 12px 20px -3px rgba(16,185,129,0.4)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 10px 15px -3px rgba(16,185,129,0.3)"; }}
               >
-                📥 견적서 다운로드 (Excel 호환 CSV)
+                📥 견적서 다운로드 (엑셀 템플릿 적용)
               </button>
 
             </div>
