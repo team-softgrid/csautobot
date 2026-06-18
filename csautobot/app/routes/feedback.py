@@ -37,10 +37,9 @@ class FeedbackResponse(BaseModel):
     created_at: Optional[str]
 
 @router.post("/feedbacks")
-def save_feedback(req: FeedbackCreateRequest, db: Session = Depends(get_db)):
+def save_feedback(req: FeedbackCreateRequest):
     try:
-        feedback = repo.create_feedback(
-            db=db,
+        feedback_id = repo.create_feedback(
             target_type=req.target_type,
             target_id=req.target_id,
             role=req.role,
@@ -49,26 +48,26 @@ def save_feedback(req: FeedbackCreateRequest, db: Session = Depends(get_db)):
             usefulness=req.usefulness,
             comment=req.comment
         )
-        return {"status": "success", "feedback_id": feedback.feedback_id}
+        return {"status": "success", "feedback_id": feedback_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create feedback: {e}")
 
 @router.get("/feedbacks", response_model=List[FeedbackResponse])
-def get_all_feedbacks(limit: int = 1000, db: Session = Depends(get_db)):
+def get_all_feedbacks(limit: int = 1000):
     try:
-        feedbacks = repo.list_feedback(db=db, limit=limit)
+        feedbacks = repo.list_feedback(limit=limit)
         results = []
         for f in feedbacks:
             results.append(FeedbackResponse(
-                feedback_id=f.feedback_id,
-                target_type=f.target_type,
-                target_id=f.target_id,
-                role=f.role,
-                reviewer_name=f.reviewer_name,
-                rating=f.rating,
-                usefulness=f.usefulness,
-                comment=f.comment,
-                created_at=f.created_at.isoformat() if f.created_at else None
+                feedback_id=f.get("feedback_id"),
+                target_type=f.get("target_type"),
+                target_id=f.get("target_id"),
+                role=f.get("role") or "기타",
+                reviewer_name=f.get("reviewer_name"),
+                rating=f.get("rating") or 0,
+                usefulness=f.get("usefulness") or 0,
+                comment=f.get("comment") or "",
+                created_at=f.get("created_at")
             ))
         return results
     except Exception as e:

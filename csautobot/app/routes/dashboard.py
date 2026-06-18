@@ -51,46 +51,46 @@ def _risk_key(ai_sum_raw: Any) -> str:
     return "low"
 
 @router.get("/dashboard/stats", response_model=DashboardStatsResponse)
-def get_dashboard_stats(db: Session = Depends(get_db)):
+def get_dashboard_stats():
     try:
         # Load raw inspection logs and feedbacks
-        logs = repo.list_inspection_logs(db=db, limit=1000)
-        feedbacks = repo.list_feedback(db=db, limit=1000)
+        logs = repo.list_inspection_logs(limit=1000)
+        feedbacks = repo.list_feedback(limit=1000)
 
         total_inspections = len(logs)
-        completed_inspections = sum(1 for l in logs if l.status == "confirmed")
+        completed_inspections = sum(1 for l in logs if l.get("status") == "confirmed")
         draft_inspections = total_inspections - completed_inspections
 
         total_feedbacks = len(feedbacks)
         avg_rating = 0.0
         avg_usefulness = 0.0
         if total_feedbacks > 0:
-            avg_rating = sum(float(f.rating or 0) for f in feedbacks) / total_feedbacks
-            avg_usefulness = sum(float(f.usefulness or 0) for f in feedbacks) / total_feedbacks
+            avg_rating = sum(float(f.get("rating") or 0) for f in feedbacks) / total_feedbacks
+            avg_usefulness = sum(float(f.get("usefulness") or 0) for f in feedbacks) / total_feedbacks
 
         inspections_data = []
         for l in logs:
             inspections_data.append({
-                "inspection_id": l.inspection_id,
-                "created_at": l.created_at.isoformat() if l.created_at else None,
-                "status": l.status or "draft",
-                "inspection_type": l.inspection_type or "-",
-                "inspection_cycle": l.inspection_cycle or "-",
-                "site_name": l.site.site_name if l.site else "-",
-                "charger_id": l.charger_id or "-",
-                "overall_risk": _risk_key(l.ai_summary)
+                "inspection_id": l.get("inspection_id"),
+                "created_at": l.get("created_at"),
+                "status": l.get("status") or "draft",
+                "inspection_type": l.get("inspection_type") or "-",
+                "inspection_cycle": l.get("inspection_cycle") or "-",
+                "site_name": l.get("site_name") or "-",
+                "charger_id": l.get("charger_id") or "-",
+                "overall_risk": _risk_key(l.get("ai_summary"))
             })
 
         feedbacks_data = []
         for f in feedbacks:
             feedbacks_data.append({
-                "feedback_id": f.feedback_id,
-                "target_type": f.target_type,
-                "role": f.role or "기타",
-                "rating": f.rating,
-                "usefulness": f.usefulness,
-                "comment": f.comment or "",
-                "created_at": f.created_at.isoformat() if f.created_at else None
+                "feedback_id": f.get("feedback_id"),
+                "target_type": f.get("target_type"),
+                "role": f.get("role") or "기타",
+                "rating": f.get("rating"),
+                "usefulness": f.get("usefulness"),
+                "comment": f.get("comment") or "",
+                "created_at": f.get("created_at")
             })
 
         return DashboardStatsResponse(
