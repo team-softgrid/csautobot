@@ -83,7 +83,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           command_timeout: 30m
           script: |
-            powershell -NoProfile -ExecutionPolicy Bypass -File "C:\deploy\csautobot\scripts\deploy-remote.ps1"
+            powershell -NoProfile -ExecutionPolicy Bypass -Command "C:\deploy\csautobot\scripts\deploy-remote.ps1 > C:\deploy\csautobot\deploy_log.txt 2>&1"
 
       - name: Fetch Remote PM2 Logs and Push to Git
         if: always()
@@ -93,9 +93,10 @@ jobs:
           sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cmd.exe /c pm2 logs csautobot-frontend --lines 100 --nostream" > pm2_frontend_logs.txt
           sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cmd.exe /c pm2 status" > pm2_status.txt
           sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "powershell -Command \"echo '--- PROCESSES ---'; Get-Process -Name node,python,excel -ErrorAction SilentlyContinue | Format-Table -AutoSize; echo '--- USERS ---'; Get-ChildItem C:\Users | Format-Table -AutoSize; echo '--- PM2 PATHS ---'; echo 'User .pm2 exists:'; Test-Path C:\Users\User\.pm2; echo 'Admin .pm2 exists:'; Test-Path C:\Users\Administrator\.pm2; echo '--- PM2 SERVICES ---'; Get-Service | Where-Object { \$_.Name -like '*pm2*' }\"" >> pm2_status.txt
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cmd.exe /c type C:\deploy\csautobot\deploy_log.txt" > deploy_log.txt
           
           git config --global user.name "deploy-bot"
           git config --global user.email "deploy-bot@softgrid.kr"
-          git add pm2_logs.txt pm2_frontend_logs.txt pm2_status.txt || exit 0
+          git add pm2_logs.txt pm2_frontend_logs.txt pm2_status.txt deploy_log.txt || exit 0
           git commit -m "chore: update remote pm2 logs [skip ci]" || exit 0
           git push origin main || exit 0
