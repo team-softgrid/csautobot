@@ -268,13 +268,13 @@ finally {
     Pop-Location
 }
 
-# Install Node.js dependencies for frontend (production only)
+# Install Node.js dependencies for frontend
 $FrontendDir = Join-Path $DeployRoot "frontend"
 if (Test-Path -LiteralPath $FrontendDir) {
     Push-Location $FrontendDir
     try {
-        Write-Host "Installing frontend production dependencies..."
-        cmd.exe /c "npm install --production --legacy-peer-deps"
+        Write-Host "Installing frontend dependencies..."
+        cmd.exe /c "npm install --legacy-peer-deps"
         if ($LASTEXITCODE -ne 0) {
             throw "npm install failed with exit code $LASTEXITCODE."
         }

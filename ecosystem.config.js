@@ -20,10 +20,10 @@ module.exports = {
     },
     {
       name: 'csautobot-frontend',
-      script: npmExecutable,
-      args: 'run start',
+      script: 'node_modules/next/dist/bin/next',
+      args: 'start',
       cwd: path.join(deployRoot, 'frontend'),
-      interpreter: 'none',
+      interpreter: 'node',
       env: {
         PORT: '5000',
       },
