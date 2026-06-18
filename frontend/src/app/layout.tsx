@@ -49,7 +49,7 @@ export default function RootLayout({
             >
               {/* Logo and Brand */}
               <div style={{ marginBottom: "32px" }}>
-                <Link href="/admin" style={{ textDecoration: "none" }}>
+                <Link href="/" style={{ textDecoration: "none" }}>
                   <h1
                     style={{
                       fontSize: "24px",
