@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict, Any, List
 
 HERE = Path(__file__).resolve().parent
-DEFAULT_EXCEL_PATH = HERE.parent / "assets" / "계약단가표-260522.xlsx"
+DEFAULT_EXCEL_PATH = HERE.parent / "assets" / "contract_unit_prices.xlsx"
 
 # Robust fallback pricing rules in case Excel parsing fails
 FALLBACK_PRICING = [
