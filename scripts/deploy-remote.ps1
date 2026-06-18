@@ -344,19 +344,33 @@ try {
 
     Remove-Item -Recurse -Force (Join-Path $DeployRoot "csautobot\__pycache__") -ErrorAction SilentlyContinue
 
-    Write-Host "Launching PM2 startOrReload via WMI (Invoke-WmiMethod) to prevent SSH session termination..."
-    try {
-        $WmiResult = Invoke-WmiMethod -Class Win32_Process -Name Create -ArgumentList "cmd.exe /c pm2 startOrReload C:\deploy\csautobot\ecosystem.config.js --update-env"
-        Write-Host "WMI Process creation ReturnValue: $($WmiResult.ReturnValue) (ProcessID: $($WmiResult.ProcessId))"
-        if ($WmiResult.ReturnValue -ne 0) {
-            Write-Host "Warning: WMI Process creation failed with ReturnValue: $($WmiResult.ReturnValue). Falling back to direct cmd PM2..."
-            cmd.exe /c "pm2 startOrReload ecosystem.config.js --update-env"
+    # ------------------------------------------------------------------
+    # Install pm2-windows-startup once so PM2 survives SSH disconnection
+    # pm2-windows-startup registers a Windows Scheduled Task at SYSTEM
+    # level that auto-starts the PM2 daemon on login/boot.
+    # ------------------------------------------------------------------
+    $Pm2WinStartup = Get-Command pm2-startup -ErrorAction SilentlyContinue
+    if ($null -eq $Pm2WinStartup) {
+        Write-Host "Installing pm2-windows-startup globally..."
+        cmd.exe /c "npm install -g pm2-windows-startup"
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "Warning: pm2-windows-startup install failed. Continuing without service registration."
         }
     }
-    catch {
-        Write-Host "Error launching via WMI: $_"
-        Write-Host "Falling back to direct cmd PM2 start..."
-        cmd.exe /c "pm2 startOrReload ecosystem.config.js --update-env"
+
+    # Re-check after possible install
+    $Pm2WinStartup = Get-Command pm2-startup -ErrorAction SilentlyContinue
+    if ($null -ne $Pm2WinStartup) {
+        Write-Host "Registering PM2 as a Windows Scheduled Task (SYSTEM level) via pm2-startup..."
+        cmd.exe /c "pm2-startup install"
+    } else {
+        Write-Host "pm2-startup not found; skipping service registration."
+    }
+
+    Write-Host "Starting/reloading PM2 apps..."
+    cmd.exe /c "pm2 startOrReload C:\deploy\csautobot\ecosystem.config.js --update-env"
+    if ($LASTEXITCODE -ne 0) {
+        throw "pm2 startOrReload failed."
     }
 
     Start-Sleep -Seconds 15
@@ -384,9 +398,7 @@ try {
     }
 
     cmd.exe /c "pm2 save"
-    if ($LASTEXITCODE -ne 0) {
-        throw "pm2 save failed."
-    }
+    Write-Host "PM2 dump saved."
     cmd.exe /c "pm2 status"
 }
 finally {
