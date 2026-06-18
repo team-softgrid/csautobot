@@ -49,7 +49,7 @@ def create_quotation_draft(req: QuotationRequest):
 @router.post("/quotation/export")
 def export_quotation_excel(req: QuotationExportRequest):
     try:
-        template_path = HERE / "docs" / "견적서.xlsx"
+        template_path = HERE / "csautobot" / "assets" / "견적서.xlsx"
         if not template_path.is_file():
             raise FileNotFoundError(f"견적서 템플릿 파일을 찾을 수 없습니다: {template_path}")
             
