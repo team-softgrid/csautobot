@@ -231,7 +231,12 @@ def generate_quotation_draft(
             })
             llm_success = True
         except Exception as e:
-            raise RuntimeError(f"견적 초안 생성에 실패했습니다 (OpenAI/Gemini 모두 호출 실패): {e}")
+            print(f"ChatGoogleGenerativeAI failed in quotation service: {e}")
+            
+    # Fallback to offline matching if LLM parsing failed entirely (e.g. invalid API keys or model errors)
+    if not llm_success or prediction is None:
+        print("Both LLM services failed or returned empty. Falling back to offline quotation draft.")
+        return _generate_offline_quotation_draft(query, charger_type)
 
     # 5. Process predicted parts and map to contract unit prices
     parts_details = []
