@@ -302,9 +302,13 @@ try {
 
     $ChromaZip = Join-Path $DeployRoot "csautobot\chroma_db.zip"
     $ChromaDir = Join-Path $DeployRoot "csautobot\chroma_db"
+    $SparsePkl = Join-Path $ChromaDir "sparse_index.pkl"
 
-    if ((Test-Path -LiteralPath $ChromaZip) -and -not (Test-Path -LiteralPath $ChromaDir)) {
-        Write-Output "chroma_db not found. Extracting initial vector DB from zip..."
+    if ((Test-Path -LiteralPath $ChromaZip) -and (-not (Test-Path -LiteralPath $ChromaDir) -or -not (Test-Path -LiteralPath $SparsePkl))) {
+        Write-Output "chroma_db or sparse_index.pkl not found. Extracting initial vector DB from zip..."
+        if (Test-Path -LiteralPath $ChromaDir) {
+            Remove-Item -Recurse -Force $ChromaDir
+        }
         New-Item -ItemType Directory -Force -Path $ChromaDir | Out-Null
         Expand-Archive -Path $ChromaZip -DestinationPath $ChromaDir -Force
         Write-Output "Vector DB extraction complete."
@@ -315,7 +319,7 @@ try {
         Write-Output "active_chroma_dir.txt updated to: $ChromaDir"
     }
     elseif (Test-Path -LiteralPath $ChromaDir) {
-        Write-Output "chroma_db already exists; skipping zip extraction to preserve production data."
+        Write-Output "chroma_db and sparse_index.pkl already exist; skipping zip extraction to preserve production data."
     }
 
     Remove-Item -Recurse -Force (Join-Path $DeployRoot "csautobot\__pycache__") -ErrorAction SilentlyContinue
