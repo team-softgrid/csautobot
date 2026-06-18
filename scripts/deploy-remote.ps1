@@ -344,12 +344,19 @@ try {
 
     Remove-Item -Recurse -Force (Join-Path $DeployRoot "csautobot\__pycache__") -ErrorAction SilentlyContinue
 
-    Write-Host "Launching PM2 startOrReload via WMI to prevent SSH session termination..."
-    $WmiResult = wmic process call create "cmd.exe /c pm2 startOrReload C:\deploy\csautobot\ecosystem.config.js --update-env"
-    if ($WmiResult -match "ReturnValue = 0;") {
-        Write-Host "WMI Process creation succeeded."
-    } else {
-        Write-Host "Warning: WMI Process creation returned non-zero code or failed: $WmiResult"
+    Write-Host "Launching PM2 startOrReload via WMI (Invoke-WmiMethod) to prevent SSH session termination..."
+    try {
+        $WmiResult = Invoke-WmiMethod -Class Win32_Process -Name Create -ArgumentList "cmd.exe /c pm2 startOrReload C:\deploy\csautobot\ecosystem.config.js --update-env"
+        Write-Host "WMI Process creation ReturnValue: $($WmiResult.ReturnValue) (ProcessID: $($WmiResult.ProcessId))"
+        if ($WmiResult.ReturnValue -ne 0) {
+            Write-Host "Warning: WMI Process creation failed with ReturnValue: $($WmiResult.ReturnValue). Falling back to direct cmd PM2..."
+            cmd.exe /c "pm2 startOrReload ecosystem.config.js --update-env"
+        }
+    }
+    catch {
+        Write-Host "Error launching via WMI: $_"
+        Write-Host "Falling back to direct cmd PM2 start..."
+        cmd.exe /c "pm2 startOrReload ecosystem.config.js --update-env"
     }
 
     Start-Sleep -Seconds 15
