@@ -1,20 +1,20 @@
 ┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
 │ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 0  │ csautobot-backend     │ default     │ N/A     │ fork    │ 10052    │ 26s    │ 0    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
-│ 1  │ csautobot-frontend    │ default     │ 16.2.9  │ fork    │ 5568     │ 26s    │ 0    │ online    │ 0%       │ 94.7mb   │ Adminis… │ disabled │
+│ 0  │ csautobot-backend     │ default     │ N/A     │ fork    │ 8112     │ 55s    │ 0    │ online    │ 0%       │ 3.0mb    │ SYSTEM   │ disabled │
+│ 1  │ csautobot-frontend    │ default     │ 16.2.9  │ fork    │ 8188     │ 55s    │ 0    │ online    │ 0%       │ 93.0mb   │ SYSTEM   │ disabled │
 └────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
 --- NETSTAT PORTS 5000/8000 ---
-  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       5568
-  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       8108
+  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       8188
+  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       10044
 --- RUNNING PROCESSES ---
 
    Id      CPU WorkingSet ProcessName
    --      --- ---------- -----------
- 5568  1.46875   99287040 node       
- 9064 0.703125   60231680 node       
- 8108 4.671875  166645760 python     
-10052        0    3141632 python     
+ 7272 0.671875   59101184 node       
+ 8188 1.390625   97570816 node       
+ 8112        0    3104768 python     
+10044 4.703125  164487168 python     
 
 
 --- SCHEDULED TASKS (PM2) ---
