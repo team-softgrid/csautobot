@@ -32,7 +32,8 @@ export async function POST(request: Request) {
       path: "/",
     });
     return response;
-  } catch {
-    return NextResponse.json({ detail: "서버 오류가 발생했습니다." }, { status: 500 });
+  } catch (e: any) {
+    console.error("Login Error:", e);
+    return NextResponse.json({ detail: "서버 오류가 발생했습니다.", error: e.message || String(e) }, { status: 500 });
   }
 }
