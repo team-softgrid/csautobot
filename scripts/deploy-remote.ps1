@@ -345,78 +345,19 @@ try {
     Remove-Item -Recurse -Force (Join-Path $DeployRoot "csautobot\__pycache__") -ErrorAction SilentlyContinue
 
     # ------------------------------------------------------------------
-    # NSSM (Non-Sucking Service Manager) 기반 Windows Service 등록
-    # - sc.exe는 Service API 구현체가 필요하므로 단순 배치파일로는 불가함
-    # - NSSM을 이용해 node.exe를 래핑하고, pm2를 --no-daemon 모드로 실행
+    # PM2 App Start
     # ------------------------------------------------------------------
-    $ServiceName = "PM2_csautobot"
-    $LogDir      = "C:\deploy\csautobot\logs"
-    New-Item -ItemType Directory -Force -Path $LogDir | Out-Null
-
-    $NssmPath = "C:\tools\nssm\nssm.exe"
-    if (-not (Test-Path $NssmPath)) {
-        Write-Output "NSSM not found. Downloading..."
-        New-Item -ItemType Directory -Force -Path "C:\tools\nssm" | Out-Null
-        $NssmZip = "C:\tools\nssm.zip"
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        Invoke-WebRequest -Uri "https://nssm.cc/ci/nssm-2.24-101-g897c7ad.zip" -OutFile $NssmZip -UseBasicParsing
-        Expand-Archive -Path $NssmZip -DestinationPath "C:\tools\nssm_extract" -Force
-        
-        $NssmBin = Get-ChildItem -Recurse "C:\tools\nssm_extract" -Filter "nssm.exe" | Where-Object { $_.DirectoryName -like "*win64*" } | Select-Object -First 1
-        if ($null -eq $NssmBin) {
-            $NssmBin = Get-ChildItem -Recurse "C:\tools\nssm_extract" -Filter "nssm.exe" | Select-Object -First 1
-        }
-        Copy-Item -Path $NssmBin.FullName -Destination $NssmPath -Force
-        Write-Output "NSSM downloaded to $NssmPath"
-    }
-
-    # node.exe 경로 탐색
-    $NodeExeInfo = Get-Command node -ErrorAction SilentlyContinue
-    $NodeExe = $null
-    if ($null -ne $NodeExeInfo) { $NodeExe = $NodeExeInfo.Source }
-    if (-not $NodeExe) { $NodeExe = "C:\Program Files\nodejs\node.exe" }
-    Write-Output "node.exe path: $NodeExe"
-
-    # npm global root로 pm2 경로 탐색
-    $NpmGlobalRoot = (cmd.exe /c "npm root -g").Trim()
-    $Pm2Js = "$NpmGlobalRoot\pm2\bin\pm2"
-    Write-Output "pm2 js path: $Pm2Js"
-
-    # 기존 서비스 제거
-    $ExistingSvc = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
-    if ($null -ne $ExistingSvc) {
-        Write-Output "Removing existing service '$ServiceName'..."
-        sc.exe stop $ServiceName 2>$null | Out-Null
-        Start-Sleep -Seconds 3
-        sc.exe delete $ServiceName 2>$null | Out-Null
-        Start-Sleep -Seconds 3
-    }
-
-    Write-Output "Registering PM2 as Windows Service via NSSM..."
-    # PM2를 포그라운드(--no-daemon)로 실행하여 NSSM이 프로세스 상태를 정확히 추적하도록 함
-    # 텔레메트리 프롬프트로 인한 Hang 방지를 위해 CI=1 및 PM2_NO_INTERACTION=1 환경변수 추가
-    $Pm2Args = "`"$Pm2Js`" start C:\deploy\csautobot\ecosystem.config.js --no-daemon"
-    & $NssmPath install $ServiceName $NodeExe $Pm2Args
-    & $NssmPath set $ServiceName AppDirectory "C:\deploy\csautobot"
-    & $NssmPath set $ServiceName AppEnvironmentExtra "PM2_HOME=C:\Users\Administrator\.pm2" "CI=1" "PM2_NO_INTERACTION=1"
-    & $NssmPath set $ServiceName Start SERVICE_AUTO_START
-    & $NssmPath set $ServiceName ObjectName LocalSystem
-    & $NssmPath set $ServiceName AppStdout "C:\deploy\csautobot\logs\nssm_pm2.log"
-    & $NssmPath set $ServiceName AppStderr "C:\deploy\csautobot\logs\nssm_pm2_err.log"
-    Write-Output "NSSM service '$ServiceName' configured."
-
-    # 기존 PM2 데몬 및 Node 프로세스 강제 종료 (SSH 세션에 묶인 데몬 정리)
-    Write-Output "Killing any existing node.exe processes..."
-    taskkill /F /IM node.exe /T 2>$null | Out-Null
+    Write-Output "Stopping existing PM2 apps..."
+    cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 delete all -s"
+    if ($LASTEXITCODE -ne 0) { $global:LASTEXITCODE = 0 }
+    
     Start-Sleep -Seconds 3
 
-    # NSSM 서비스 시작
-    Write-Output "Starting Windows Service '$ServiceName'..."
-    & $NssmPath start $ServiceName
+    Write-Output "Starting PM2 apps..."
+    cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 start C:\deploy\csautobot\ecosystem.config.js --update-env"
+    cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 save"
+    
     Start-Sleep -Seconds 5
-    Write-Output "Windows Service '$ServiceName' started. PM2 will survive SSH disconnection."
-
-    Start-Sleep -Seconds 15
     
     # 1. Backend Health Check (Port 8000)
     try {
@@ -424,9 +365,7 @@ try {
         Write-Host "FastAPI Backend health check status: $($Response.StatusCode)"
     }
     catch {
-        Write-Host "Warning: FastAPI Backend local health check failed (this may be due to localhost binding on Windows Server). Details: $_"
-        Write-Host "Recent PM2 logs for backend:"
-        cmd.exe /c "pm2 logs csautobot-backend --lines 40 --nostream"
+        Write-Host "Warning: FastAPI Backend local health check failed. Details: $_"
     }
 
     # 2. Frontend Health Check (Port 5000)
@@ -435,14 +374,11 @@ try {
         Write-Host "Next.js Frontend health check status: $($Response.StatusCode)"
     }
     catch {
-        Write-Host "Warning: Next.js Frontend local health check failed (this may be due to localhost binding on Windows Server). Details: $_"
-        Write-Host "Recent PM2 logs for frontend:"
-        cmd.exe /c "pm2 logs csautobot-frontend --lines 40 --nostream"
+        Write-Host "Warning: Next.js Frontend local health check failed. Details: $_"
     }
 
-    cmd.exe /c "pm2 status"
-    Write-Host "Deployment complete. PM2 is managed by NSSM Windows Service '$ServiceName'."
-    Get-Service -Name $ServiceName -ErrorAction SilentlyContinue | Format-Table Name,Status,StartType -AutoSize
+    cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 status"
+    Write-Host "Deployment complete."
 }
 finally {
     Pop-Location
