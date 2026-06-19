@@ -152,7 +152,7 @@ Requirement already satisfied: uritemplate<5,>=3.0.1 in .\.venv\Lib\site-package
 Requirement already satisfied: pyparsing<4,>=3.1 in .\.venv\Lib\site-packages (from httplib2<1.0.0,>=0.19.0->google-api-python-client->google-generativeai>=0.8.0->-r C:\deploy\csautobot\requirements-prod.txt (line 22)) (3.3.2)
 Requirement already satisfied: oauthlib>=3.0.0 in .\.venv\Lib\site-packages (from requests-oauthlib->kubernetes>=28.1.0->chromadb>=0.6.3->-r C:\deploy\csautobot\requirements-prod.txt (line 15)) (3.3.1)
 
-up to date, audited 362 packages in 3s
+up to date, audited 362 packages in 2s
 
 145 packages are looking for funding
   run `npm fund` for details
@@ -170,3 +170,57 @@ Excel assets copied successfully.
 node.exe path: C:\Program Files\nodejs\node.exe
 pm2 js path: C:\Users\Administrator\AppData\Roaming\npm\node_modules\pm2\bin\pm2
 Removing existing service 'PM2_csautobot'...
+Registering PM2 as Windows Service via NSSM...
+Service "PM2_csautobot" installed successfully!
+
+Set parameter "AppDirectory" for service "PM2_csautobot".
+
+Set parameter "AppEnvironmentExtra" for service "PM2_csautobot".
+
+Set parameter "Start" for service "PM2_csautobot".
+
+Reset parameter "ObjectName" for service "PM2_csautobot" to its default.
+
+Set parameter "AppStdout" for service "PM2_csautobot".
+
+Set parameter "AppStderr" for service "PM2_csautobot".
+
+NSSM service 'PM2_csautobot' configured.
+Killing any existing SSH-bound PM2 daemon...
+
+                        -------------
+
+__/\\\\\\\\\\\\\____/\\\\____________/\\\\____/\\\\\\\\\_____
+ _\/\\\/////////\\\_\/\\\\\\________/\\\\\\__/\\\///////\\\___
+  _\/\\\_______\/\\\_\/\\\//\\\____/\\\//\\\_\///______\//\\\__
+   _\/\\\\\\\\\\\\\/__\/\\\\///\\\/\\\/_\/\\\___________/\\\/___
+    _\/\\\/////////____\/\\\__\///\\\/___\/\\\________/\\\//_____
+     _\/\\\_____________\/\\\____\///_____\/\\\_____/\\\//________
+      _\/\\\_____________\/\\\_____________\/\\\___/\\\/___________
+       _\/\\\_____________\/\\\_____________\/\\\__/\\\\\\\\\\\\\\\_
+        _\///______________\///______________\///__\///////////////__
+
+
+                          Runtime Edition
+
+        PM2 is a Production Process Manager for Node.js applications
+                     with a built-in Load Balancer.
+
+                Start and Daemonize any application:
+                $ pm2 start app.js
+
+                Load Balance 4 instances of api.js:
+                $ pm2 start api.js -i 4
+
+                Monitor in production:
+                $ pm2 monitor
+
+                Make pm2 auto-boot at server restart:
+                $ pm2 startup
+
+                To go further checkout:
+                http://pm2.io/
+
+
+                        -------------
+
