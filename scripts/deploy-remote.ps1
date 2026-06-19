@@ -386,8 +386,9 @@ try {
     $ExistingSvc = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
     if ($null -ne $ExistingSvc) {
         Write-Output "Removing existing service '$ServiceName'..."
-        & $NssmPath stop $ServiceName confirm 2>$null
-        & $NssmPath remove $ServiceName confirm 2>$null
+        sc.exe stop $ServiceName 2>$null | Out-Null
+        Start-Sleep -Seconds 3
+        sc.exe delete $ServiceName 2>$null | Out-Null
         Start-Sleep -Seconds 3
     }
 
