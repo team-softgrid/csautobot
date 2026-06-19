@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
   const pathname = usePathname();
 
-  const isLandingPage = pathname === "/";
+  const isLandingPage = pathname === "/" || pathname === "/login";
 
   return (
     <html lang="ko">
@@ -129,6 +129,37 @@ export default function RootLayout({
                   );
                 })}
               </nav>
+
+              {/* Logout Button */}
+              <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
+                <button
+                  onClick={async () => {
+                    await fetch("/api/auth/logout", { method: "POST" });
+                    window.location.href = "/login";
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "10px 16px",
+                    borderRadius: "8px",
+                    color: "#f87171",
+                    background: "transparent",
+                    border: "1px solid rgba(248, 113, 113, 0.2)",
+                    textAlign: "left",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    transition: "all 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(248, 113, 113, 0.1)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                  }}
+                >
+                  🚪 로그아웃
+                </button>
+              </div>
 
               {/* Caption */}
               <div

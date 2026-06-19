@@ -33,12 +33,19 @@ from app.routes.inspection import router as inspection_router
 from app.routes.dashboard import router as dashboard_router
 from app.routes.feedback import router as feedback_router
 from app.routes.quotation import router as quotation_router
+from app.routes.auth import router as auth_router
+from auth_db import init_auth_db
 
 app.include_router(search_router, prefix="/api/v1")
 app.include_router(inspection_router, prefix="/api/v1")
 app.include_router(dashboard_router, prefix="/api/v1")
 app.include_router(feedback_router, prefix="/api/v1")
 app.include_router(quotation_router, prefix="/api/v1")
+app.include_router(auth_router, prefix="/api/v1")
+
+@app.on_event("startup")
+def on_startup():
+    init_auth_db()
 
 @app.get("/")
 def read_root():
