@@ -1,0 +1,176 @@
+# csautobot 배포 지침 (AGENTS.md)
+
+> 이 문서는 배포 시행착오를 통해 확립된 **확정 지침**입니다.
+> 배포 관련 작업을 할 때 반드시 이 문서를 먼저 읽고 따르십시오.
+
+---
+
+## 1. 프로젝트 구조 및 배포 환경
+
+| 항목 | 값 |
+|------|-----|
+| 배포 서버 | `211.237.13.172` (Windows Server), SSH 포트 `20022` |
+| 배포 경로 | `C:\deploy\csautobot` |
+| Python 환경 | `C:\deploy\csautobot\.venv\Scripts\python.exe` |
+| PM2 home | `C:\Users\Administrator\.pm2` |
+| Frontend 포트 | `5000` (Next.js) |
+| Backend 포트 | `8000` (FastAPI / uvicorn) |
+| 배포 방식 | GitHub Actions → SCP → PowerShell 원격 실행 |
+| 배포 스크립트 | `scripts/deploy-remote.ps1` |
+| 생태계 설정 | `ecosystem.config.js` |
+| CI/CD | `.github/workflows/deploy.yml` |
+
+---
+
+## 2. Windows 원격 서버에서 PM2 영속성 — 핵심 원칙
+
+> **⚠️ 가장 중요한 지침: Windows + SSH 환경에서 PM2는 SSH 세션이 종료되면 데몬이 함께 종료된다.**
+
+### 절대 하지 말 것 (검증된 실패 방법)
+
+- ❌ `pm2 startOrReload` 후 아무 조치 없이 SSH 종료
+- ❌ `WMI (Invoke-WmiMethod Win32_Process)`로 PM2 기동 → SSH 세션 트리와 연결되어 세션 종료 시 함께 사망
+- ❌ `wmic process call create` 방식 → 동일 문제
+- ❌ `pm2-windows-startup` / `pm2-startup install` → Windows 예약 작업으로 등록하지만, **현재 SSH 세션 종료 시 즉시 PM2 데몬이 죽음**. 다음 로그인/재부팅 때만 재기동되므로 사실상 무효
+- ❌ `pm2 --home C:\path` 플래그 → **존재하지 않는 PM2 CLI 옵션**. 반드시 `PM2_HOME` 환경변수로 처리할 것
+- ❌ PowerShell 7+ 전용 문법 (`?.` null 조건 연산자) → 서버가 PowerShell 5.x 이므로 파싱 오류 발생
+- ❌ NSSM 외부 다운로드 → 다운로드 URL 불안정, 불필요한 복잡도
+
+### 반드시 해야 할 것 (확정 동작 방법)
+
+**`sc.exe` + 래퍼 배치파일로 Windows Service 등록 (PowerShell 5.x 호환, 외부 도구 불필요)**
+
+```powershell
+# 1. 래퍼 배치파일 생성
+$NodeExe = "C:\Program Files\nodejs\node.exe"
+$NpmGlobalRoot = (cmd.exe /c "npm root -g").Trim()
+$Pm2Js = "$NpmGlobalRoot\pm2\bin\pm2"
+$BatContent = @"
+@echo off
+set PM2_HOME=C:\Users\Administrator\.pm2
+"$NodeExe" "$Pm2Js" resurrect
+"@
+Set-Content -Path "C:\deploy\csautobot\pm2_service_wrapper.bat" -Value $BatContent -Encoding ASCII
+
+# 2. 기존 서비스 제거 (있을 경우)
+sc.exe stop PM2_csautobot 2>$null | Out-Null
+sc.exe delete PM2_csautobot 2>$null | Out-Null
+Start-Sleep -Seconds 3
+
+# 3. Windows Service 등록 (LocalSystem, 자동시작, 자동재시작)
+$BinPath = "cmd.exe /c `"C:\deploy\csautobot\pm2_service_wrapper.bat`""
+sc.exe create PM2_csautobot binPath= $BinPath start= auto obj= LocalSystem DisplayName= "PM2 csautobot Service"
+sc.exe failure PM2_csautobot reset= 60 actions= restart/5000/restart/10000/restart/30000
+
+# 4. PM2 앱 기동 및 상태 저장 (현재 세션)
+$env:PM2_HOME = "C:\Users\Administrator\.pm2"
+cmd.exe /c "pm2 startOrReload C:\deploy\csautobot\ecosystem.config.js --update-env"
+cmd.exe /c "pm2 save"
+
+# 5. 서비스 시작 (이후 SSH 세션 종료 후에도 독립 생존)
+sc.exe start PM2_csautobot 2>$null | Out-Null
+```
+
+**이 방식이 동작하는 이유**: `LocalSystem` 계정으로 등록된 Windows Service는 SSH 세션 트리와 완전히 독립적으로 실행되며, 서버 재부팅 후에도 자동 복원됩니다.
+
+---
+
+## 3. PM2_HOME 환경변수 처리
+
+SSH 계정과 PM2 실행 계정이 다를 수 있으므로 항상 명시적으로 지정해야 합니다.
+
+```powershell
+# ✅ 올바른 방법 — 환경변수로 지정
+$env:PM2_HOME = "C:\Users\Administrator\.pm2"
+cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2 && pm2 status"
+
+# ❌ 잘못된 방법 — 존재하지 않는 플래그 (오류 발생)
+pm2 --home C:\Users\Administrator\.pm2 status
+```
+
+---
+
+## 4. GitHub Actions 로그 수집 단계 규칙
+
+### 로그 fetch 단계는 배포 성패에 영향을 주면 안 됨
+
+```yaml
+- name: Fetch Remote PM2 Logs and Push to Git
+  if: always()
+  run: |
+    sshpass ... "cmd.exe /c set PM2_HOME=... && pm2 logs ..." > pm2_logs.txt || true
+    # ↑ 모든 sshpass 명령 끝에 || true 필수 (실패해도 빌드 계속)
+```
+
+### PM2 로그/상태 확인 시 반드시 PM2_HOME 지정
+
+```bash
+# ✅ 올바른 방법
+sshpass ... "cmd.exe /c set PM2_HOME=C:\\Users\\Administrator\\.pm2 && pm2 status"
+
+# ❌ 잘못된 방법 (존재하지 않는 플래그)
+sshpass ... "cmd.exe /c pm2 --home C:\\... status"
+```
+
+### 실제 서버 프로세스 생존 확인은 netstat으로
+
+```bash
+sshpass ... "powershell -Command \"netstat -ano | findstr ':5000 :8000'\""
+# 결과: TCP 0.0.0.0:5000 LISTENING → 정상
+# 결과: 빈 출력 → 앱 다운
+```
+
+---
+
+## 5. 배포 후 서버 생존 확인 순서
+
+1. **netstat 포트 확인** → `TCP 0.0.0.0:5000 LISTENING` / `TCP 0.0.0.0:8000 LISTENING` 이어야 함
+2. **Windows Service 상태** → `Get-Service -Name PM2_csautobot` → `Running` 또는 `Stopped` 확인
+3. **PM2 status** → `PM2_HOME` 지정 후 `pm2 status` 실행, `online` 상태 확인
+4. **외부 HTTP 요청** → `http://211.237.13.172:5000` (Frontend), `http://211.237.13.172:8000` (Backend API)
+
+---
+
+## 6. 스크립트 호환성 주의사항
+
+| 항목 | 주의사항 |
+|------|----------|
+| PowerShell 버전 | 서버는 **PS 5.x** → `?.` null 조건 연산자 사용 불가 → `if ($null -ne ...)` 사용 |
+| 한글 파일명 | `docs/견적서.xlsx` → Git LFS 관리. 복사 시 인코딩 주의 |
+| Python 실행 | 반드시 `.venv\Scripts\python.exe` 사용. 시스템 python 사용 금지 |
+| npm 명령 | cmd.exe 안에서 `npm.cmd` 또는 `cmd.exe /c npm` 형태로 실행 |
+| 견적서 템플릿 | `docs/견적서.xlsx` → 배포 시 `csautobot/assets_template/quotation_template.xlsx`로 복사됨 |
+
+---
+
+## 7. 배포 파이프라인 흐름 요약
+
+```
+GitHub push → main
+  ↓
+GitHub Actions (ubuntu-latest)
+  ↓ (1) Frontend npm install & build
+  ↓ (2) SCP: 파일 전송 → C:\deploy\csautobot
+  ↓ (3) SSH: deploy-remote.ps1 실행
+      ├─ pip install (venv)
+      ├─ npm install (frontend)
+      ├─ DB 초기화 (최초 1회만, 기존 데이터 보존)
+      ├─ Excel 템플릿 복사
+      ├─ sc.exe로 PM2_csautobot 서비스 등록/갱신
+      ├─ pm2 startOrReload + pm2 save
+      └─ sc.exe start PM2_csautobot
+  ↓ (4) 로그 수집 (|| true) → git push [skip ci]
+```
+
+---
+
+## 8. 트러블슈팅 체크리스트
+
+| 증상 | 원인 | 해결 |
+|------|------|------|
+| 배포 직후는 접속되나 이후 안 됨 | SSH 종료 시 PM2 데몬 사망 | `PM2_csautobot` Windows Service 등록 확인 |
+| `pm2 status` 빈 목록 | 새 PM2 데몬 생성 (PM2_HOME 불일치) | `PM2_HOME=C:\Users\Administrator\.pm2` 설정 |
+| localhost에서도 접속 안 됨 | PM2 앱 크래시 or 포트 미바인딩 | netstat 포트 확인 → pm2 logs 확인 → pm2 재기동 |
+| 로그 fetch step만 failure | sshpass 명령 에러코드 반환 | 각 sshpass 명령에 `\|\| true` 추가 |
+| Backend 500 에러 | Python 앱 오류 | `pm2 logs csautobot-backend --lines 100 --nostream` |
+| NSSM 관련 코드가 있으면 | 과거 실패한 방식 잔재 | 즉시 제거하고 `sc.exe` 방식으로 교체 |
