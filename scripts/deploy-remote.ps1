@@ -345,72 +345,74 @@ try {
     Remove-Item -Recurse -Force (Join-Path $DeployRoot "csautobot\__pycache__") -ErrorAction SilentlyContinue
 
     # ------------------------------------------------------------------
-    # Windows Service 등록: sc.exe + 래퍼 배치파일 방식
-    # - 외부 도구 불필요, PowerShell 5.x 호환
-    # - PM2_csautobot 서비스: LocalSystem으로 부팅시 자동 기동
+    # NSSM (Non-Sucking Service Manager) 기반 Windows Service 등록
+    # - sc.exe는 Service API 구현체가 필요하므로 단순 배치파일로는 불가함
+    # - NSSM을 이용해 node.exe를 래핑하고, pm2를 --no-daemon 모드로 실행
     # ------------------------------------------------------------------
     $ServiceName = "PM2_csautobot"
-    $WrapperBat  = "C:\deploy\csautobot\pm2_service_wrapper.bat"
     $LogDir      = "C:\deploy\csautobot\logs"
     New-Item -ItemType Directory -Force -Path $LogDir | Out-Null
 
+    $NssmPath = "C:\tools\nssm\nssm.exe"
+    if (-not (Test-Path $NssmPath)) {
+        Write-Output "NSSM not found. Downloading..."
+        New-Item -ItemType Directory -Force -Path "C:\tools\nssm" | Out-Null
+        $NssmZip = "C:\tools\nssm.zip"
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest -Uri "https://nssm.cc/ci/nssm-2.24-101-g897c7ad.zip" -OutFile $NssmZip -UseBasicParsing
+        Expand-Archive -Path $NssmZip -DestinationPath "C:\tools\nssm_extract" -Force
+        
+        $NssmBin = Get-ChildItem -Recurse "C:\tools\nssm_extract" -Filter "nssm.exe" | Where-Object { $_.DirectoryName -like "*win64*" } | Select-Object -First 1
+        if ($null -eq $NssmBin) {
+            $NssmBin = Get-ChildItem -Recurse "C:\tools\nssm_extract" -Filter "nssm.exe" | Select-Object -First 1
+        }
+        Copy-Item -Path $NssmBin.FullName -Destination $NssmPath -Force
+        Write-Output "NSSM downloaded to $NssmPath"
+    }
+
     # node.exe 경로 탐색
+    $NodeExeInfo = Get-Command node -ErrorAction SilentlyContinue
     $NodeExe = $null
-    $NodeCandidates = @(
-        "C:\Program Files\nodejs\node.exe",
-        "C:\Program Files (x86)\nodejs\node.exe"
-    )
-    foreach ($c in $NodeCandidates) {
-        if (Test-Path $c) { $NodeExe = $c; break }
-    }
-    if (-not $NodeExe) {
-        $NodeExe = (cmd.exe /c "where node 2>nul").Split("`n")[0].Trim()
-    }
-    Write-Host "node.exe path: $NodeExe"
+    if ($null -ne $NodeExeInfo) { $NodeExe = $NodeExeInfo.Source }
+    if (-not $NodeExe) { $NodeExe = "C:\Program Files\nodejs\node.exe" }
+    Write-Output "node.exe path: $NodeExe"
 
     # npm global root로 pm2 경로 탐색
     $NpmGlobalRoot = (cmd.exe /c "npm root -g").Trim()
     $Pm2Js = "$NpmGlobalRoot\pm2\bin\pm2"
-    Write-Host "pm2 js path: $Pm2Js"
-
-    # 래퍼 배치 파일 생성 (서비스가 실행할 스크립트)
-    $BatContent = @"
-@echo off
-set PM2_HOME=C:\Users\Administrator\.pm2
-"$NodeExe" "$Pm2Js" resurrect
-"@
-    Set-Content -Path $WrapperBat -Value $BatContent -Encoding ASCII
-    Write-Host "Wrapper batch written to $WrapperBat"
+    Write-Output "pm2 js path: $Pm2Js"
 
     # 기존 서비스 제거
     $ExistingSvc = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
     if ($null -ne $ExistingSvc) {
-        Write-Host "Removing existing service '$ServiceName'..."
-        sc.exe stop $ServiceName 2>$null | Out-Null
+        Write-Output "Removing existing service '$ServiceName'..."
+        & $NssmPath stop $ServiceName confirm 2>$null
+        & $NssmPath remove $ServiceName confirm 2>$null
         Start-Sleep -Seconds 3
-        sc.exe delete $ServiceName | Out-Null
-        Start-Sleep -Seconds 2
     }
 
-    # sc.exe로 Windows Service 등록 (cmd.exe /c 래퍼 실행)
-    $BinPath = "cmd.exe /c `"$WrapperBat`" >> `"$LogDir\pm2_service.log`" 2>&1"
-    sc.exe create $ServiceName binPath= $BinPath start= auto obj= LocalSystem DisplayName= "PM2 csautobot Service" | Out-Null
-    sc.exe description $ServiceName "Manages PM2 process manager for csautobot backend and frontend" | Out-Null
-    sc.exe failure $ServiceName reset= 60 actions= restart/5000/restart/10000/restart/30000 | Out-Null
-    Write-Host "Windows Service '$ServiceName' registered via sc.exe."
+    Write-Output "Registering PM2 as Windows Service via NSSM..."
+    # PM2를 포그라운드(--no-daemon)로 실행하여 NSSM이 프로세스 상태를 정확히 추적하도록 함
+    $Pm2Args = "`"$Pm2Js`" start C:\deploy\csautobot\ecosystem.config.js --no-daemon"
+    & $NssmPath install $ServiceName $NodeExe $Pm2Args
+    & $NssmPath set $ServiceName AppDirectory "C:\deploy\csautobot"
+    & $NssmPath set $ServiceName AppEnvironmentExtra "PM2_HOME=C:\Users\Administrator\.pm2"
+    & $NssmPath set $ServiceName Start SERVICE_AUTO_START
+    & $NssmPath set $ServiceName ObjectName LocalSystem
+    & $NssmPath set $ServiceName AppStdout "C:\deploy\csautobot\logs\nssm_pm2.log"
+    & $NssmPath set $ServiceName AppStderr "C:\deploy\csautobot\logs\nssm_pm2_err.log"
+    Write-Output "NSSM service '$ServiceName' configured."
 
-    # PM2 앱 즉시 기동 (현재 세션에서)
-    Write-Host "Starting/reloading PM2 apps (current session)..."
-    $env:PM2_HOME = "C:\Users\Administrator\.pm2"
-    cmd.exe /c "pm2 startOrReload C:\deploy\csautobot\ecosystem.config.js --update-env"
-    if ($LASTEXITCODE -ne 0) {
-        throw "pm2 startOrReload failed."
-    }
-    cmd.exe /c "pm2 save"
-    Write-Host "PM2 dump saved."
-    # 서비스 시작 (이후 SSH 세션 종료 후에도 독립적 생존)
-    sc.exe start $ServiceName 2>$null | Out-Null
-    Write-Host "Windows Service '$ServiceName' started. PM2 will survive SSH disconnection."
+    # 기존 PM2 데몬 강제 종료 (SSH 세션에 묶인 데몬 정리)
+    Write-Output "Killing any existing SSH-bound PM2 daemon..."
+    cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2 && pm2 kill"
+    Start-Sleep -Seconds 3
+
+    # NSSM 서비스 시작
+    Write-Output "Starting Windows Service '$ServiceName'..."
+    & $NssmPath start $ServiceName
+    Start-Sleep -Seconds 5
+    Write-Output "Windows Service '$ServiceName' started. PM2 will survive SSH disconnection."
 
     Start-Sleep -Seconds 15
     
