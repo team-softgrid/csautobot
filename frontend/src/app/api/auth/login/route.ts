@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
     const data = await res.json();
     const response = NextResponse.json({ ok: true });
-    response.cookies.set("auth_token", data.access_token, {
+    response.cookies.set("csautobot_token", data.access_token, {
       httpOnly: true,
       secure: process.env.COOKIE_SECURE === "true",
       sameSite: "lax",
