@@ -345,33 +345,68 @@ try {
     Remove-Item -Recurse -Force (Join-Path $DeployRoot "csautobot\__pycache__") -ErrorAction SilentlyContinue
 
     # ------------------------------------------------------------------
-    # Install pm2-windows-startup once so PM2 survives SSH disconnection
-    # pm2-windows-startup registers a Windows Scheduled Task at SYSTEM
-    # level that auto-starts the PM2 daemon on login/boot.
+    # NSSM (Non-Sucking Service Manager) 기반 Windows Service 등록
+    # - SSH 세션 종료, 재부팅 이후에도 PM2 데몬 완전 생존 보장
+    # - NSSM이 없으면 자동 다운로드 후 설치
     # ------------------------------------------------------------------
-    $Pm2WinStartup = Get-Command pm2-startup -ErrorAction SilentlyContinue
-    if ($null -eq $Pm2WinStartup) {
-        Write-Host "Installing pm2-windows-startup globally..."
-        cmd.exe /c "npm install -g pm2-windows-startup"
-        if ($LASTEXITCODE -ne 0) {
-            Write-Host "Warning: pm2-windows-startup install failed. Continuing without service registration."
+    $NssmPath = "C:\tools\nssm\nssm.exe"
+    if (-not (Test-Path $NssmPath)) {
+        Write-Host "NSSM not found. Downloading..."
+        New-Item -ItemType Directory -Force -Path "C:\tools\nssm" | Out-Null
+        $NssmZip = "C:\tools\nssm.zip"
+        Invoke-WebRequest -Uri "https://nssm.cc/ci/nssm-2.24-101-g897c7ad.zip" -OutFile $NssmZip -UseBasicParsing
+        Expand-Archive -Path $NssmZip -DestinationPath "C:\tools\nssm_extract" -Force
+        $NssmBin = Get-ChildItem -Recurse "C:\tools\nssm_extract" -Filter "nssm.exe" | Where-Object { $_.DirectoryName -like "*win64*" } | Select-Object -First 1
+        if ($null -eq $NssmBin) {
+            $NssmBin = Get-ChildItem -Recurse "C:\tools\nssm_extract" -Filter "nssm.exe" | Select-Object -First 1
         }
+        Copy-Item -Path $NssmBin.FullName -Destination $NssmPath -Force
+        Write-Host "NSSM downloaded to $NssmPath"
     }
 
-    # Re-check after possible install
-    $Pm2WinStartup = Get-Command pm2-startup -ErrorAction SilentlyContinue
-    if ($null -ne $Pm2WinStartup) {
-        Write-Host "Registering PM2 as a Windows Scheduled Task (SYSTEM level) via pm2-startup..."
-        cmd.exe /c "pm2-startup install"
-    } else {
-        Write-Host "pm2-startup not found; skipping service registration."
+    # pm2 실행파일 경로 확인
+    $Pm2Cmd = (Get-Command pm2 -ErrorAction SilentlyContinue)?.Source
+    if (-not $Pm2Cmd) {
+        $Pm2Cmd = "C:\Program Files\nodejs\pm2.cmd"
+    }
+    # cmd.exe wrapper: PM2는 .cmd 파일이므로 cmd.exe를 통해 실행
+    $NodeExe = (Get-Command node -ErrorAction SilentlyContinue)?.Source
+    if (-not $NodeExe) { $NodeExe = "C:\Program Files\nodejs\node.exe" }
+    # PM2 글로벌 모듈 경로 확인
+    $Pm2Js = "$(npm root -g)\pm2\bin\pm2"
+    
+    $ServiceName = "PM2_csautobot"
+    $ExistingService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
+    if ($null -ne $ExistingService) {
+        Write-Host "NSSM service '$ServiceName' already exists. Stopping and reconfiguring..."
+        & $NssmPath stop $ServiceName confirm 2>$null
+        & $NssmPath remove $ServiceName confirm 2>$null
+        Start-Sleep -Seconds 3
     }
 
-    Write-Host "Starting/reloading PM2 apps..."
+    Write-Host "Registering PM2 as Windows Service via NSSM..."
+    & $NssmPath install $ServiceName $NodeExe $Pm2Js
+    & $NssmPath set $ServiceName AppParameters "$Pm2Js resurrect"
+    & $NssmPath set $ServiceName AppDirectory "C:\deploy\csautobot"
+    & $NssmPath set $ServiceName AppEnvironmentExtra "PM2_HOME=C:\Users\Administrator\.pm2"
+    & $NssmPath set $ServiceName Start SERVICE_AUTO_START
+    & $NssmPath set $ServiceName ObjectName LocalSystem
+    & $NssmPath set $ServiceName AppStdout "C:\deploy\csautobot\logs\nssm_pm2.log"
+    & $NssmPath set $ServiceName AppStderr "C:\deploy\csautobot\logs\nssm_pm2_err.log"
+    New-Item -ItemType Directory -Force -Path "C:\deploy\csautobot\logs" | Out-Null
+    Write-Host "NSSM service '$ServiceName' registered successfully."
+
+    Write-Host "Starting/reloading PM2 apps (in current session for immediate effect)..."
+    $env:PM2_HOME = "C:\Users\Administrator\.pm2"
     cmd.exe /c "pm2 startOrReload C:\deploy\csautobot\ecosystem.config.js --update-env"
     if ($LASTEXITCODE -ne 0) {
         throw "pm2 startOrReload failed."
     }
+    cmd.exe /c "pm2 save"
+    Write-Host "PM2 dump saved (will be auto-resurrected by NSSM service on next session)."
+    # NSSM 서비스 시작 (이미 등록된 서비스 시작 - 이후 SSH 세션 독립적으로 생존)
+    & $NssmPath start $ServiceName 2>$null
+    Write-Host "NSSM service started. PM2 is now managed as a Windows Service."
 
     Start-Sleep -Seconds 15
     
@@ -397,9 +432,9 @@ try {
         cmd.exe /c "pm2 logs csautobot-frontend --lines 40 --nostream"
     }
 
-    cmd.exe /c "pm2 save"
-    Write-Host "PM2 dump saved."
     cmd.exe /c "pm2 status"
+    Write-Host "Deployment complete. PM2 is managed by NSSM Windows Service '$ServiceName'."
+    Get-Service -Name $ServiceName -ErrorAction SilentlyContinue | Format-Table Name,Status,StartType -AutoSize
 }
 finally {
     Pop-Location
