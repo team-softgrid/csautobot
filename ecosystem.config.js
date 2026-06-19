@@ -21,7 +21,7 @@ module.exports = {
     {
       name: 'csautobot-frontend',
       script: 'node_modules/next/dist/bin/next',
-      args: 'start',
+      args: 'start -H 0.0.0.0',
       cwd: path.join(deployRoot, 'frontend'),
       interpreter: 'node',
       env: {
