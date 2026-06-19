@@ -405,9 +405,9 @@ try {
     & $NssmPath set $ServiceName AppStderr "C:\deploy\csautobot\logs\nssm_pm2_err.log"
     Write-Output "NSSM service '$ServiceName' configured."
 
-    # 기존 PM2 데몬 강제 종료 (SSH 세션에 묶인 데몬 정리)
-    Write-Output "Killing any existing SSH-bound PM2 daemon..."
-    cmd.exe /c "set CI=1&& set PM2_NO_INTERACTION=1&& set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 kill"
+    # 기존 PM2 데몬 및 Node 프로세스 강제 종료 (SSH 세션에 묶인 데몬 정리)
+    Write-Output "Killing any existing node.exe processes..."
+    taskkill /F /IM node.exe /T 2>$null | Out-Null
     Start-Sleep -Seconds 3
 
     # NSSM 서비스 시작
