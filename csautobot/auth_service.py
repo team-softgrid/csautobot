@@ -12,7 +12,7 @@ import secrets as _secrets
 SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
 if not SECRET_KEY:
     SECRET_KEY = _secrets.token_hex(32)
-    print("WARNING: JWT_SECRET_KEY not set. Using a temporary random key — all tokens will be invalidated on restart.")
+    print("WARNING: JWT_SECRET_KEY not set. Using a temporary random key - all tokens will be invalidated on restart.")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 8  # 8시간
 
