@@ -1,3 +1,5 @@
+[PM2] Spawning PM2 daemon with pm2_home=C:\Users\Administrator\.pm2
+[PM2] PM2 Successfully daemonized
 Requirement already satisfied: pip in .\.venv\Lib\site-packages (26.1.2)
 Requirement already satisfied: setuptools in .\.venv\Lib\site-packages (82.0.1)
 Requirement already satisfied: wheel in .\.venv\Lib\site-packages (0.47.0)
@@ -150,7 +152,7 @@ Requirement already satisfied: uritemplate<5,>=3.0.1 in .\.venv\Lib\site-package
 Requirement already satisfied: pyparsing<4,>=3.1 in .\.venv\Lib\site-packages (from httplib2<1.0.0,>=0.19.0->google-api-python-client->google-generativeai>=0.8.0->-r C:\deploy\csautobot\requirements-prod.txt (line 22)) (3.3.2)
 Requirement already satisfied: oauthlib>=3.0.0 in .\.venv\Lib\site-packages (from requests-oauthlib->kubernetes>=28.1.0->chromadb>=0.6.3->-r C:\deploy\csautobot\requirements-prod.txt (line 15)) (3.3.1)
 
-up to date, audited 362 packages in 2s
+up to date, audited 362 packages in 3s
 
 145 packages are looking for funding
   run `npm fund` for details
@@ -165,8 +167,6 @@ csautobot.db already exists; skipping initialization to preserve existing user d
 chroma_db and sparse_index.pkl already exist; skipping zip extraction to preserve production data.
 Copying excel assets from template...
 Excel assets copied successfully.
-NSSM not found. Downloading...
-NSSM downloaded to C:\tools\nssm\nssm.exe
 node.exe path: C:\Program Files\nodejs\node.exe
 pm2 js path: C:\Users\Administrator\AppData\Roaming\npm\node_modules\pm2\bin\pm2
 Removing existing service 'PM2_csautobot'...
