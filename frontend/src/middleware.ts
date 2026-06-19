@@ -6,8 +6,9 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isLoginPage = pathname === "/login";
+  const isLandingPage = pathname === "/";
   
-  if (!token && !isLoginPage) {
+  if (!token && !isLoginPage && !isLandingPage) {
     if (pathname.startsWith("/api/")) {
       return NextResponse.json({ detail: "Unauthorized" }, { status: 401 });
     }
