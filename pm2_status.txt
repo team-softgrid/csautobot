@@ -1,35 +1,20 @@
 ┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
 │ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 0  │ csautobot-backend     │ default     │ N/A     │ fork    │ 4104     │ 40s    │ 0    │ online    │ 0%       │ 3.0mb    │ SYSTEM   │ disabled │
-│ 1  │ csautobot-frontend    │ default     │ 16.2.9  │ fork    │ 9788     │ 40s    │ 0    │ online    │ 0%       │ 104.5mb  │ SYSTEM   │ disabled │
+│ 0  │ csautobot-backend     │ default     │ N/A     │ fork    │ 10052    │ 26s    │ 0    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
+│ 1  │ csautobot-frontend    │ default     │ 16.2.9  │ fork    │ 5568     │ 26s    │ 0    │ online    │ 0%       │ 94.7mb   │ Adminis… │ disabled │
 └────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
 --- NETSTAT PORTS 5000/8000 ---
-  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       9788
-  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       8504
-  TCP    127.0.0.1:5000         127.0.0.1:49906        TIME_WAIT       0
-  TCP    127.0.0.1:5000         127.0.0.1:49907        TIME_WAIT       0
-  TCP    127.0.0.1:5000         127.0.0.1:49910        TIME_WAIT       0
-  TCP    127.0.0.1:5000         127.0.0.1:49911        TIME_WAIT       0
-  TCP    127.0.0.1:5000         127.0.0.1:49927        TIME_WAIT       0
-  TCP    127.0.0.1:5000         127.0.0.1:49928        TIME_WAIT       0
-  TCP    127.0.0.1:5000         127.0.0.1:49940        ESTABLISHED     9788
-  TCP    127.0.0.1:5000         127.0.0.1:49941        ESTABLISHED     9788
-  TCP    127.0.0.1:8000         127.0.0.1:49945        TIME_WAIT       0
-  TCP    127.0.0.1:8000         127.0.0.1:49946        ESTABLISHED     8504
-  TCP    127.0.0.1:8000         127.0.0.1:49959        ESTABLISHED     8504
-  TCP    127.0.0.1:49940        127.0.0.1:5000         ESTABLISHED     8068
-  TCP    127.0.0.1:49941        127.0.0.1:5000         ESTABLISHED     8068
-  TCP    127.0.0.1:49946        127.0.0.1:8000         ESTABLISHED     8068
-  TCP    127.0.0.1:49959        127.0.0.1:8000         ESTABLISHED     8068
+  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       5568
+  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       8108
 --- RUNNING PROCESSES ---
 
-  Id      CPU WorkingSet ProcessName
-  --      --- ---------- -----------
-9172     0.75   55685120 node       
-9788 2.234375  109572096 node       
-4104        0    3104768 python     
-8504     8.25  220495872 python     
+   Id      CPU WorkingSet ProcessName
+   --      --- ---------- -----------
+ 5568  1.46875   99287040 node       
+ 9064 0.703125   60231680 node       
+ 8108 4.671875  166645760 python     
+10052        0    3141632 python     
 
 
 --- SCHEDULED TASKS (PM2) ---

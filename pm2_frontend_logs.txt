@@ -1,10 +1,6 @@
 [TAILING] Tailing last 100 lines for [csautobot-frontend] process (change the value with --lines option)
 C:\Users\Administrator\.pm2\logs\csautobot-frontend-error.log last 100 lines:
 C:\Users\Administrator\.pm2\logs\csautobot-frontend-out.log last 100 lines:
-1|csautobo | 2026-06-18 13:11 +09:00: ▲ Next.js 16.2.9
-1|csautobo | 2026-06-18 13:11 +09:00: - Local:         http://localhost:5000
-1|csautobo | 2026-06-18 13:11 +09:00: - Network:       http://172.16.100.8:5000
-1|csautobo | 2026-06-18 13:11 +09:00: ✓ Ready in 692ms
 1|csautobo | 2026-06-18 13:24 +09:00: ▲ Next.js 16.2.9
 1|csautobo | 2026-06-18 13:24 +09:00: - Local:         http://localhost:5000
 1|csautobo | 2026-06-18 13:24 +09:00: - Network:       http://172.16.100.8:5000
@@ -97,4 +93,12 @@ C:\Users\Administrator\.pm2\logs\csautobot-frontend-out.log last 100 lines:
 1|csautobo | 2026-06-19 11:39 +09:00: - Local:         http://localhost:5000
 1|csautobo | 2026-06-19 11:39 +09:00: - Network:       http://0.0.0.0:5000
 1|csautobo | 2026-06-19 11:39 +09:00: ✓ Ready in 1539ms
+1|csautobo | 2026-06-19 11:54 +09:00: ▲ Next.js 16.2.9
+1|csautobo | 2026-06-19 11:54 +09:00: - Local:         http://localhost:5000
+1|csautobo | 2026-06-19 11:54 +09:00: - Network:       http://0.0.0.0:5000
+1|csautobo | 2026-06-19 11:54 +09:00: ✓ Ready in 339ms
+1|csautobo | 2026-06-19 11:54 +09:00: ▲ Next.js 16.2.9
+1|csautobo | 2026-06-19 11:54 +09:00: - Local:         http://localhost:5000
+1|csautobo | 2026-06-19 11:54 +09:00: - Network:       http://0.0.0.0:5000
+1|csautobo | 2026-06-19 11:54 +09:00: ✓ Ready in 340ms
 
