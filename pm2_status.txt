@@ -1,19 +1,25 @@
-┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
-│ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
-├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 0  │ csautobot-backend     │ default     │ N/A     │ fork    │ 8672     │ 3s     │ 5    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
-│ 1  │ csautobot-frontend    │ default     │ 16.2.9  │ fork    │ 6636     │ 31s    │ 0    │ online    │ 0%       │ 103.3mb  │ Adminis… │ disabled │
-└────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+┌────┬──────────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name                     │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼──────────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 2  │ aicallcenter-backend     │ default     │ N/A     │ fork    │ 4796     │ 35s    │ 0    │ online    │ 0%       │ 190.6mb  │ Adminis… │ disabled │
+│ 4  │ aicallcenter-caddy       │ default     │ N/A     │ fork    │ 10160    │ 35s    │ 0    │ online    │ 0%       │ 36.5mb   │ Adminis… │ disabled │
+│ 3  │ aicallcenter-frontend    │ default     │ N/A     │ fork    │ 8200     │ 35s    │ 0    │ online    │ 0%       │ 85.4mb   │ Adminis… │ disabled │
+│ 5  │ csautobot-backend        │ default     │ N/A     │ fork    │ 8800     │ 28s    │ 0    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
+│ 6  │ csautobot-frontend       │ default     │ 16.2.9  │ fork    │ 8744     │ 28s    │ 0    │ online    │ 0%       │ 104.5mb  │ Adminis… │ disabled │
+└────┴──────────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
 --- NETSTAT PORTS 5000/8000 ---
-  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       6636
+  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       8744
+  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       10104
 --- RUNNING PROCESSES ---
 
-  Id      CPU WorkingSet ProcessName
-  --      --- ---------- -----------
-6636  1.59375  107786240 node       
-7796 0.953125   64671744 node       
-4036   0.4375   36827136 python     
-9680 0.015625    3137536 python     
+   Id      CPU WorkingSet ProcessName
+   --      --- ---------- -----------
+ 6676    0.875   67268608 node       
+ 8200 1.421875   89534464 node       
+ 8744  1.71875  109535232 node       
+ 4796   5.9375  199831552 python     
+ 8800        0    3108864 python     
+10104 4.765625  171323392 python     
 
 
 --- SCHEDULED TASKS (PM2) ---
