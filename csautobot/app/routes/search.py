@@ -143,16 +143,25 @@ def search_as_cases(req: SearchRequest):
     if not llm_success:
         try:
             from langchain_google_genai import ChatGoogleGenerativeAI
-            # Ensure Google API key is set
             if not os.getenv("GOOGLE_API_KEY"):
                 from dotenv import load_dotenv
                 load_dotenv(HERE / ".env")
-            llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0).with_structured_output(AnswerSchema)
+            llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0).with_structured_output(AnswerSchema)
             chain = prompt | llm
             structured = chain.invoke({"context": ctx, "web_context": web_ctx, "question": req.query.strip()})
             llm_success = True
         except Exception as e2:
-            raise HTTPException(status_code=500, detail=f"LLM generation failed: {e2}")
+            # LLM 전부 실패 시 오프라인 응답 반환 (500 대신 graceful degradation)
+            import logging
+            logging.warning(f"All LLMs failed for as-cases search: {e2}")
+            structured = AnswerSchema(
+                symptom_summary="AI 분석 서비스를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해주세요.",
+                top_causes=[],
+                inspection_steps=["서비스 복구 후 재시도 권장"],
+                parts="사례에 명시 없음",
+                evidence_refs=[],
+                confidence_note="AI 서비스 일시 중단 중 (API 할당량 초과 또는 모델 오류)"
+            )
 
     # Build response format metadata docs
     metadata_docs = []

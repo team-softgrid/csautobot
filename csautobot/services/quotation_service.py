@@ -236,7 +236,7 @@ def generate_quotation_draft(
             if not os.getenv("GOOGLE_API_KEY"):
                 from dotenv import load_dotenv
                 load_dotenv(BOT_DIR / ".env")
-            llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0).with_structured_output(LLMPrediction)
+            llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0).with_structured_output(LLMPrediction)
             chain = prompt | llm
             prediction = chain.invoke({
                 "question": query,

@@ -250,11 +250,11 @@ def render() -> None:
                         from dotenv import load_dotenv
                         load_dotenv(index_dir.parent / ".env")
                     
-                    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0).with_structured_output(AnswerSchema)
+                    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0).with_structured_output(AnswerSchema)
                     chain = prompt | llm
                     structured = chain.invoke({"context": ctx, "web_context": web_ctx, "question": q.strip()})
                     llm_success = True
-                    st.info("💡 OpenAI API 장애 또는 한도 초과로 인해 Gemini-1.5-Flash 모델이 답변을 생성했습니다.")
+                    st.info("💡 OpenAI API 장애 또는 한도 초과로 인해 Gemini-2.0-Flash 모델이 답변을 생성했습니다.")
                 except Exception as e2:
                     st.error(f"❌ 검색 및 답변 생성에 실패했습니다. (OpenAI & Gemini API 모두 장애: {e2})")
                     return
