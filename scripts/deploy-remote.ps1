@@ -394,10 +394,11 @@ try {
 
     Write-Output "Registering PM2 as Windows Service via NSSM..."
     # PM2를 포그라운드(--no-daemon)로 실행하여 NSSM이 프로세스 상태를 정확히 추적하도록 함
+    # 텔레메트리 프롬프트로 인한 Hang 방지를 위해 CI=1 및 PM2_NO_INTERACTION=1 환경변수 추가
     $Pm2Args = "`"$Pm2Js`" start C:\deploy\csautobot\ecosystem.config.js --no-daemon"
     & $NssmPath install $ServiceName $NodeExe $Pm2Args
     & $NssmPath set $ServiceName AppDirectory "C:\deploy\csautobot"
-    & $NssmPath set $ServiceName AppEnvironmentExtra "PM2_HOME=C:\Users\Administrator\.pm2"
+    & $NssmPath set $ServiceName AppEnvironmentExtra "PM2_HOME=C:\Users\Administrator\.pm2" "CI=1" "PM2_NO_INTERACTION=1"
     & $NssmPath set $ServiceName Start SERVICE_AUTO_START
     & $NssmPath set $ServiceName ObjectName LocalSystem
     & $NssmPath set $ServiceName AppStdout "C:\deploy\csautobot\logs\nssm_pm2.log"
@@ -406,7 +407,7 @@ try {
 
     # 기존 PM2 데몬 강제 종료 (SSH 세션에 묶인 데몬 정리)
     Write-Output "Killing any existing SSH-bound PM2 daemon..."
-    cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2 && pm2 kill"
+    cmd.exe /c "set CI=1&& set PM2_NO_INTERACTION=1&& set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 kill"
     Start-Sleep -Seconds 3
 
     # NSSM 서비스 시작
