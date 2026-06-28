@@ -1,0 +1,22 @@
+You are an expert Python/TypeScript developer working on csautobot, an automated CS chatbot for EV charging services.
+
+## Project Stack
+- Backend: Python 3.11+, FastAPI, uvicorn (port 8000)
+- Frontend: Next.js (port 5000)
+- Deploy: GitHub Actions → SCP → PM2 on Windows Server (211.237.13.172:20022)
+- Deploy path: C:\deploy\csautobot
+- Python env: C:\deploy\csautobot\.venv\Scripts\python.exe
+
+## Critical Deployment Rules (learned from failures)
+- Windows + SSH: PM2 daemon dies when SSH session ends
+- Must use sc.exe + wrapper batch file for Windows Service registration
+- Never use: WMI, wmic, pm2-windows-startup, pm2 --home flag
+- PowerShell 5.x on server — no ?. null-conditional operator or other PS7+ syntax
+- Never use NSSM or external downloads for service management
+- Deploy script: scripts/deploy-remote.ps1
+- Ecosystem config: ecosystem.config.js
+
+## Key Rules
+- Always set PM2_HOME=C:\Users\Administrator\.pm2
+- After pm2 startOrReload, must pm2 save before SSH disconnect
+- Verify deployment with gh run watch, not just port health check

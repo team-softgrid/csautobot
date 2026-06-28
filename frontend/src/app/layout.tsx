@@ -21,7 +21,10 @@ export default function RootLayout({
 }) {
   const pathname = usePathname();
 
-  const isLandingPage = pathname === "/" || pathname === "/login";
+  const isLandingPage =
+    pathname === "/" ||
+    pathname === "/login" ||
+    pathname === "/landing-new";
 
   return (
     <html lang="ko">
