@@ -1,21 +1,20 @@
 ┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
 │ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 0  │ csautobot-backend     │ default     │ N/A     │ fork    │ 9380     │ 26s    │ 0    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
-│ 1  │ csautobot-frontend    │ default     │ 16.2.9  │ fork    │ 9928     │ 26s    │ 0    │ online    │ 0%       │ 104.6mb  │ Adminis… │ disabled │
+│ 0  │ csautobot-backend     │ default     │ N/A     │ fork    │ 7928     │ 78s    │ 0    │ online    │ 0%       │ 3.0mb    │ SYSTEM   │ disabled │
+│ 1  │ csautobot-frontend    │ default     │ 16.2.9  │ fork    │ 1556     │ 78s    │ 0    │ online    │ 0%       │ 106.9mb  │ SYSTEM   │ disabled │
 └────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
 --- NETSTAT PORTS 5000/8000 ---
-  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       9928
-  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       5472
-  TCP    172.16.100.8:5000      115.139.182.217:58198  TIME_WAIT       0
+  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       1556
+  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       8128
 --- RUNNING PROCESSES ---
 
   Id      CPU WorkingSet ProcessName
   --      --- ---------- -----------
-8376 0.765625   65847296 node       
-9928 1.640625  109707264 node       
-5472 4.734375  172134400 python     
-9380        0    3137536 python     
+1556 1.921875  112226304 node       
+1640  0.78125   72105984 node       
+7928 0.015625    3149824 python     
+8128 5.453125  170549248 python     
 
 
 --- SCHEDULED TASKS (PM2) ---
