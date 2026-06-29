@@ -1,1 +1,141 @@
 [TAILING] Tailing last 100 lines for [csautobot-frontend] process (change the value with --lines option)
+C:\Users\Administrator\.pm2\logs\csautobot-frontend-error.log last 100 lines:
+10|csautob | 2026-06-20 06:20 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+10|csautob | 2026-06-20 06:20 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+10|csautob | 2026-06-20 06:20 +09:00:     at ignore-listed frames
+10|csautob | 2026-06-20 06:20 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+10|csautob | 2026-06-20 06:20 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+10|csautob | 2026-06-20 06:20 +09:00:     at ignore-listed frames
+10|csautob | 2026-06-20 06:20 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+10|csautob | 2026-06-20 06:20 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+10|csautob | 2026-06-20 06:20 +09:00:     at ignore-listed frames
+10|csautob | 2026-06-20 06:20 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+10|csautob | 2026-06-20 06:20 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+10|csautob | 2026-06-20 06:20 +09:00:     at ignore-listed frames
+10|csautob | 2026-06-21 18:54 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+10|csautob | 2026-06-21 18:54 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+10|csautob | 2026-06-21 18:54 +09:00:     at ignore-listed frames
+10|csautob | 2026-06-23 12:35 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+10|csautob | 2026-06-23 12:35 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+10|csautob | 2026-06-23 12:35 +09:00:     at ignore-listed frames
+10|csautob | 2026-06-26 22:06 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+10|csautob | 2026-06-26 22:06 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+10|csautob | 2026-06-26 22:06 +09:00:     at ignore-listed frames
+10|csautob | 2026-06-29 09:51 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+10|csautob | 2026-06-29 09:51 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+10|csautob | 2026-06-29 09:51 +09:00:     at ignore-listed frames
+10|csautob | 2026-06-29 09:51 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+10|csautob | 2026-06-29 09:51 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+10|csautob | 2026-06-29 09:51 +09:00:     at ignore-listed frames
+10|csautob | 2026-06-29 09:51 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+10|csautob | 2026-06-29 09:51 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+10|csautob | 2026-06-29 09:51 +09:00:     at ignore-listed frames
+10|csautob | 2026-06-29 09:51 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+10|csautob | 2026-06-29 09:51 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+10|csautob | 2026-06-29 09:51 +09:00:     at ignore-listed frames
+10|csautob | 2026-06-29 09:51 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+10|csautob | 2026-06-29 09:51 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+10|csautob | 2026-06-29 09:51 +09:00:     at ignore-listed frames
+
+C:\Users\Administrator\.pm2\logs\csautobot-frontend-out.log last 100 lines:
+10|csautob | 2026-06-18 19:18 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-18 19:18 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-18 19:18 +09:00: - Network:       http://172.16.100.8:5000
+10|csautob | 2026-06-18 19:18 +09:00: ✓ Ready in 335ms
+10|csautob | 2026-06-18 19:22 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-18 19:22 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-18 19:22 +09:00: - Network:       http://172.16.100.8:5000
+10|csautob | 2026-06-18 19:22 +09:00: ✓ Ready in 332ms
+10|csautob | 2026-06-18 19:30 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-18 19:30 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-18 19:30 +09:00: - Network:       http://172.16.100.8:5000
+10|csautob | 2026-06-18 19:30 +09:00: ✓ Ready in 338ms
+10|csautob | 2026-06-18 19:33 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-18 19:33 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-18 19:33 +09:00: - Network:       http://172.16.100.8:5000
+10|csautob | 2026-06-18 19:33 +09:00: ✓ Ready in 353ms
+10|csautob | 2026-06-18 19:36 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-18 19:36 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-18 19:36 +09:00: - Network:       http://172.16.100.8:5000
+10|csautob | 2026-06-18 19:36 +09:00: ✓ Ready in 350ms
+10|csautob | 2026-06-18 20:23 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-18 20:23 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-18 20:23 +09:00: - Network:       http://172.16.100.8:5000
+10|csautob | 2026-06-18 20:23 +09:00: ✓ Ready in 351ms
+10|csautob | 2026-06-18 21:31 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-18 21:31 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-18 21:31 +09:00: - Network:       http://172.16.100.8:5000
+10|csautob | 2026-06-18 21:31 +09:00: ✓ Ready in 356ms
+10|csautob | 2026-06-18 21:35 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-18 21:35 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-18 21:35 +09:00: - Network:       http://172.16.100.8:5000
+10|csautob | 2026-06-18 21:35 +09:00: ✓ Ready in 356ms
+10|csautob | 2026-06-18 21:48 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-18 21:48 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-18 21:48 +09:00: - Network:       http://172.16.100.8:5000
+10|csautob | 2026-06-18 21:48 +09:00: ✓ Ready in 342ms
+10|csautob | 2026-06-19 10:46 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-19 10:46 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-19 10:46 +09:00: - Network:       http://172.16.100.8:5000
+10|csautob | 2026-06-19 10:46 +09:00: ✓ Ready in 352ms
+10|csautob | 2026-06-19 10:58 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-19 10:58 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-19 10:58 +09:00: - Network:       http://172.16.100.8:5000
+10|csautob | 2026-06-19 10:58 +09:00: ✓ Ready in 386ms
+10|csautob | 2026-06-19 11:02 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-19 11:02 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-19 11:02 +09:00: - Network:       http://172.16.100.8:5000
+10|csautob | 2026-06-19 11:02 +09:00: ✓ Ready in 336ms
+10|csautob | 2026-06-19 11:39 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-19 11:39 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-19 11:39 +09:00: - Network:       http://0.0.0.0:5000
+10|csautob | 2026-06-19 11:39 +09:00: ✓ Ready in 1539ms
+10|csautob | 2026-06-19 11:54 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-19 11:54 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-19 11:54 +09:00: - Network:       http://0.0.0.0:5000
+10|csautob | 2026-06-19 11:54 +09:00: ✓ Ready in 339ms
+10|csautob | 2026-06-19 11:54 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-19 11:54 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-19 11:54 +09:00: - Network:       http://0.0.0.0:5000
+10|csautob | 2026-06-19 11:54 +09:00: ✓ Ready in 340ms
+10|csautob | 2026-06-19 13:02 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-19 13:02 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-19 13:02 +09:00: - Network:       http://0.0.0.0:5000
+10|csautob | 2026-06-19 13:02 +09:00: ✓ Ready in 822ms
+10|csautob | 2026-06-19 14:00 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-19 14:00 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-19 14:00 +09:00: - Network:       http://0.0.0.0:5000
+10|csautob | 2026-06-19 14:00 +09:00: ✓ Ready in 1981ms
+10|csautob | 2026-06-19 14:01 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-19 14:01 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-19 14:01 +09:00: - Network:       http://0.0.0.0:5000
+10|csautob | 2026-06-19 14:01 +09:00: ✓ Ready in 337ms
+10|csautob | 2026-06-19 14:15 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-19 14:15 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-19 14:15 +09:00: - Network:       http://0.0.0.0:5000
+10|csautob | 2026-06-19 14:15 +09:00: ✓ Ready in 332ms
+10|csautob | 2026-06-19 14:16 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-19 14:16 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-19 14:16 +09:00: - Network:       http://0.0.0.0:5000
+10|csautob | 2026-06-19 14:16 +09:00: ✓ Ready in 352ms
+10|csautob | 2026-06-19 14:21 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-19 14:21 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-19 14:21 +09:00: - Network:       http://0.0.0.0:5000
+10|csautob | 2026-06-19 14:21 +09:00: ✓ Ready in 362ms
+10|csautob | 2026-06-19 14:21 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-19 14:21 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-19 14:21 +09:00: - Network:       http://0.0.0.0:5000
+10|csautob | 2026-06-19 14:21 +09:00: ✓ Ready in 339ms
+10|csautob | 2026-06-28 14:13 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-28 14:13 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-28 14:13 +09:00: - Network:       http://0.0.0.0:5000
+10|csautob | 2026-06-28 14:13 +09:00: ✓ Ready in 2.6s
+10|csautob | 2026-06-29 14:51 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-29 14:51 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-29 14:51 +09:00: - Network:       http://0.0.0.0:5000
+10|csautob | 2026-06-29 14:51 +09:00: ✓ Ready in 4.2s
+10|csautob | 2026-06-29 15:16 +09:00: ▲ Next.js 16.2.9
+10|csautob | 2026-06-29 15:16 +09:00: - Local:         http://localhost:5000
+10|csautob | 2026-06-29 15:16 +09:00: - Network:       http://0.0.0.0:5000
+10|csautob | 2026-06-29 15:16 +09:00: ✓ Ready in 2.3s
+
