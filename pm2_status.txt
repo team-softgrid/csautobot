@@ -1,20 +1,22 @@
 ┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
 │ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 0  │ csautobot-backend     │ default     │ N/A     │ fork    │ 7928     │ 78s    │ 0    │ online    │ 0%       │ 3.0mb    │ SYSTEM   │ disabled │
-│ 1  │ csautobot-frontend    │ default     │ 16.2.9  │ fork    │ 1556     │ 78s    │ 0    │ online    │ 0%       │ 106.9mb  │ SYSTEM   │ disabled │
+│ 2  │ aicallcenter-caddy    │ default     │ N/A     │ fork    │ 8448     │ 115s   │ 0    │ online    │ 0%       │ 38.8mb   │ Adminis… │ disabled │
+│ 3  │ csautobot-backend     │ default     │ N/A     │ fork    │ 6004     │ 32s    │ 0    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
+│ 4  │ csautobot-frontend    │ default     │ 16.2.9  │ fork    │ 2000     │ 32s    │ 0    │ online    │ 0%       │ 111.7mb  │ Adminis… │ disabled │
 └────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
 --- NETSTAT PORTS 5000/8000 ---
-  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       1556
-  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       8128
+  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       2000
+  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       5572
 --- RUNNING PROCESSES ---
 
   Id      CPU WorkingSet ProcessName
   --      --- ---------- -----------
-1556 1.921875  112226304 node       
-1640  0.78125   72105984 node       
-7928 0.015625    3149824 python     
-8128 5.453125  170549248 python     
+1640  5.53125   82894848 node       
+2000 1.984375  117211136 node       
+8152 51.78125  999997440 node       
+5572    5.375  170569728 python     
+6004 0.015625    3112960 python     
 
 
 --- SCHEDULED TASKS (PM2) ---
