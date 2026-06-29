@@ -53,7 +53,7 @@ jobs:
           LANGSMITH_PROJECT=ragproject
           EOF
 
-      - name: Stop Backend and Kill Excel processes on Remote Server
+      - name: Stop csautobot services on Remote Server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -61,7 +61,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            powershell -Command "try { Stop-Process -Name excel -ErrorAction SilentlyContinue } catch {}; try { pm2 kill } catch {}; try { Stop-Process -Name python -ErrorAction SilentlyContinue } catch {}; try { Stop-Process -Name node -ErrorAction SilentlyContinue } catch {}; Start-Sleep -Seconds 5"
+            powershell -Command "try { Stop-Process -Name excel -ErrorAction SilentlyContinue } catch {}; try { pm2 stop csautobot-backend csautobot-frontend -s } catch {}; try { pm2 delete csautobot-backend csautobot-frontend -s } catch {}; Start-Sleep -Seconds 3"
 
       - name: Copy files via SCP
         uses: appleboy/scp-action@master

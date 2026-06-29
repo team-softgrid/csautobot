@@ -198,57 +198,6 @@ finally {
     Pop-Location
 }
 
-# Clean up legacy mklogis PM2 app and directories if any exist
-Push-Location $DeployRoot
-try {
-    Write-Host "Cleaning up legacy mklogis service and folders..."
-    try {
-        # 1. Direct cleanup for known legacy app names (independent of json parsing) using cmd.exe
-        $KnownApps = @("mklogis", "mklogis-admin-web", "mklogis-backend", "csautobot")
-        foreach ($app in $KnownApps) {
-            Write-Host "Stopping and deleting PM2 app: $app"
-            cmd.exe /c "pm2 stop $app"
-            cmd.exe /c "pm2 delete $app"
-        }
-
-        # 2. Dynamic cleanup using jlist as fallback
-        $Pm2List = cmd.exe /c "pm2 jlist" | ConvertFrom-Json
-        foreach ($app in $Pm2List) {
-            if ($app.name -like "*mklogis*") {
-                Write-Host "Stopping and deleting dynamically found PM2 app: $($app.name)"
-                cmd.exe /c "pm2 stop $($app.name)"
-                cmd.exe /c "pm2 delete $($app.name)"
-            }
-        }
-    } catch {
-        Write-Host "Non-critical: PM2 programmatic cleanup ended with error: $_"
-    }
-
-    $DeployParent = "C:\deploy"
-    if (Test-Path -LiteralPath $DeployParent) {
-        # Delete specific known folders first
-        $SpecificFolders = @("mklogis", "mklogis-admin-web", "mklogis-backend", "mklogistics")
-        foreach ($folder in $SpecificFolders) {
-            $FullPath = Join-Path $DeployParent $folder
-            if (Test-Path -LiteralPath $FullPath) {
-                Write-Host "Deleting legacy folder: $FullPath"
-                Remove-Item -Recurse -Force $FullPath
-            }
-        }
-        # Wildcard deletion as fallback
-        Get-ChildItem -Path $DeployParent -Directory -Filter "*mklogis*" | ForEach-Object {
-            Write-Host "Deleting legacy mklogis folder: $($_.FullName)"
-            Remove-Item -Recurse -Force $_.FullName
-        }
-    }
-}
-catch {
-    Write-Host "Error occurred during mklogis cleanup: $_"
-}
-finally {
-    Pop-Location
-}
-
 Push-Location $DeployRoot
 try {
     Write-Host "Creating C:\tmp for short temp path to avoid Long Path errors..."
@@ -347,8 +296,10 @@ try {
     # ------------------------------------------------------------------
     # PM2 App Start
     # ------------------------------------------------------------------
-    Write-Output "Stopping existing PM2 apps..."
-    cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 delete all -s"
+    Write-Output "Stopping existing csautobot PM2 apps..."
+    cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 delete csautobot-backend -s"
+    if ($LASTEXITCODE -ne 0) { $global:LASTEXITCODE = 0 }
+    cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 delete csautobot-frontend -s"
     if ($LASTEXITCODE -ne 0) { $global:LASTEXITCODE = 0 }
     
     Start-Sleep -Seconds 3
