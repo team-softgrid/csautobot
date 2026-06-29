@@ -8,7 +8,10 @@ function Invoke-Checked {
         [string[]]$Arguments = @()
     )
 
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
     & $FilePath @Arguments
+    $ErrorActionPreference = $prev
     if ($LASTEXITCODE -ne 0) {
         throw "$FilePath $($Arguments -join ' ') failed with exit code $LASTEXITCODE."
     }
