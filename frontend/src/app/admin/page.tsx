@@ -29,6 +29,12 @@ export default function AdminHomePage() {
       path: "/data-management",
       color: "#10b981",
     },
+    {
+      title: "👤 사용자 관리",
+      description: "관리자와 일반 사용자 계정을 등록하고 권한을 조정합니다.",
+      path: "/admin/users",
+      color: "#a855f7",
+    },
   ];
 
   return (

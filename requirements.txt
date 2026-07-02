@@ -43,6 +43,11 @@ notebook==7.3.3
 
 python-dotenv==1.0.1
 pydantic==2.10.6
+fastapi>=0.110.0
+uvicorn>=0.28.0
+python-multipart>=0.0.9
+PyJWT>=2.8.0
+bcrypt>=4.1.2
 lxml==5.3.1
 pillow==10.4.0
 lark==1.2.2
@@ -72,4 +77,3 @@ wikipedia==1.4.0
 scikit-learn==1.6.1
 pymysql==1.1.1
 cryptography==42.0.8
- 
