@@ -97,11 +97,16 @@ export default function UsersPage() {
     [users],
   );
 
+  const clearSessionAndRedirect = useCallback(async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.replace("/login");
+  }, [router]);
+
   const fetchCurrentUser = useCallback(async () => {
     const response = await fetch("/api/auth/me", { cache: "no-store" });
 
     if (response.status === 401) {
-      router.push("/login");
+      await clearSessionAndRedirect();
       return;
     }
 
@@ -109,7 +114,7 @@ export default function UsersPage() {
       const user = (await response.json()) as User;
       setCurrentUserId(user.id);
     }
-  }, [router]);
+  }, [clearSessionAndRedirect]);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -119,7 +124,7 @@ export default function UsersPage() {
       const response = await fetch("/api/users", { cache: "no-store" });
 
       if (response.status === 401) {
-        router.push("/login");
+        await clearSessionAndRedirect();
         return;
       }
 
@@ -138,7 +143,7 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
-  }, [router]);
+  }, [clearSessionAndRedirect]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {

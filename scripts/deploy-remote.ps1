@@ -133,6 +133,35 @@ function Test-DotEnvKey {
     return [bool](Select-String -LiteralPath $Path -Pattern $Pattern -Quiet)
 }
 
+function Ensure-JwtSecret {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$EnvPath,
+        [Parameter(Mandatory = $true)]
+        [string]$DeployRoot
+    )
+
+    if (Test-DotEnvKey -Path $EnvPath -Key "JWT_SECRET_KEY") {
+        return
+    }
+
+    $SecretPath = Join-Path $DeployRoot ".jwt_secret"
+    if (Test-Path -LiteralPath $SecretPath) {
+        $ExistingSecret = [string](Get-Content -LiteralPath $SecretPath -Raw).Trim()
+        if (-not [string]::IsNullOrWhiteSpace($ExistingSecret)) {
+            Set-DotEnvValue -Path $EnvPath -Key "JWT_SECRET_KEY" -Value $ExistingSecret
+            return
+        }
+    }
+
+    $Bytes = [byte[]]::new(32)
+    [System.Security.Cryptography.RandomNumberGenerator]::Fill($Bytes)
+    $GeneratedSecret = [Convert]::ToHexString($Bytes).ToLowerInvariant()
+    $Utf8NoBom = New-Object System.Text.UTF8Encoding $False
+    [System.IO.File]::WriteAllText($SecretPath, $GeneratedSecret, $Utf8NoBom)
+    Set-DotEnvValue -Path $EnvPath -Key "JWT_SECRET_KEY" -Value $GeneratedSecret
+}
+
 $DeployRoot = $env:CSAUTOBOT_DEPLOY_ROOT
 if ([string]::IsNullOrWhiteSpace($DeployRoot)) {
     $DeployRoot = "C:\deploy\csautobot"
@@ -174,14 +203,17 @@ Set-DotEnvValue -Path $EnvPath -Key "ANTHROPIC_API_KEY" -Value $env:ANTHROPIC_AP
 Set-DotEnvValue -Path $EnvPath -Key "GOOGLE_API_KEY" -Value $env:GOOGLE_API_KEY
 Set-DotEnvValue -Path $EnvPath -Key "TAVILY_API_KEY" -Value $env:TAVILY_API_KEY
 Set-DotEnvValue -Path $EnvPath -Key "LANGSMITH_API_KEY" -Value $env:LANGSMITH_API_KEY
+Set-DotEnvValue -Path $EnvPath -Key "JWT_SECRET_KEY" -Value $env:JWT_SECRET_KEY
 Set-DotEnvValue -Path $EnvPath -Key "LANGSMITH_TRACING" -Value "true"
 Set-DotEnvValue -Path $EnvPath -Key "LANGSMITH_ENDPOINT" -Value "https://api.smith.langchain.com"
 Set-DotEnvValue -Path $EnvPath -Key "LANGSMITH_PROJECT" -Value "ragproject"
+Ensure-JwtSecret -EnvPath $EnvPath -DeployRoot $DeployRoot
 
 if (-not (Test-DotEnvKey -Path $EnvPath -Key "OPENAI_API_KEY")) {
     throw "OPENAI_API_KEY is not configured. Add it to GitHub Actions secrets or $EnvPath before deploying."
 }
 Write-Host "OPENAI_API_KEY configuration: present"
+Write-Host "JWT_SECRET_KEY configuration: present"
 
 Push-Location $DeployRoot
 try {

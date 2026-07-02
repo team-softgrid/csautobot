@@ -33,12 +33,18 @@ export async function proxyBackend(
 export async function toNextResponse(response: Response): Promise<NextResponse> {
   const body = await response.text();
 
-  return new NextResponse(body, {
+  const nextResponse = new NextResponse(body, {
     status: response.status,
     headers: {
       "content-type": response.headers.get("content-type") || "application/json",
     },
   });
+
+  if (response.status === 401) {
+    nextResponse.cookies.delete("csautobot_token");
+  }
+
+  return nextResponse;
 }
 
 export function backendUnavailableResponse(error: unknown): NextResponse {
