@@ -155,7 +155,13 @@ function Ensure-JwtSecret {
     }
 
     $Bytes = [byte[]]::new(32)
-    [System.Security.Cryptography.RandomNumberGenerator]::Fill($Bytes)
+    $Rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+    try {
+        $Rng.GetBytes($Bytes)
+    }
+    finally {
+        $Rng.Dispose()
+    }
     $GeneratedSecret = [Convert]::ToHexString($Bytes).ToLowerInvariant()
     $Utf8NoBom = New-Object System.Text.UTF8Encoding $False
     [System.IO.File]::WriteAllText($SecretPath, $GeneratedSecret, $Utf8NoBom)
