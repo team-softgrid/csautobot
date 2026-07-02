@@ -107,25 +107,43 @@ export default function RootLayout({
 
                 {PAGE_ORDER.map((page) => {
                   const isActive = pathname.startsWith(page.path);
+                  const linkStyle: React.CSSProperties = {
+                    padding: "12px 16px",
+                    borderRadius: "8px",
+                    color: isActive ? "#ffffff" : "#94a3b8",
+                    background: isActive ? "#06b6d4" : "transparent",
+                    textDecoration: "none",
+                    fontWeight: isActive ? "bold" : "normal",
+                    transition: "all 0.2s",
+                  };
+                  const hoverHandlers = {
+                    onMouseEnter: (e: React.MouseEvent<HTMLAnchorElement>) => {
+                      if (!isActive) e.currentTarget.style.color = "#ffffff";
+                    },
+                    onMouseLeave: (e: React.MouseEvent<HTMLAnchorElement>) => {
+                      if (!isActive) e.currentTarget.style.color = "#94a3b8";
+                    },
+                  };
+
+                  if (page.path === "/admin/users") {
+                    return (
+                      <a
+                        key={page.path}
+                        href={page.path}
+                        style={linkStyle}
+                        {...hoverHandlers}
+                      >
+                        {page.name}
+                      </a>
+                    );
+                  }
+
                   return (
                     <Link
                       key={page.path}
                       href={page.path}
-                      style={{
-                        padding: "12px 16px",
-                        borderRadius: "8px",
-                        color: isActive ? "#ffffff" : "#94a3b8",
-                        background: isActive ? "#06b6d4" : "transparent",
-                        textDecoration: "none",
-                        fontWeight: isActive ? "bold" : "normal",
-                        transition: "all 0.2s",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isActive) e.currentTarget.style.color = "#ffffff";
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isActive) e.currentTarget.style.color = "#94a3b8";
-                      }}
+                      style={linkStyle}
+                      {...hoverHandlers}
                     >
                       {page.name}
                     </Link>
