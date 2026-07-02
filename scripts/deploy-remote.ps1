@@ -162,7 +162,7 @@ function Ensure-JwtSecret {
     finally {
         $Rng.Dispose()
     }
-    $GeneratedSecret = [Convert]::ToHexString($Bytes).ToLowerInvariant()
+    $GeneratedSecret = [BitConverter]::ToString($Bytes).Replace("-", "").ToLowerInvariant()
     $Utf8NoBom = New-Object System.Text.UTF8Encoding $False
     [System.IO.File]::WriteAllText($SecretPath, $GeneratedSecret, $Utf8NoBom)
     Set-DotEnvValue -Path $EnvPath -Key "JWT_SECRET_KEY" -Value $GeneratedSecret
