@@ -7,27 +7,20 @@ Local PM2 version: 7.0.3
 ┌────┬────────────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
 │ id │ name                       │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├────┼────────────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 54 │ aicallcenter-backend       │ default     │ N/A     │ fork    │ 8948     │ 5m     │ 0    │ online    │ 0%       │ 256.6mb  │ Adminis… │ disabled │
-│ 53 │ aicallcenter-caddy         │ default     │ N/A     │ fork    │ 9220     │ 5m     │ 1    │ online    │ 0%       │ 32.1mb   │ Adminis… │ disabled │
-│ 55 │ aicallcenter-frontend      │ default     │ N/A     │ fork    │ 5968     │ 5m     │ 0    │ online    │ 0%       │ 99.8mb   │ Adminis… │ disabled │
-│ 56 │ csautobot-backend          │ default     │ N/A     │ fork    │ 6852     │ 33s    │ 0    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
-│ 57 │ csautobot-frontend         │ default     │ 16.2.9  │ fork    │ 688      │ 33s    │ 0    │ online    │ 0%       │ 112.9mb  │ Adminis… │ disabled │
-│ 50 │ ocppautomation-frontend    │ default     │ 16.2.3  │ fork    │ 9004     │ 93m    │ 0    │ online    │ 0%       │ 126.5mb  │ Adminis… │ disabled │
+│ 54 │ aicallcenter-backend       │ default     │ N/A     │ fork    │ 9328     │ 66s    │ 2    │ online    │ 0%       │ 211.6mb  │ Adminis… │ disabled │
+│ 59 │ aicallcenter-caddy         │ default     │ N/A     │ fork    │ 4968     │ 66s    │ 0    │ online    │ 0%       │ 34.8mb   │ Adminis… │ disabled │
+│ 55 │ aicallcenter-frontend      │ default     │ N/A     │ fork    │ 3504     │ 66s    │ 2    │ online    │ 0%       │ 115.5mb  │ Adminis… │ disabled │
+│ 50 │ ocppautomation-frontend    │ default     │ 16.2.3  │ fork    │ 9004     │ 103m   │ 0    │ online    │ 0%       │ 126.5mb  │ Adminis… │ disabled │
 └────┴────────────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
 --- NETSTAT PORTS 5000/8000 ---
-  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       688
-  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       4076
 --- RUNNING PROCESSES ---
 
   Id       CPU WorkingSet ProcessName
   --       --- ---------- -----------
- 688   2.21875  118480896 node       
-1640   29.1875   86573056 node       
-5968   1.59375  104693760 node       
-9004  3.078125  132665344 node       
-4076  5.234375  170065920 python     
-6852         0    3112960 python     
-8948 11.046875  269062144 python     
+1640 29.421875   86716416 node       
+3504    1.9375  121131008 node       
+9004   3.09375  132665344 node       
+9328   7.34375  221908992 python     
 
 
 --- SCHEDULED TASKS (PM2) ---
