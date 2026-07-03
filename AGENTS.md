@@ -1,5 +1,6 @@
 # AGENTS.md — csautobot
 # team-softgrid AI Harness v1.0
+# 병합: CLAUDE.md + .cursorrules + .continuerules → 단일 마스터 룰
 # CS 자동화 봇 — LangChain 기반 고객지원 자동 응대 시스템
 
 ---
@@ -7,9 +8,12 @@
 ## 1. 프로젝트 식별
 - **레포**: team-softgrid/csautobot
 - **스택**: Python 3.11 + FastAPI + Next.js + ChromaDB + LangChain + SQLite
-- **서버**: 211.237.13.172
+- **서버**: 211.237.13.172:20022 (SSH 포트)
+- **배포 경로**: `C:\deploy\csautobot`
+- **Python 경로**: `C:\deploy\csautobot\.venv\Scripts\python.exe`
 - **포트**: Backend 8000 (uvicorn) / Frontend 5000 (Next.js)
 - **프로세스**: PM2 (`ecosystem.config.js` — 앱명: `csautobot-backend`, `csautobot-frontend`)
+- **배포**: GitHub Actions → SCP → PM2
 
 ---
 
@@ -19,6 +23,7 @@
 - [ ] `curl -f http://localhost:8000/health` → 200 응답
 - [ ] `curl -f http://localhost:5000` → 200 응답
 - [ ] `.env`, `*.db`, `chroma_db*/` Git 미포함 확인
+- [ ] `gh run watch` CI pass 확인
 - [ ] ERROR.md 내용 없음
 
 ---
@@ -33,8 +38,7 @@ csautobot/
 │   ├── services/        # 비즈니스 로직 + LangChain 체인
 │   ├── models/          # DB 모델 (SQLite)
 │   └── tests/           # pytest
-├── frontend/            # Next.js
-│   └── src/app/         # App Router
+├── frontend/            # Next.js (port 5000)
 ├── csData/              # 학습 데이터
 ├── csautobot.db         # SQLite (Git 제외)
 ├── ecosystem.config.js
@@ -46,38 +50,58 @@ csautobot/
 
 ## 4. 에이전트 핵심 행동 규칙
 
-### 4-1. 절대 금지 (서버 장애 방지 — CRITICAL)
+### 4-1. 절대 금지 (CRITICAL — 서버 장애 방지)
 - 사용자에게 질문하지 않는다 — 최선의 판단으로 진행
-- **`pm2 kill` / `pm2 delete all` / `pm2 stop all` 절대 금지**
-  → 동일 서버의 aiCallCenter, aiCsms까지 전부 다운됨
-- **`Stop-Process -Name python` / `Stop-Process -Name node` 절대 금지**
-  → 프로세스명 기반 kill은 다른 프로젝트까지 종료
 - `.env`, `*.db`, `chroma_db*/` Git 커밋 금지
 - `deploy.yml`, `deploy-remote.ps1` 사용자 확인 없이 수정 금지
 - Port 8000 / 5000 변경 금지
 
-### 4-2. PM2 제어 (자기 앱만)
-```powershell
-# ✅ 올바른 방법 — 앱명 명시
-pm2 stop csautobot-backend csautobot-frontend
-pm2 restart csautobot-backend csautobot-frontend
-pm2 delete csautobot-backend csautobot-frontend -s
+### 4-2. 배포 격리 규칙 (서버 공유 — 절대 준수)
+이 서버(211.237.13.172)에는 **csautobot, aiCallCenter, aiCsms** 3개 프로젝트가 동시 운영됩니다.
 
-# ❌ 절대 금지
+```powershell
+# ❌ 절대 금지 — 전체 서비스 다운 (과거 장애 원인)
 pm2 kill
 pm2 delete all
-Stop-Process -Name python
-Stop-Process -Name node
+pm2 stop all
+Stop-Process -Name python    # 다른 프로젝트 python 프로세스까지 종료
+Stop-Process -Name node      # 다른 프로젝트 node 프로세스까지 종료
+
+# ✅ 올바른 방법 — 앱명 명시하여 자기 앱만 제어
+pm2 stop csautobot-backend csautobot-frontend
+pm2 restart csautobot-backend csautobot-frontend
+pm2 delete csautobot-backend -s
+pm2 delete csautobot-frontend -s
 ```
 
-### 4-3. 자율 실행 루프
+**포트 할당 (변경 금지)**
+| 프로젝트 | 백엔드 | 프론트 | 프로세스 |
+|---------|--------|--------|---------|
+| **csautobot** | **8000** | **5000** | PM2 |
+| aiCallCenter | 8090 | 3000 | PM2 |
+| aiCsms | 8080 | SSR | Windows Service |
+
+### 4-3. Windows 서버 배포 특수 규칙 (과거 실패에서 학습)
+- PM2 daemon: SSH 세션 종료 시 죽는 문제 → `sc.exe` + wrapper batch file로 Windows Service 등록
+- 절대 사용 금지: WMI, wmic, pm2-windows-startup, pm2 `--home` flag, NSSM
+- PowerShell 버전: 서버는 **PS 5.x** → `?.` null-conditional, `??=` 등 PS 7+ 문법 사용 금지
+- PM2_HOME 반드시 명시: `PM2_HOME=C:\Users\Administrator\.pm2`
+- `pm2 startOrReload` 후 반드시 `pm2 save` (SSH disconnect 전)
+
+### 4-4. 필수 배포 루틴
+1. `git commit` + `git push`
+2. `gh run watch` — CI 완료까지 모니터링 (port health check만으로 완료 판단 금지)
+3. 배포 성공 확인: `curl http://211.237.13.172:8000/health` + `curl http://211.237.13.172:5000`
+4. `completed: success` 확인 후에만 완료 보고
+
+### 4-5. 자율 실행 루프
 ```
 태스크 선택 → 코드 작성 → 즉시 실행 → 결과 확인
   └─ 실패 → 에러 로그 통째로 컨텍스트 유지 → 자가 수정 (최대 3회)
        └─ 3회 실패 → ERROR.md 기록 → [blocked] → 다음 태스크
 ```
 
-### 4-4. Git 워크플로우
+### 4-6. Git 워크플로우
 ```bash
 git checkout -b agent/{task-name}
 # pytest pass 후
@@ -90,10 +114,11 @@ gh pr create --base main
 
 ## 5. 기술 스택 패턴
 
-### FastAPI 라우터
+### FastAPI
 ```python
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+import os
 
 router = APIRouter(prefix="/api/v1", tags=["cs"])
 
@@ -110,27 +135,26 @@ async def query_cs(body: QueryRequest):
         raise HTTPException(status_code=400, detail=str(e))
 ```
 
-### LangChain 체인 패턴
+### LangChain + ChromaDB
 ```python
 from langchain_openai import ChatOpenAI
-from langchain_chroma import Chroma
-from langchain.chains import RetrievalQA
 import os
 
 llm = ChatOpenAI(
     model="gpt-4o-mini",
-    api_key=os.environ["OPENAI_API_KEY"]
+    api_key=os.environ["OPENAI_API_KEY"]  # 하드코딩 절대 금지
 )
-vectorstore = Chroma(persist_directory="./chroma_db")
-chain = RetrievalQA.from_chain_type(llm=llm, retriever=vectorstore.as_retriever())
 ```
 
-### 환경변수
-```python
-import os
-# .env에서 로드 (python-dotenv), 절대 하드코딩 금지
-OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
+### PM2 ecosystem.config.js
+```javascript
+// 앱명 변경 금지 (배포 스크립트가 이 이름으로 제어)
+module.exports = {
+  apps: [
+    { name: 'csautobot-backend', script: '...' },
+    { name: 'csautobot-frontend', script: '...' }
+  ]
+}
 ```
 
 ---
@@ -140,42 +164,29 @@ ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
 # 전체 (커버리지 포함)
 pytest --cov=csautobot --cov-report=term-missing --cov-fail-under=80
 
-# 빠른 실행 (커버리지 제외)
+# 빠른 실행
 pytest tests/ -v --tb=short
 
-# LLM Mock 필수
-# conftest.py의 mock_llm fixture 활용 (실제 API 키 불필요)
+# LLM Mock 활용 (실제 API 키 불필요)
+# conftest.py의 mock_llm fixture 사용
 ```
 
 ---
 
-## 7. 배포 (Level 1 — 사용자 승인 필요)
-```powershell
-# 스테이징 확인 후 수동 실행
-.\scripts\deploy-remote.ps1
-
-# 배포 후 헬스체크
-curl http://211.237.13.172:8000/health
-curl http://211.237.13.172:5000
-```
-
----
-
-## 8. PROJECT OVERRIDE (프로젝트 전용 커스텀)
+## 7. PROJECT OVERRIDE (프로젝트 전용 커스텀)
 
 ### 특화 완료 기준
-- [ ] CS 질문 응답 API (`POST /api/v1/query` 200 + 답변 반환)
-- [ ] ChromaDB 학습 데이터 인덱싱 완료
-- [ ] 대화 세션 관리 (`session_id` 기반 히스토리 유지)
-- [ ] 관리자 대시보드 CS 이력 조회 정상
+- [ ] CS 질문 응답 (`POST /api/v1/query` 200 + 답변 반환)
+- [ ] ChromaDB 인덱싱 완료
+- [ ] 세션 히스토리 유지 (`session_id` 기반)
+- [ ] PM2 `pm2 save` 완료 (SSH disconnect 후에도 서비스 유지)
 
 ### 특화 금지 사항
 - LangChain 버전 임의 업그레이드 금지 (`pyproject.toml` 버전 고정)
-- ChromaDB 컬렉션명 변경 금지
-- SQLite DB 파일(`csautobot.db`) 스키마 임의 변경 금지
+- `csautobot.db` SQLite 스키마 임의 변경 금지
+- ecosystem.config.js 앱명 변경 금지
 
 ### 포트 / 엔드포인트
-- Backend: `http://localhost:8000`
+- Backend: `http://localhost:8000` / Health: `/health`
 - Frontend: `http://localhost:5000`
-- Health: `http://localhost:8000/health`
-- CS 질문: `POST http://localhost:8000/api/v1/query`
+- CS 질문: `POST /api/v1/query`
