@@ -1,30 +1,16 @@
-# AI Agent Guidelines for csautobot
+# .cursorrules — csautobot
+# 모든 규칙은 AGENTS.md에 있습니다. Cursor는 프로젝트 루트 파일을 컨텍스트로 읽으므로 AGENTS.md가 자동 적용됩니다.
+# @AGENTS.md
 
-## 배포 격리 규칙 (CRITICAL)
+## Cursor / Composer Agent 전용 추가 규칙
 
-이 서버에는 csautobot, aiCallCenter, aiCsms 3개 프로젝트가 동일 서버에서 동시 운영됩니다.
+### Yolo 모드 허용 범위
+- Python 소스, Next.js 컴포넌트 생성·수정: 허용
+- 예외 (반드시 사용자 확인): `deploy.yml` 수정, `ecosystem.config.js` 앱명 변경, `.env` 생성
 
-### 절대 금지
-- `pm2 kill`, `pm2 delete all`, `pm2 stop all` — 다른 프로젝트 서비스가 전부 죽음
-- `Stop-Process -Name python` / `Stop-Process -Name node` — 다른 프로젝트 프로세스까지 종료
-- 다른 프로젝트(aiCallCenter, aiCsms)의 PM2 앱을 제어하는 코드 추가
-
-### 반드시 준수
-- PM2 앱 이름 명시: `pm2 stop csautobot-backend csautobot-frontend`
-- 포트 변경 금지: 백엔드 8000, 프론트엔드 5000
-- ecosystem.config.js 앱 이름 변경 금지
-
-```powershell
-# ❌ 금지
-pm2 kill
-pm2 delete all
-Stop-Process -Name python
-
-# ✅ 올바름
-pm2 delete csautobot-backend -s
-pm2 delete csautobot-frontend -s
-```
-
-## 기타 규칙
-
-상세 규칙은 `CLAUDE.md` 참조.
+### 작업 완료 루틴
+1. `pytest --cov=csautobot --cov-fail-under=80` pass 확인
+2. `git commit` + `git push`
+3. `gh run watch` CI 완료 확인
+4. 배포 후: `curl http://211.237.13.172:8000/health`
+5. PM2 저장: `PM2_HOME=C:\Users\Administrator\.pm2 pm2 save`
