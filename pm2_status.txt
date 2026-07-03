@@ -4,30 +4,27 @@
 In memory PM2 version: 7.0.1
 Local PM2 version: 7.0.3
 
-┌────┬────────────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
-│ id │ name                       │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
-├────┼────────────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 54 │ aicallcenter-backend       │ default     │ N/A     │ fork    │ 9208     │ 112m   │ 3    │ online    │ 0%       │ 250.6mb  │ Adminis… │ disabled │
-│ 69 │ aicallcenter-caddy         │ default     │ N/A     │ fork    │ 0        │ 0      │ 15   │ errored   │ 0%       │ 0b       │ Adminis… │ disabled │
-│ 55 │ aicallcenter-frontend      │ default     │ N/A     │ fork    │ 8484     │ 112m   │ 3    │ online    │ 0%       │ 127.6mb  │ Adminis… │ disabled │
-│ 70 │ csautobot-backend          │ default     │ N/A     │ fork    │ 8560     │ 35s    │ 0    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
-│ 71 │ csautobot-frontend         │ default     │ 16.2.9  │ fork    │ 1252     │ 35s    │ 0    │ online    │ 0%       │ 116.5mb  │ Adminis… │ disabled │
-│ 50 │ ocppautomation-frontend    │ default     │ 16.2.3  │ fork    │ 9004     │ 3h     │ 0    │ online    │ 0%       │ 135.1mb  │ Adminis… │ disabled │
-└────┴────────────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+┌─────┬────────────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id  │ name                       │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├─────┼────────────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 127 │ aicallcenter-caddy         │ default     │ N/A     │ fork    │ 9876     │ 113m   │ 0    │ online    │ 0%       │ 37.1mb   │ Adminis… │ disabled │
+│ 130 │ csautobot-backend          │ default     │ N/A     │ fork    │ 4644     │ 43s    │ 0    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
+│ 131 │ csautobot-frontend         │ default     │ 16.2.9  │ fork    │ 10216    │ 43s    │ 0    │ online    │ 0%       │ 113.4mb  │ Adminis… │ disabled │
+│ 50  │ ocppautomation-frontend    │ default     │ 16.2.3  │ fork    │ 9004     │ 24h    │ 0    │ online    │ 0%       │ 135.6mb  │ Adminis… │ disabled │
+└─────┴────────────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
 --- NETSTAT PORTS 5000/8000 ---
-  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       1252
-  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       8596
+  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       10216
+  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       5764
 --- RUNNING PROCESSES ---
 
-  Id       CPU WorkingSet ProcessName
-  --       --- ---------- -----------
-1252  1.859375  122175488 node       
-1640 30.890625   87269376 node       
-8484  4.265625  133763072 node       
-9004    4.9375  141709312 node       
-8560  0.015625    3125248 python     
-8596         5  172040192 python     
-9208 10.078125  262754304 python     
+   Id       CPU WorkingSet ProcessName
+   --       --- ---------- -----------
+ 1640 42.328125   86196224 node       
+ 3696 81.546875 1139445760 node       
+ 9004  11.03125  142151680 node       
+10216  2.203125  118943744 node       
+ 4644  0.015625    3112960 python     
+ 5764      6.25  170471424 python     
 
 
 --- SCHEDULED TASKS (PM2) ---
