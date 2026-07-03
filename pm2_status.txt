@@ -7,17 +7,24 @@ Local PM2 version: 7.0.3
 ┌─────┬────────────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
 │ id  │ name                       │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├─────┼────────────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 127 │ aicallcenter-caddy         │ default     │ N/A     │ fork    │ 9876     │ 2h     │ 0    │ online    │ 0%       │ 36.9mb   │ Adminis… │ disabled │
-│ 50  │ ocppautomation-frontend    │ default     │ 16.2.3  │ fork    │ 9004     │ 24h    │ 0    │ online    │ 0%       │ 135.6mb  │ Adminis… │ disabled │
+│ 127 │ aicallcenter-caddy         │ default     │ N/A     │ fork    │ 9876     │ 2h     │ 0    │ online    │ 0%       │ 38.6mb   │ Adminis… │ disabled │
+│ 138 │ csautobot-backend          │ default     │ N/A     │ fork    │ 8744     │ 41s    │ 0    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
+│ 139 │ csautobot-frontend         │ default     │ 16.2.9  │ fork    │ 8364     │ 41s    │ 0    │ online    │ 0%       │ 113.9mb  │ Adminis… │ disabled │
+│ 50  │ ocppautomation-frontend    │ default     │ 16.2.3  │ fork    │ 9004     │ 25h    │ 0    │ online    │ 0%       │ 135.6mb  │ Adminis… │ disabled │
 └─────┴────────────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
 --- NETSTAT PORTS 5000/8000 ---
+  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       8364
+  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       8548
 --- RUNNING PROCESSES ---
 
-  Id       CPU WorkingSet ProcessName
-  --       --- ---------- -----------
-1640 42.859375   85868544 node       
-8176 17.421875  167682048 node       
-9004 11.453125  142151680 node       
+  Id      CPU WorkingSet ProcessName
+  --      --- ---------- -----------
+1640 43.34375   86126592 node       
+8364  2.09375  119578624 node       
+9004  11.5625  142151680 node       
+9552  30.5625 1021140992 node       
+8548   5.8125  170631168 python     
+8744        0    3125248 python     
 
 
 --- SCHEDULED TASKS (PM2) ---
