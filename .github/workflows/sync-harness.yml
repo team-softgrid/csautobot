@@ -1,0 +1,124 @@
+name: Sync AI Harness
+
+# ai-harness 레포에서 변경 시 각 프로젝트 레포에 자동 동기화
+# 또는 각 레포에서 수동 트리거
+
+on:
+  workflow_dispatch:
+    inputs:
+      harness_ref:
+        description: 'ai-harness 브랜치/태그 (기본: main)'
+        required: false
+        default: 'main'
+  schedule:
+    - cron: '0 2 * * 1'  # 매주 월요일 02:00 UTC 자동 동기화
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 현재 레포
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.HARNESS_TOKEN }}
+
+      - name: ai-harness 체크아웃
+        uses: actions/checkout@v4
+        with:
+          repository: team-softgrid/ai-harness
+          token: ${{ secrets.HARNESS_TOKEN }}
+          ref: ${{ github.event.inputs.harness_ref || 'main' }}
+          path: .harness-sync
+
+      - name: 스킬 파일 동기화
+        run: |
+          mkdir -p .agents/skills
+          cp -r .harness-sync/skills/. .agents/skills/
+          echo "✅ skills 동기화 완료"
+
+      - name: GitHub Actions 워크플로우 동기화
+        run: |
+          mkdir -p .github/workflows
+          # sync-harness.yml 자신은 덮어쓰지 않음
+          for f in .harness-sync/workflows/*.yml; do
+            fname=$(basename "$f")
+            if [ "$fname" != "sync-harness.yml" ]; then
+              cp "$f" ".github/workflows/$fname"
+              echo "✅ $fname 동기화"
+            fi
+          done
+
+      - name: AGENTS.md 업데이트 (PROJECT OVERRIDE 섹션 보존)
+        run: |
+          # 기존 AGENTS.md의 PROJECT OVERRIDE 섹션 추출
+          if [ -f AGENTS.md ]; then
+            OVERRIDE=$(awk '/^## 8\. PROJECT OVERRIDE/,0' AGENTS.md)
+          else
+            OVERRIDE="## 8. PROJECT OVERRIDE (프로젝트 전용 커스텀)\n<!-- 이 섹션만 각 레포에서 직접 수정 허용 -->"
+          fi
+
+          # 템플릿 복사 및 변수 치환
+          cp .harness-sync/templates/AGENTS.md.template AGENTS.md.new
+          sed -i "s/{{PROJECT_NAME}}/${{ github.event.repository.name }}/g" AGENTS.md.new
+          sed -i "s/{{HARNESS_VERSION}}/$(cat .harness-sync/VERSION 2>/dev/null || echo 'v1.0')/g" AGENTS.md.new
+
+          # PROJECT OVERRIDE 섹션 복원 (§8 이후 교체)
+          head -n $(grep -n "^## 8\." AGENTS.md.new | cut -d: -f1 | head -1) AGENTS.md.new > AGENTS.md
+          echo "$OVERRIDE" >> AGENTS.md
+
+          rm AGENTS.md.new
+          echo "✅ AGENTS.md 업데이트 (PROJECT OVERRIDE 보존)"
+
+      - name: CLAUDE.md 동기화 (없으면 생성)
+        run: |
+          if [ ! -f CLAUDE.md ]; then
+            cp .harness-sync/templates/CLAUDE.md.template CLAUDE.md
+            sed -i "s/{{PROJECT_NAME}}/${{ github.event.repository.name }}/g" CLAUDE.md
+            echo "✅ CLAUDE.md 생성"
+          fi
+
+      - name: .cursorrules 동기화
+        run: |
+          cp .harness-sync/templates/.cursorrules.template .cursorrules
+          sed -i "s/{{PROJECT_NAME}}/${{ github.event.repository.name }}/g" .cursorrules
+          echo "✅ .cursorrules 업데이트"
+
+      - name: copilot-instructions 동기화
+        run: |
+          mkdir -p .github
+          cp .harness-sync/templates/copilot-instructions.md.template .github/copilot-instructions.md
+          sed -i "s/{{PROJECT_NAME}}/${{ github.event.repository.name }}/g" .github/copilot-instructions.md
+          echo "✅ copilot-instructions.md 업데이트"
+
+      - name: 변경사항 커밋 및 PR 생성
+        run: |
+          git config user.name "ai-harness-bot"
+          git config user.email "bot@team-softgrid.com"
+
+          BRANCH="harness/sync-$(date +%Y%m%d)"
+          git checkout -b "$BRANCH"
+          git add AGENTS.md CLAUDE.md .cursorrules .github/ .agents/
+
+          if git diff --cached --quiet; then
+            echo "변경사항 없음 — 동기화 불필요"
+            exit 0
+          fi
+
+          git commit -m "chore: ai-harness 동기화 $(date +%Y-%m-%d)"
+          git push origin "$BRANCH"
+
+          gh pr create \
+            --title "chore: ai-harness 동기화 $(date +%Y-%m-%d)" \
+            --body "ai-harness 레포 변경사항 자동 동기화
+
+            - skills/ 업데이트
+            - AGENTS.md 업데이트 (PROJECT OVERRIDE 보존)
+            - .cursorrules 업데이트
+
+            **리뷰 포인트**: PROJECT OVERRIDE 섹션이 올바르게 보존되었는지 확인" \
+            --base main
+        env:
+          GH_TOKEN: ${{ secrets.HARNESS_TOKEN }}
+
+      - name: 정리
+        run: rm -rf .harness-sync
