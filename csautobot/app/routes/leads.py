@@ -5,8 +5,16 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from auth_service import get_current_admin_user
-from leads_db import create_lead, list_leads, list_notify_failures, update_lead_status
-from services.lead_notifier import notify_new_lead
+from leads_db import (
+    create_lead,
+    delete_notify_failure,
+    get_lead_by_id,
+    get_notify_failure,
+    list_leads,
+    list_notify_failures,
+    update_lead_status,
+)
+from services.lead_notifier import notify_new_lead, retry_lead_channel
 
 router = APIRouter(tags=["Leads"])
 
@@ -51,6 +59,12 @@ class NotifyFailureItem(BaseModel):
     channel: str
     error_message: str
     created_at: float
+
+
+class NotifyRetryResponse(BaseModel):
+    success: bool
+    channel: str
+    message: str
 
 
 @router.post("/leads", response_model=LeadCreateResponse, status_code=201)
@@ -105,3 +119,32 @@ def get_notify_failures(
 ):
     rows = list_notify_failures(limit=limit)
     return [NotifyFailureItem(**row) for row in rows]
+
+
+@router.post("/leads/notify-failures/{failure_id}/retry", response_model=NotifyRetryResponse)
+def retry_notify_failure(
+    failure_id: int,
+    _admin: dict = Depends(get_current_admin_user),
+):
+    failure = get_notify_failure(failure_id)
+    if not failure:
+        raise HTTPException(status_code=404, detail="Notify failure not found")
+    lead_id = failure.get("lead_id")
+    if not lead_id:
+        raise HTTPException(status_code=422, detail="No lead associated with this failure")
+    lead = get_lead_by_id(int(lead_id))
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    channel = str(failure["channel"])
+    if retry_lead_channel(lead, channel):
+        delete_notify_failure(failure_id)
+        return NotifyRetryResponse(
+            success=True,
+            channel=channel,
+            message="알림 재전송에 성공했습니다.",
+        )
+    return NotifyRetryResponse(
+        success=False,
+        channel=channel,
+        message="알림 재전송에 실패했습니다. dead-letter가 갱신되었습니다.",
+    )

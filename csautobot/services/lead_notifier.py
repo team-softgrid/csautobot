@@ -18,6 +18,15 @@ logger = logging.getLogger(__name__)
 MAX_NOTIFY_RETRIES = 3
 
 
+def _channel_sender(channel: str) -> Callable[[dict[str, Any]], None] | None:
+    senders: dict[str, Callable[[dict[str, Any]], None]] = {
+        "webhook": _send_webhook,
+        "slack": _send_slack,
+        "smtp": _send_smtp,
+    }
+    return senders.get(channel)
+
+
 def _lead_summary(lead: dict[str, Any]) -> str:
     plans = lead.get("interest_plans") or "-"
     phone = lead.get("phone") or "-"
@@ -143,3 +152,24 @@ def notify_new_lead(lead: dict[str, Any]) -> None:
     _attempt_channel("webhook", lead, _send_webhook)
     _attempt_channel("slack", lead, _send_slack)
     _attempt_channel("smtp", lead, _send_smtp)
+
+
+def retry_lead_channel(lead: dict[str, Any], channel: str) -> bool:
+    """Manually retry a single notification channel. Returns True on success."""
+    send_fn = _channel_sender(channel)
+    if send_fn is None:
+        return False
+    lead_id = int(lead.get("id") or 0)
+    last_exc: Exception | None = None
+    for attempt in range(MAX_NOTIFY_RETRIES):
+        try:
+            send_fn(lead)
+            return True
+        except Exception as exc:
+            last_exc = exc
+            logger.warning("Lead %s manual retry %s failed: %s", channel, attempt + 1, exc)
+            if attempt < MAX_NOTIFY_RETRIES - 1:
+                time.sleep(0.2 * (attempt + 1))
+    if last_exc is not None:
+        record_notify_failure(lead_id, channel, str(last_exc))
+    return False

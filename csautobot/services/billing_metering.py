@@ -9,7 +9,7 @@ from fastapi import HTTPException
 from sqlalchemy import func
 
 from storage.db import get_db_context
-from storage.repositories import Tenant, UsageMeter
+from storage.repositories import AuditLog, Tenant, UsageMeter
 
 # feature_code values align with usage_meter.feature_code in schema.sql
 FEATURE_RAG_SEARCH = "RAG_SEARCH"
@@ -154,13 +154,19 @@ def list_plans() -> list[dict[str, Any]]:
     ]
 
 
-def update_tenant_plan(tenant_id: str, plan_code: str) -> dict[str, Any]:
+def update_tenant_plan(
+    tenant_id: str,
+    plan_code: str,
+    *,
+    changed_by: str | None = None,
+) -> dict[str, Any]:
     plan = plan_code.upper()
     if plan not in PLAN_LIMITS:
         raise ValueError(f"Unsupported plan_code: {plan_code}")
     tid = (tenant_id or DEFAULT_TENANT_ID).strip()
     with get_db_context() as db:
         tenant = db.query(Tenant).filter(Tenant.tenant_id == tid).first()
+        old_plan = (tenant.plan_code or "FREE").upper() if tenant else "FREE"
         if not tenant:
             tenant = Tenant(
                 tenant_id=tid,
@@ -170,9 +176,47 @@ def update_tenant_plan(tenant_id: str, plan_code: str) -> dict[str, Any]:
             db.add(tenant)
         else:
             tenant.plan_code = plan
+        if old_plan != plan:
+            db.add(
+                AuditLog(
+                    tenant_id=tid,
+                    user_id=changed_by,
+                    action_code="PLAN_CHANGE",
+                    resource_type="tenant",
+                    resource_id=tid,
+                    payload_json={"old_plan": old_plan, "new_plan": plan},
+                )
+            )
         db.flush()
         return {
             "tenant_id": tenant.tenant_id,
             "tenant_name": tenant.tenant_name,
             "plan_code": (tenant.plan_code or plan).upper(),
         }
+
+
+def list_plan_change_audits(
+    *,
+    tenant_id: str | None = None,
+    limit: int = 50,
+) -> list[dict[str, Any]]:
+    with get_db_context() as db:
+        query = db.query(AuditLog).filter(AuditLog.action_code == "PLAN_CHANGE")
+        if tenant_id:
+            query = query.filter(AuditLog.tenant_id == tenant_id)
+        rows = (
+            query.order_by(AuditLog.created_at.desc())
+            .limit(limit)
+            .all()
+        )
+        return [
+            {
+                "audit_id": row.audit_id,
+                "tenant_id": row.tenant_id,
+                "changed_by": row.user_id,
+                "old_plan": (row.payload_json or {}).get("old_plan"),
+                "new_plan": (row.payload_json or {}).get("new_plan"),
+                "created_at": row.created_at.isoformat() + "Z" if row.created_at else None,
+            }
+            for row in rows
+        ]

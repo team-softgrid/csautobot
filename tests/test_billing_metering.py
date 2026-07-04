@@ -9,6 +9,7 @@ from services.billing_metering import (
     check_quota,
     get_limit,
     get_monthly_summary,
+    list_plan_change_audits,
     list_plans,
     record_usage,
     update_tenant_plan,
@@ -64,3 +65,11 @@ class TestBillingMetering:
     def test_update_tenant_plan_invalid_raises(self):
         with pytest.raises(ValueError):
             update_tenant_plan("pytest_plan_tenant", "INVALID")
+
+    def test_update_tenant_plan_records_audit(self):
+        update_tenant_plan("pytest_audit_tenant", "PRO", changed_by="admin@test.com")
+        audits = list_plan_change_audits(tenant_id="pytest_audit_tenant", limit=10)
+        assert len(audits) >= 1
+        assert audits[0]["old_plan"] == "FREE"
+        assert audits[0]["new_plan"] == "PRO"
+        assert audits[0]["changed_by"] == "admin@test.com"

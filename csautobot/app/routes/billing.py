@@ -7,6 +7,7 @@ from auth_service import get_current_admin_user
 from services.billing_metering import (
     DEFAULT_TENANT_ID,
     get_monthly_summary,
+    list_plan_change_audits,
     list_plans,
     list_tenants,
     update_tenant_plan,
@@ -28,6 +29,15 @@ class PlanUpdateRequest(BaseModel):
 class PlanItem(BaseModel):
     plan_code: str
     limits: dict[str, int | None]
+
+
+class PlanAuditItem(BaseModel):
+    audit_id: int
+    tenant_id: str
+    changed_by: str | None
+    old_plan: str | None
+    new_plan: str | None
+    created_at: str | None
 
 
 @router.get("/billing/usage/monthly")
@@ -54,13 +64,27 @@ def billing_admin_tenants(
 def patch_tenant_plan(
     tenant_id: str,
     body: PlanUpdateRequest,
-    _admin: dict = Depends(get_current_admin_user),
+    admin: dict = Depends(get_current_admin_user),
 ) -> TenantItem:
     try:
-        row = update_tenant_plan(tenant_id, body.plan_code)
+        row = update_tenant_plan(
+            tenant_id,
+            body.plan_code,
+            changed_by=admin.get("username"),
+        )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     return TenantItem(**row)
+
+
+@router.get("/billing/admin/plan-audit", response_model=list[PlanAuditItem])
+def billing_admin_plan_audit(
+    tenant_id: Optional[str] = Query(default=None),
+    limit: int = Query(default=50, ge=1, le=200),
+    _admin: dict = Depends(get_current_admin_user),
+) -> list[PlanAuditItem]:
+    rows = list_plan_change_audits(tenant_id=tenant_id, limit=limit)
+    return [PlanAuditItem(**row) for row in rows]
 
 
 @router.get("/billing/admin/summary")

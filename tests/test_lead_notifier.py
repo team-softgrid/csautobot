@@ -1,7 +1,7 @@
 """Tests for lead notification service."""
 from unittest.mock import MagicMock, patch
 
-from services.lead_notifier import notify_new_lead
+from services.lead_notifier import notify_new_lead, retry_lead_channel
 
 SAMPLE_LEAD = {
     "id": 1,
@@ -73,3 +73,12 @@ class TestLeadNotifier:
         record_mock = mocker.patch("services.lead_notifier.record_notify_failure")
         notify_new_lead(SAMPLE_LEAD)
         record_mock.assert_called_once_with(1, "webhook", "webhook down")
+
+    def test_retry_channel_success(self, mocker):
+        mocker.patch("services.lead_notifier.time.sleep")
+        send_mock = mocker.patch("services.lead_notifier._send_webhook")
+        assert retry_lead_channel(SAMPLE_LEAD, "webhook") is True
+        send_mock.assert_called_once()
+
+    def test_retry_unknown_channel_returns_false(self):
+        assert retry_lead_channel(SAMPLE_LEAD, "unknown") is False

@@ -27,6 +27,15 @@ type TenantOption = {
   plan_code: string;
 };
 
+type PlanAuditEntry = {
+  audit_id: number;
+  tenant_id: string;
+  changed_by: string | null;
+  old_plan: string | null;
+  new_plan: string | null;
+  created_at: string | null;
+};
+
 const FEATURE_LABELS: Record<string, string> = {
   RAG_SEARCH: "AS 유사 사례 검색",
   AI_GENERATION: "AI 생성 (점검·견적)",
@@ -58,6 +67,7 @@ export default function AdminBillingPage() {
   const [selectedPlan, setSelectedPlan] = useState<PlanCode>("FREE");
   const [savingPlan, setSavingPlan] = useState(false);
   const [notice, setNotice] = useState("");
+  const [auditLog, setAuditLog] = useState<PlanAuditEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -65,6 +75,20 @@ export default function AdminBillingPage() {
     await fetch("/api/auth/logout", { method: "POST" });
     router.replace("/login");
   }, [router]);
+
+  const fetchAuditLog = useCallback(async (tenantId: string) => {
+    try {
+      const response = await fetch(
+        `/api/billing/plan-audit?tenant_id=${encodeURIComponent(tenantId)}`,
+        { cache: "no-store" },
+      );
+      if (response.ok) {
+        setAuditLog((await response.json()) as PlanAuditEntry[]);
+      }
+    } catch {
+      setAuditLog([]);
+    }
+  }, []);
 
   const fetchTenants = useCallback(async () => {
     const response = await fetch("/api/billing/tenants", { cache: "no-store" });
@@ -122,6 +146,7 @@ export default function AdminBillingPage() {
         const tenantId = exists ? initialTenant : list[0]?.tenant_id || DEFAULT_TENANT_ID;
         setSelectedTenantId(tenantId);
         await fetchSummary(tenantId);
+        await fetchAuditLog(tenantId);
       } catch (fetchError) {
         setError(
           fetchError instanceof Error
@@ -131,7 +156,7 @@ export default function AdminBillingPage() {
         setLoading(false);
       }
     })();
-  }, [fetchTenants, fetchSummary]);
+  }, [fetchTenants, fetchSummary, fetchAuditLog]);
 
   const handleTenantChange = (tenantId: string) => {
     setSelectedTenantId(tenantId);
@@ -139,6 +164,7 @@ export default function AdminBillingPage() {
       localStorage.setItem("csautobot_tenant_id", tenantId);
     }
     void fetchSummary(tenantId);
+    void fetchAuditLog(tenantId);
   };
 
   const handlePlanSave = async () => {
@@ -161,6 +187,7 @@ export default function AdminBillingPage() {
       const list = await fetchTenants();
       setTenants(list);
       await fetchSummary(selectedTenantId);
+      await fetchAuditLog(selectedTenantId);
     } catch (saveError) {
       setError(
         saveError instanceof Error ? saveError.message : "플랜 변경에 실패했습니다.",
@@ -390,6 +417,44 @@ export default function AdminBillingPage() {
           </div>
         </>
       ) : null}
+
+      {auditLog.length > 0 && (
+        <section className="glass-panel" style={{ padding: "24px", marginTop: "24px" }}>
+          <h3 style={{ margin: "0 0 12px", color: "#f8fafc", fontSize: "16px" }}>
+            플랜 변경 감사 로그
+          </h3>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", color: "#94a3b8" }}>
+                  <th style={{ padding: "10px 12px", textAlign: "left" }}>변경자</th>
+                  <th style={{ padding: "10px 12px", textAlign: "left" }}>이전</th>
+                  <th style={{ padding: "10px 12px", textAlign: "left" }}>변경</th>
+                  <th style={{ padding: "10px 12px", textAlign: "left" }}>시각</th>
+                </tr>
+              </thead>
+              <tbody>
+                {auditLog.map((entry) => (
+                  <tr key={entry.audit_id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                    <td style={{ padding: "10px 12px", color: "#e2e8f0" }}>
+                      {entry.changed_by || "-"}
+                    </td>
+                    <td style={{ padding: "10px 12px", color: "#94a3b8" }}>{entry.old_plan}</td>
+                    <td style={{ padding: "10px 12px", color: "#06b6d4", fontWeight: 600 }}>
+                      {entry.new_plan}
+                    </td>
+                    <td style={{ padding: "10px 12px", color: "#94a3b8", whiteSpace: "nowrap" }}>
+                      {entry.created_at
+                        ? new Date(entry.created_at).toLocaleString("ko-KR")
+                        : "-"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

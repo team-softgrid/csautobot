@@ -143,3 +143,39 @@ def list_notify_failures(*, limit: int = 50) -> list[dict[str, Any]]:
         return [dict(r) for r in rows]
     finally:
         conn.close()
+
+
+def get_lead_by_id(lead_id: int) -> dict[str, Any] | None:
+    conn = sqlite3.connect(LEADS_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    try:
+        row = conn.execute("SELECT * FROM leads WHERE id = ?", (lead_id,)).fetchone()
+        return dict(row) if row else None
+    finally:
+        conn.close()
+
+
+def get_notify_failure(failure_id: int) -> dict[str, Any] | None:
+    conn = sqlite3.connect(LEADS_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    try:
+        row = conn.execute(
+            "SELECT * FROM lead_notify_failures WHERE id = ?",
+            (failure_id,),
+        ).fetchone()
+        return dict(row) if row else None
+    finally:
+        conn.close()
+
+
+def delete_notify_failure(failure_id: int) -> bool:
+    conn = sqlite3.connect(LEADS_DB_PATH)
+    try:
+        cursor = conn.execute(
+            "DELETE FROM lead_notify_failures WHERE id = ?",
+            (failure_id,),
+        )
+        conn.commit()
+        return cursor.rowcount > 0
+    finally:
+        conn.close()
