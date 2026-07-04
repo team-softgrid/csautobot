@@ -21,6 +21,14 @@ type NotifyChannelStatus = {
   env_var: string;
 };
 
+type NotifyChannelStats = {
+  channel: string;
+  success_count: number;
+  failure_count: number;
+  last_success_at: number | null;
+  last_failure_at: number | null;
+};
+
 type Lead = {
   id: number;
   company_name: string;
@@ -62,6 +70,7 @@ export default function AdminLeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [failures, setFailures] = useState<NotifyFailure[]>([]);
   const [channels, setChannels] = useState<NotifyChannelStatus[]>([]);
+  const [channelStats, setChannelStats] = useState<NotifyChannelStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState<number | null>(null);
@@ -119,6 +128,10 @@ export default function AdminLeadsPage() {
         const response = await fetch("/api/leads/notify-channels", { cache: "no-store" });
         if (response.ok) {
           setChannels((await response.json()) as NotifyChannelStatus[]);
+        }
+        const statsResponse = await fetch("/api/leads/notify-stats", { cache: "no-store" });
+        if (statsResponse.ok) {
+          setChannelStats((await statsResponse.json()) as NotifyChannelStats[]);
         }
       } catch {
         // optional section
@@ -353,6 +366,46 @@ export default function AdminLeadsPage() {
                 </button>
               </div>
             ))}
+          </div>
+        </section>
+      )}
+
+      {channelStats.length > 0 && (
+        <section className="glass-panel" style={{ padding: "20px 24px", marginBottom: "20px" }}>
+          <h3 style={{ margin: "0 0 12px", color: "#f8fafc", fontSize: "16px" }}>
+            채널별 알림 통계 (최근 30일)
+          </h3>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", color: "#94a3b8" }}>
+                  <th style={{ padding: "10px 12px", textAlign: "left" }}>채널</th>
+                  <th style={{ padding: "10px 12px", textAlign: "right" }}>성공</th>
+                  <th style={{ padding: "10px 12px", textAlign: "right" }}>실패</th>
+                  <th style={{ padding: "10px 12px", textAlign: "left" }}>최근 성공</th>
+                  <th style={{ padding: "10px 12px", textAlign: "left" }}>최근 실패</th>
+                </tr>
+              </thead>
+              <tbody>
+                {channelStats.map((row) => (
+                  <tr key={row.channel} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                    <td style={{ padding: "10px 12px", color: "#e2e8f0" }}>{row.channel}</td>
+                    <td style={{ padding: "10px 12px", color: "#86efac", textAlign: "right" }}>
+                      {row.success_count}
+                    </td>
+                    <td style={{ padding: "10px 12px", color: "#fca5a5", textAlign: "right" }}>
+                      {row.failure_count}
+                    </td>
+                    <td style={{ padding: "10px 12px", color: "#94a3b8" }}>
+                      {row.last_success_at ? formatDate(row.last_success_at) : "-"}
+                    </td>
+                    <td style={{ padding: "10px 12px", color: "#94a3b8" }}>
+                      {row.last_failure_at ? formatDate(row.last_failure_at) : "-"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
       )}

@@ -27,11 +27,13 @@ def init_test_databases():
     """Harness tests run outside TestClient startup; ensure SQLite schemas exist."""
     from auth_db import init_auth_db
     from leads_db import init_leads_db
+    from services.billing_alert_notifier import init_billing_alert_db
     from storage.db import init_db
 
     init_db()
     init_auth_db()
     init_leads_db()
+    init_billing_alert_db()
 
 
 @pytest.fixture(scope="session")
