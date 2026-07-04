@@ -12,7 +12,7 @@ from typing import Any
 
 import httpx
 
-from leads_db import record_notify_failure
+from leads_db import record_notify_event, record_notify_failure
 
 logger = logging.getLogger(__name__)
 MAX_NOTIFY_RETRIES = 3
@@ -61,12 +61,19 @@ def _lead_summary(lead: dict[str, Any]) -> str:
     )
 
 
-def _attempt_channel(channel: str, lead: dict[str, Any], send_fn: Callable[[dict[str, Any]], None]) -> None:
+def _attempt_channel(
+    channel: str,
+    lead: dict[str, Any],
+    send_fn: Callable[[dict[str, Any]], None],
+    *,
+    source: str = "lead_created",
+) -> None:
     lead_id = int(lead.get("id") or 0)
     last_exc: Exception | None = None
     for attempt in range(MAX_NOTIFY_RETRIES):
         try:
             send_fn(lead)
+            record_notify_event(lead_id, channel, success=True, source=source)
             return
         except Exception as exc:
             last_exc = exc
@@ -183,6 +190,7 @@ def retry_lead_channel(lead: dict[str, Any], channel: str) -> bool:
     for attempt in range(MAX_NOTIFY_RETRIES):
         try:
             send_fn(lead)
+            record_notify_event(lead_id, channel, success=True, source="manual_retry")
             return True
         except Exception as exc:
             last_exc = exc
@@ -251,6 +259,7 @@ def send_test_notification(channel: str, *, dry_run: bool = True) -> dict[str, A
         }
     try:
         send_fn(TEST_LEAD)
+        record_notify_event(0, channel, success=True, source="test")
         return {
             "channel": channel,
             "configured": True,

@@ -34,6 +34,18 @@ def init_leads_db() -> None:
         )
         """
     )
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS lead_notify_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            lead_id INTEGER,
+            channel TEXT NOT NULL,
+            success INTEGER NOT NULL,
+            source TEXT NOT NULL DEFAULT 'lead_created',
+            created_at REAL NOT NULL
+        )
+        """
+    )
     conn.commit()
     conn.close()
 
@@ -124,6 +136,53 @@ def record_notify_failure(lead_id: int, channel: str, error_message: str) -> Non
             (lead_id, channel, error_message[:2000], time.time()),
         )
         conn.commit()
+    finally:
+        conn.close()
+    record_notify_event(lead_id, channel, success=False, source="failure")
+
+
+def record_notify_event(
+    lead_id: int,
+    channel: str,
+    *,
+    success: bool,
+    source: str = "lead_created",
+) -> None:
+    conn = sqlite3.connect(LEADS_DB_PATH)
+    try:
+        conn.execute(
+            """
+            INSERT INTO lead_notify_events (lead_id, channel, success, source, created_at)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (lead_id, channel, 1 if success else 0, source, time.time()),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def get_notify_channel_stats(*, days: int = 30) -> list[dict[str, Any]]:
+    since = time.time() - max(1, days) * 86400
+    conn = sqlite3.connect(LEADS_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    try:
+        rows = conn.execute(
+            """
+            SELECT
+                channel,
+                SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) AS success_count,
+                SUM(CASE WHEN success = 0 THEN 1 ELSE 0 END) AS failure_count,
+                MAX(CASE WHEN success = 1 THEN created_at END) AS last_success_at,
+                MAX(CASE WHEN success = 0 THEN created_at END) AS last_failure_at
+            FROM lead_notify_events
+            WHERE created_at >= ?
+            GROUP BY channel
+            ORDER BY channel ASC
+            """,
+            (since,),
+        ).fetchall()
+        return [dict(row) for row in rows]
     finally:
         conn.close()
 

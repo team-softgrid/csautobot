@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
 from auth_service import get_current_admin_user
+from services.billing_alert_notifier import send_usage_alert_notifications
 from services.billing_metering import (
     DEFAULT_TENANT_ID,
     get_monthly_summary,
@@ -45,6 +46,15 @@ class PlanAuditPage(BaseModel):
     total: int
     limit: int
     offset: int
+
+
+class UsageAlertNotifyResult(BaseModel):
+    tenant_id: str
+    sent_count: int
+    skipped_count: int
+    channels_available: list[str]
+    message: str
+    results: list[dict[str, Any]]
 
 
 @router.get("/billing/usage/monthly")
@@ -118,6 +128,17 @@ def billing_admin_usage_alerts(
         "thresholds": summary["alert_thresholds"],
         "alerts": summary["usage_alerts"],
     }
+
+
+@router.post("/billing/admin/usage-alerts/notify", response_model=UsageAlertNotifyResult)
+def billing_admin_notify_usage_alerts(
+    tenant_id: Optional[str] = Query(default=DEFAULT_TENANT_ID),
+    force: bool = Query(default=False),
+    _admin: dict = Depends(get_current_admin_user),
+) -> UsageAlertNotifyResult:
+    tid = tenant_id or DEFAULT_TENANT_ID
+    result = send_usage_alert_notifications(tid, force=force)
+    return UsageAlertNotifyResult(**result)
 
 
 @router.get("/billing/admin/summary")

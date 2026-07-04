@@ -9,6 +9,7 @@ from leads_db import (
     create_lead,
     delete_notify_failure,
     get_lead_by_id,
+    get_notify_channel_stats,
     get_notify_failure,
     list_leads,
     list_notify_failures,
@@ -92,6 +93,14 @@ class NotifyTestResult(BaseModel):
     message: str
 
 
+class NotifyChannelStatsItem(BaseModel):
+    channel: str
+    success_count: int
+    failure_count: int
+    last_success_at: float | None = None
+    last_failure_at: float | None = None
+
+
 @router.post("/leads", response_model=LeadCreateResponse, status_code=201)
 def submit_lead(body: LeadCreateRequest):
     email = body.email.strip()
@@ -142,6 +151,15 @@ def get_notify_channels(
     _admin: dict = Depends(get_current_admin_user),
 ):
     return [NotifyChannelStatusItem(**row) for row in get_notify_channel_status()]
+
+
+@router.get("/leads/notify-stats", response_model=List[NotifyChannelStatsItem])
+def get_notify_stats(
+    days: int = Query(default=30, ge=1, le=365),
+    _admin: dict = Depends(get_current_admin_user),
+):
+    rows = get_notify_channel_stats(days=days)
+    return [NotifyChannelStatsItem(**row) for row in rows]
 
 
 @router.post("/leads/notify-test", response_model=NotifyTestResult)

@@ -95,6 +95,7 @@ export default function AdminBillingPage() {
   });
   const [auditPlanFilter, setAuditPlanFilter] = useState<"" | PlanCode>("");
   const [auditOffset, setAuditOffset] = useState(0);
+  const [sendingAlerts, setSendingAlerts] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -215,6 +216,29 @@ export default function AdminBillingPage() {
   const handleAuditPageChange = (nextOffset: number) => {
     setAuditOffset(nextOffset);
     void fetchAuditLog(selectedTenantId, nextOffset, auditPlanFilter);
+  };
+
+  const handleSendUsageAlerts = async () => {
+    setSendingAlerts(true);
+    setError("");
+    setNotice("");
+    try {
+      const response = await fetch(
+        `/api/billing/usage-alerts/notify?tenant_id=${encodeURIComponent(selectedTenantId)}`,
+        { method: "POST" },
+      );
+      if (!response.ok) {
+        throw new Error(await readError(response));
+      }
+      const result = (await response.json()) as { message: string };
+      setNotice(result.message);
+    } catch (sendError) {
+      setError(
+        sendError instanceof Error ? sendError.message : "임계치 알림 발송에 실패했습니다.",
+      );
+    } finally {
+      setSendingAlerts(false);
+    }
   };
 
   const handlePlanSave = async () => {
@@ -356,8 +380,36 @@ export default function AdminBillingPage() {
                 borderLeft: "4px solid #f59e0b",
               }}
             >
-              <div style={{ color: "#fcd34d", fontWeight: 600, marginBottom: "8px" }}>
-                사용량 임계치 알림 ({summary.alert_thresholds?.join("%, ") ?? "80, 90"}%)
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "12px",
+                  flexWrap: "wrap",
+                  marginBottom: "8px",
+                }}
+              >
+                <div style={{ color: "#fcd34d", fontWeight: 600 }}>
+                  사용량 임계치 알림 ({summary.alert_thresholds?.join("%, ") ?? "80, 90"}%)
+                </div>
+                <button
+                  type="button"
+                  disabled={sendingAlerts}
+                  onClick={() => void handleSendUsageAlerts()}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "6px",
+                    border: "1px solid rgba(245,158,11,0.4)",
+                    background: "rgba(245,158,11,0.15)",
+                    color: "#fcd34d",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                  }}
+                >
+                  {sendingAlerts ? "발송 중..." : "Slack/이메일 발송"}
+                </button>
               </div>
               <ul style={{ margin: 0, paddingLeft: "18px", color: "#fde68a", fontSize: "13px" }}>
                 {summary.usage_alerts.map((alert) => (
