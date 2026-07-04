@@ -7,27 +7,17 @@ Local PM2 version: 7.0.3
 ┌─────┬────────────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
 │ id  │ name                       │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├─────┼────────────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 193 │ aicallcenter-backend       │ default     │ N/A     │ fork    │ 7596     │ 70m    │ 1    │ online    │ 0%       │ 275.3mb  │ Adminis… │ disabled │
-│ 195 │ aicallcenter-caddy         │ default     │ N/A     │ fork    │ 7776     │ 22m    │ 0    │ online    │ 0%       │ 35.1mb   │ Adminis… │ disabled │
-│ 194 │ aicallcenter-frontend      │ default     │ N/A     │ fork    │ 4212     │ 70m    │ 1    │ online    │ 0%       │ 114.5mb  │ Adminis… │ disabled │
-│ 199 │ csautobot-backend          │ default     │ N/A     │ fork    │ 4064     │ 28s    │ 0    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
-│ 200 │ csautobot-frontend         │ default     │ 16.2.9  │ fork    │ 9764     │ 28s    │ 0    │ online    │ 0%       │ 115.7mb  │ Adminis… │ disabled │
-│ 196 │ ocppautomation-frontend    │ default     │ 16.2.3  │ fork    │ 2924     │ 15m    │ 0    │ online    │ 0%       │ 132.2mb  │ Adminis… │ disabled │
+│ 195 │ aicallcenter-caddy         │ default     │ N/A     │ fork    │ 7776     │ 36m    │ 0    │ online    │ 0%       │ 35.2mb   │ Adminis… │ disabled │
+│ 196 │ ocppautomation-frontend    │ default     │ 16.2.3  │ fork    │ 2924     │ 29m    │ 0    │ online    │ 0.8%     │ 132.0mb  │ Adminis… │ disabled │
 └─────┴────────────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
 --- NETSTAT PORTS 5000/8000 ---
-  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       9764
-  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       3864
 --- RUNNING PROCESSES ---
 
   Id       CPU WorkingSet ProcessName
   --       --- ---------- -----------
-1640 55.171875   87011328 node       
-2924  3.546875  138657792 node       
-4212  2.984375  120045568 node       
-9764   1.78125  121348096 node       
-3864   4.90625  173666304 python     
-4064         0    3125248 python     
-7596      60.5  288620544 python     
+1640 55.453125   87035904 node       
+2924     3.625  138391552 node       
+7516 15.859375  165265408 node       
 
 
 --- SCHEDULED TASKS (PM2) ---
