@@ -63,3 +63,13 @@ class TestLeadNotifier:
         args, kwargs = mock_client.post.call_args
         assert "hooks.slack.com" in args[0]
         assert kwargs["json"]["text"].startswith("[CSAutobot]")
+
+    def test_webhook_retries_then_dead_letter(self, mocker):
+        mocker.patch("services.lead_notifier.time.sleep")
+        mocker.patch(
+            "services.lead_notifier._send_webhook",
+            side_effect=RuntimeError("webhook down"),
+        )
+        record_mock = mocker.patch("services.lead_notifier.record_notify_failure")
+        notify_new_lead(SAMPLE_LEAD)
+        record_mock.assert_called_once_with(1, "webhook", "webhook down")

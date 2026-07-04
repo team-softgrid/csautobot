@@ -23,6 +23,17 @@ def init_leads_db() -> None:
         )
         """
     )
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS lead_notify_failures (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            lead_id INTEGER,
+            channel TEXT NOT NULL,
+            error_message TEXT NOT NULL,
+            created_at REAL NOT NULL
+        )
+        """
+    )
     conn.commit()
     conn.close()
 
@@ -98,5 +109,37 @@ def update_lead_status(lead_id: int, status: str) -> dict[str, Any] | None:
         conn.commit()
         row = conn.execute("SELECT * FROM leads WHERE id = ?", (lead_id,)).fetchone()
         return dict(row) if row else None
+    finally:
+        conn.close()
+
+
+def record_notify_failure(lead_id: int, channel: str, error_message: str) -> None:
+    conn = sqlite3.connect(LEADS_DB_PATH)
+    try:
+        conn.execute(
+            """
+            INSERT INTO lead_notify_failures (lead_id, channel, error_message, created_at)
+            VALUES (?, ?, ?, ?)
+            """,
+            (lead_id, channel, error_message[:2000], time.time()),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def list_notify_failures(*, limit: int = 50) -> list[dict[str, Any]]:
+    conn = sqlite3.connect(LEADS_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    try:
+        rows = conn.execute(
+            """
+            SELECT * FROM lead_notify_failures
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+        return [dict(r) for r in rows]
     finally:
         conn.close()

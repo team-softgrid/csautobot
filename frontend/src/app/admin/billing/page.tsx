@@ -32,6 +32,9 @@ const FEATURE_LABELS: Record<string, string> = {
   AI_GENERATION: "AI 생성 (점검·견적)",
 };
 
+const PLAN_OPTIONS = ["FREE", "PRO", "ENTERPRISE"] as const;
+type PlanCode = (typeof PLAN_OPTIONS)[number];
+
 function formatLimit(limit: number | null): string {
   return limit === null ? "무제한" : limit.toLocaleString("ko-KR");
 }
@@ -52,6 +55,9 @@ export default function AdminBillingPage() {
   const [tenants, setTenants] = useState<TenantOption[]>([]);
   const [selectedTenantId, setSelectedTenantId] = useState(DEFAULT_TENANT_ID);
   const [summary, setSummary] = useState<BillingSummary | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<PlanCode>("FREE");
+  const [savingPlan, setSavingPlan] = useState(false);
+  const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -90,6 +96,7 @@ export default function AdminBillingPage() {
         }
         const data = (await response.json()) as BillingSummary;
         setSummary(data);
+        setSelectedPlan(data.plan_code as PlanCode);
       } catch (fetchError) {
         setSummary(null);
         setError(
@@ -132,6 +139,35 @@ export default function AdminBillingPage() {
       localStorage.setItem("csautobot_tenant_id", tenantId);
     }
     void fetchSummary(tenantId);
+  };
+
+  const handlePlanSave = async () => {
+    setSavingPlan(true);
+    setError("");
+    setNotice("");
+    try {
+      const response = await fetch(
+        `/api/billing/tenants/${encodeURIComponent(selectedTenantId)}/plan`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ plan_code: selectedPlan }),
+        },
+      );
+      if (!response.ok) {
+        throw new Error(await readError(response));
+      }
+      setNotice("플랜이 변경되었습니다.");
+      const list = await fetchTenants();
+      setTenants(list);
+      await fetchSummary(selectedTenantId);
+    } catch (saveError) {
+      setError(
+        saveError instanceof Error ? saveError.message : "플랜 변경에 실패했습니다.",
+      );
+    } finally {
+      setSavingPlan(false);
+    }
   };
 
   return (
@@ -215,6 +251,20 @@ export default function AdminBillingPage() {
         </div>
       )}
 
+      {notice && (
+        <div
+          className="glass-panel"
+          style={{
+            padding: "16px",
+            marginBottom: "16px",
+            borderLeft: "4px solid #10b981",
+            color: "#86efac",
+          }}
+        >
+          {notice}
+        </div>
+      )}
+
       {loading ? (
         <p style={{ color: "#94a3b8" }}>불러오는 중...</p>
       ) : summary ? (
@@ -235,7 +285,43 @@ export default function AdminBillingPage() {
             </div>
             <div>
               <div style={{ fontSize: "12px", color: "#64748b", marginBottom: "4px" }}>플랜</div>
-              <div style={{ fontSize: "18px", fontWeight: 700, color: "#06b6d4" }}>{summary.plan_code}</div>
+              <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+                <select
+                  value={selectedPlan}
+                  onChange={(e) => setSelectedPlan(e.target.value as PlanCode)}
+                  disabled={savingPlan}
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: "8px",
+                    color: "#06b6d4",
+                    padding: "8px 12px",
+                    fontWeight: 700,
+                  }}
+                >
+                  {PLAN_OPTIONS.map((plan) => (
+                    <option key={plan} value={plan}>
+                      {plan}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => void handlePlanSave()}
+                  disabled={savingPlan || selectedPlan === summary.plan_code}
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(6,182,212,0.3)",
+                    background: "rgba(6,182,212,0.1)",
+                    color: "#06b6d4",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                  }}
+                >
+                  {savingPlan ? "저장 중..." : "플랜 저장"}
+                </button>
+              </div>
             </div>
             <div>
               <div style={{ fontSize: "12px", color: "#64748b", marginBottom: "4px" }}>집계 시작</div>

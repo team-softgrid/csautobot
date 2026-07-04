@@ -22,6 +22,7 @@ PLAN_LIMITS: dict[str, dict[str, int | None]] = {
 }
 
 DEFAULT_TENANT_ID = "default_tenant"
+VALID_PLAN_CODES = tuple(PLAN_LIMITS.keys())
 
 
 def _month_start() -> datetime.datetime:
@@ -144,3 +145,34 @@ def list_tenants() -> list[dict[str, Any]]:
             "plan_code": get_plan_code(DEFAULT_TENANT_ID),
         }
     ]
+
+
+def list_plans() -> list[dict[str, Any]]:
+    return [
+        {"plan_code": code, "limits": PLAN_LIMITS[code]}
+        for code in VALID_PLAN_CODES
+    ]
+
+
+def update_tenant_plan(tenant_id: str, plan_code: str) -> dict[str, Any]:
+    plan = plan_code.upper()
+    if plan not in PLAN_LIMITS:
+        raise ValueError(f"Unsupported plan_code: {plan_code}")
+    tid = (tenant_id or DEFAULT_TENANT_ID).strip()
+    with get_db_context() as db:
+        tenant = db.query(Tenant).filter(Tenant.tenant_id == tid).first()
+        if not tenant:
+            tenant = Tenant(
+                tenant_id=tid,
+                tenant_name=tid.replace("_", " ").title(),
+                plan_code=plan,
+            )
+            db.add(tenant)
+        else:
+            tenant.plan_code = plan
+        db.flush()
+        return {
+            "tenant_id": tenant.tenant_id,
+            "tenant_name": tenant.tenant_name,
+            "plan_code": (tenant.plan_code or plan).upper(),
+        }

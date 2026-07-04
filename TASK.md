@@ -2,25 +2,26 @@
 
 > AGENTS.md §4-5 자율 루프 상태 저장소. 세션 재개 시 이 파일부터 읽습니다.
 
-## 현재 스프린트 (2026-07-04)
+## 현재 스프린트 (2026-07-04) — Sprint 5
 
 | ID | 태스크 | 상태 |
 |----|--------|:----:|
-| F1 | Admin billing tenant 선택 UI | done |
-| F2 | `GET /billing/admin/tenants` API | done |
-| F3 | leads Slack webhook 알림 | done |
+| G1 | Admin billing 플랜 변경 UI + PATCH API | done |
+| G2 | leads 알림 재시도 (3회) | done |
+| G3 | dead-letter 로그 + Admin UI | done |
 
 ## 이전 스프린트 (완료)
 
 | ID | 태스크 | 상태 |
 |----|--------|:----:|
+| F1~F3 | billing tenant 선택 + Slack 알림 | done |
 | E1~E3 | tenant_id + lead_notifier | done |
 | D1~D5 | usage metering + Admin UI | done |
 
 ## Done 기준 (AGENTS.md §2)
 
-- [x] `pytest tests/` pass + `--cov-fail-under=60`
-- [x] `cd frontend && npm run build` pass
+- [ ] `pytest tests/` pass + `--cov-fail-under=60`
+- [ ] `cd frontend && npm run build` pass
 - [ ] CI Harness Gate pass (PR push 후)
 - [ ] 프로덕션 배포
 
@@ -36,8 +37,8 @@
 
 ## 다음 스프린트 (대기)
 
-1. Admin billing — 플랜 변경 UI
-2. leads 알림 재시도 / dead-letter 로그
+1. leads 알림 수동 재전송 UI
+2. billing 플랜 변경 감사 로그
 3. `ERROR.md` 없음 유지
 
 ## Blocked
