@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 from auth_service import get_current_admin_user
 from leads_db import create_lead, list_leads, update_lead_status
+from services.lead_notifier import notify_new_lead
 
 router = APIRouter(tags=["Leads"])
 
@@ -59,6 +60,7 @@ def submit_lead(body: LeadCreateRequest):
         interest_plans=plans,
         message=body.message.strip() if body.message else None,
     )
+    notify_new_lead(dict(row))
     return LeadCreateResponse(
         id=int(row["id"]),
         status="NEW",
