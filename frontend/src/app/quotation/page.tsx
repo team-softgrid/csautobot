@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getApiUrl } from "../utils";
+import { getApiUrl, getTenantId, readApiError } from "../utils";
 
 interface PartItem {
   part_name: string;
@@ -47,10 +47,13 @@ export default function QuotationPage() {
         body: JSON.stringify({
           query: query.trim(),
           charger_type: chargerType,
+          tenant_id: getTenantId(),
         }),
       });
 
-      if (!res.ok) throw new Error("견적서 초안 생성 요청에 실패했습니다.");
+      if (!res.ok) {
+        throw new Error(await readApiError(res));
+      }
       const data = await res.json();
       
       setDraft({

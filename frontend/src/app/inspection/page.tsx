@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getApiUrl } from "../utils";
+import { getApiUrl, getTenantId, readApiError } from "../utils";
 
 interface ChecklistItem {
   item: string;
@@ -74,8 +74,13 @@ export default function InspectionPage() {
           cycle,
           checklist,
           memo,
+          tenant_id: getTenantId(),
         }),
       });
+      if (!res.ok) {
+        alert(await readApiError(res));
+        return;
+      }
       const data = await res.json();
       setDraft(data);
     } catch (err) {
@@ -93,6 +98,7 @@ export default function InspectionPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           inspection_id: inspectionId,
+          tenant_id: getTenantId(),
           site_id: siteId,
           inspection_cycle: cycle,
           inspection_type: type,

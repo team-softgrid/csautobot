@@ -6,36 +6,37 @@
 
 | ID | 태스크 | 상태 |
 |----|--------|:----:|
-| D1 | 점검·견적 AI draft → usage_meter 기록 | done |
-| D2 | `GET/PATCH /api/v1/leads` Admin API | done |
-| D3 | `GET /api/v1/billing/admin/summary` | done |
-| D4 | Admin UI: leads / billing 페이지 | done |
-| D5 | `frontend/src/lib/backend.ts` 프록시 유틸 | done |
+| E1 | 프론트 search/inspection/quotation → `tenant_id` 전달 | done |
+| E2 | `readApiError` 429 한도 메시지 | done |
+| E3 | `lead_notifier` — SMTP + CRM webhook | done |
 
 ## 이전 스프린트 (완료)
 
 | ID | 태스크 | 상태 |
 |----|--------|:----:|
-| A1 | `GET /health` 엔드포인트 | done |
-| A2 | `test_harness.py` ↔ 실제 API 동기화 | done |
-| B1 | `POST /api/v1/leads` 도입 상담 API | done |
-| B2 | 랜딩 Contact 폼 → API 연동 | done |
-| C1 | `billing_metering.py` + usage 집계 API | done |
-| C2 | 검색 API 쿼터 체크·기록 | done |
+| D1~D5 | usage metering + Admin leads/billing | done |
+| A1~C2 | Harness + leads + billing v1 | done |
 
 ## Done 기준 (AGENTS.md §2)
 
-- [x] `GET /health` → 200
 - [x] `pytest tests/` pass + `--cov-fail-under=60`
 - [x] `cd frontend && npm run build` pass
-- [x] CI Harness Gate pass (main)
-- [x] 프로덕션 배포 완료
-- [ ] Admin leads/billing 배포 후 검증
+- [ ] CI Harness Gate pass (PR push 후)
+- [ ] 프로덕션 배포
+
+## 환경 변수 (leads 알림, 선택)
+
+| 변수 | 용도 |
+|------|------|
+| `LEADS_NOTIFY_EMAIL` | 알림 수신 이메일 |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` | SMTP 발송 |
+| `LEADS_WEBHOOK_URL` | CRM webhook (JSON POST) |
+| `NEXT_PUBLIC_TENANT_ID` | 프론트 기본 tenant (미설정 시 `default_tenant`) |
 
 ## 다음 스프린트 (대기)
 
-1. 점검·견적 프론트에 tenant_id 전달
-2. leads 이메일 알림 / CRM 연동
+1. Admin billing — tenant 선택 UI
+2. leads Slack 알림
 3. `ERROR.md` 없음 유지
 
 ## Blocked

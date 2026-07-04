@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { getApiUrl } from "../utils";
+import { getApiUrl, getTenantId, readApiError } from "../utils";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -34,13 +34,14 @@ export default function SearchPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query: query.trim(),
+          tenant_id: getTenantId(),
           use_web_search: useWebSearch,
           k_hybrid: kHybrid,
           k_dense: kDense,
           k_sparse: kSparse,
         }),
       });
-      if (!res.ok) throw new Error("검색 요청에 실패했습니다.");
+      if (!res.ok) throw new Error(await readApiError(res));
       const data = await res.json();
       setResult(data);
     } catch (err) {
