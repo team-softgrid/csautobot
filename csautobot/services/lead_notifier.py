@@ -5,12 +5,17 @@ from __future__ import annotations
 import logging
 import os
 import smtplib
+import time
+from collections.abc import Callable
 from email.message import EmailMessage
 from typing import Any
 
 import httpx
 
+from leads_db import record_notify_failure
+
 logger = logging.getLogger(__name__)
+MAX_NOTIFY_RETRIES = 3
 
 
 def _lead_summary(lead: dict[str, Any]) -> str:
@@ -26,6 +31,23 @@ def _lead_summary(lead: dict[str, Any]) -> str:
         f"메시지: {message}\n"
         f"Lead ID: {lead.get('id', '-')}\n"
     )
+
+
+def _attempt_channel(channel: str, lead: dict[str, Any], send_fn: Callable[[dict[str, Any]], None]) -> None:
+    lead_id = int(lead.get("id") or 0)
+    last_exc: Exception | None = None
+    for attempt in range(MAX_NOTIFY_RETRIES):
+        try:
+            send_fn(lead)
+            return
+        except Exception as exc:
+            last_exc = exc
+            logger.warning("Lead %s attempt %s failed: %s", channel, attempt + 1, exc)
+            if attempt < MAX_NOTIFY_RETRIES - 1:
+                time.sleep(0.2 * (attempt + 1))
+    if last_exc is not None:
+        record_notify_failure(lead_id, channel, str(last_exc))
+        logger.error("Lead %s dead-letter lead_id=%s: %s", channel, lead_id, last_exc)
 
 
 def _send_webhook(lead: dict[str, Any]) -> None:
@@ -118,15 +140,6 @@ def _send_smtp(lead: dict[str, Any]) -> None:
 def notify_new_lead(lead: dict[str, Any]) -> None:
     """Notify ops/CRM about a new lead. Failures are logged, never raised."""
     logger.info("New lead #%s: %s", lead.get("id"), lead.get("company_name"))
-    try:
-        _send_webhook(lead)
-    except Exception as exc:
-        logger.warning("Lead webhook failed: %s", exc)
-    try:
-        _send_slack(lead)
-    except Exception as exc:
-        logger.warning("Lead Slack notification failed: %s", exc)
-    try:
-        _send_smtp(lead)
-    except Exception as exc:
-        logger.warning("Lead email notification failed: %s", exc)
+    _attempt_channel("webhook", lead, _send_webhook)
+    _attempt_channel("slack", lead, _send_slack)
+    _attempt_channel("smtp", lead, _send_smtp)

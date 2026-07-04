@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from auth_service import get_current_admin_user
-from leads_db import create_lead, list_leads, update_lead_status
+from leads_db import create_lead, list_leads, list_notify_failures, update_lead_status
 from services.lead_notifier import notify_new_lead
 
 router = APIRouter(tags=["Leads"])
@@ -43,6 +43,14 @@ class LeadItem(BaseModel):
 
 class LeadStatusUpdate(BaseModel):
     status: Literal["NEW", "CONTACTED", "CLOSED"]
+
+
+class NotifyFailureItem(BaseModel):
+    id: int
+    lead_id: int | None
+    channel: str
+    error_message: str
+    created_at: float
 
 
 @router.post("/leads", response_model=LeadCreateResponse, status_code=201)
@@ -88,3 +96,12 @@ def patch_lead_status(
     if not row:
         raise HTTPException(status_code=404, detail="Lead not found")
     return LeadItem(**row)
+
+
+@router.get("/leads/notify-failures", response_model=List[NotifyFailureItem])
+def get_notify_failures(
+    limit: int = Query(default=50, ge=1, le=200),
+    _admin: dict = Depends(get_current_admin_user),
+):
+    rows = list_notify_failures(limit=limit)
+    return [NotifyFailureItem(**row) for row in rows]

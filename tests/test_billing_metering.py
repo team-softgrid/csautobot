@@ -5,10 +5,13 @@ from fastapi import HTTPException
 from services.billing_metering import (
     FEATURE_RAG_SEARCH,
     PLAN_LIMITS,
+    VALID_PLAN_CODES,
     check_quota,
     get_limit,
     get_monthly_summary,
+    list_plans,
     record_usage,
+    update_tenant_plan,
 )
 
 
@@ -43,3 +46,21 @@ class TestBillingMetering:
         with pytest.raises(HTTPException) as exc:
             check_quota(tenant_id, FEATURE_RAG_SEARCH)
         assert exc.value.status_code == 429
+
+    def test_list_plans_returns_all_codes(self):
+        plans = list_plans()
+        codes = {row["plan_code"] for row in plans}
+        assert codes == set(VALID_PLAN_CODES)
+        for row in plans:
+            assert row["limits"] == PLAN_LIMITS[row["plan_code"]]
+
+    def test_update_tenant_plan(self):
+        row = update_tenant_plan("pytest_plan_tenant", "PRO")
+        assert row["tenant_id"] == "pytest_plan_tenant"
+        assert row["plan_code"] == "PRO"
+        summary = get_monthly_summary("pytest_plan_tenant")
+        assert summary["plan_code"] == "PRO"
+
+    def test_update_tenant_plan_invalid_raises(self):
+        with pytest.raises(ValueError):
+            update_tenant_plan("pytest_plan_tenant", "INVALID")

@@ -6,6 +6,14 @@ import { Mail, Phone, RefreshCw } from "lucide-react";
 
 type LeadStatus = "NEW" | "CONTACTED" | "CLOSED";
 
+type NotifyFailure = {
+  id: number;
+  lead_id: number | null;
+  channel: string;
+  error_message: string;
+  created_at: number;
+};
+
 type Lead = {
   id: number;
   company_name: string;
@@ -45,6 +53,7 @@ async function readError(response: Response): Promise<string> {
 export default function AdminLeadsPage() {
   const router = useRouter();
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [failures, setFailures] = useState<NotifyFailure[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState<number | null>(null);
@@ -80,7 +89,17 @@ export default function AdminLeadsPage() {
   }, [clearSessionAndRedirect]);
 
   useEffect(() => {
-    void fetchLeads();
+    void (async () => {
+      await fetchLeads();
+      try {
+        const response = await fetch("/api/leads/notify-failures", { cache: "no-store" });
+        if (response.ok) {
+          setFailures((await response.json()) as NotifyFailure[]);
+        }
+      } catch {
+        // optional section — ignore fetch errors
+      }
+    })();
   }, [fetchLeads]);
 
   const updateStatus = async (lead: Lead, status: LeadStatus) => {
@@ -241,6 +260,38 @@ export default function AdminLeadsPage() {
           </div>
         )}
       </div>
+
+      {failures.length > 0 && (
+        <section className="glass-panel" style={{ padding: "24px", marginTop: "24px" }}>
+          <h3 style={{ margin: "0 0 12px", color: "#f8fafc", fontSize: "16px" }}>
+            알림 실패 로그 (dead-letter)
+          </h3>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", color: "#94a3b8" }}>
+                  <th style={{ padding: "10px 12px", textAlign: "left" }}>Lead ID</th>
+                  <th style={{ padding: "10px 12px", textAlign: "left" }}>채널</th>
+                  <th style={{ padding: "10px 12px", textAlign: "left" }}>오류</th>
+                  <th style={{ padding: "10px 12px", textAlign: "left" }}>시각</th>
+                </tr>
+              </thead>
+              <tbody>
+                {failures.map((row) => (
+                  <tr key={row.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                    <td style={{ padding: "10px 12px", color: "#e2e8f0" }}>{row.lead_id ?? "-"}</td>
+                    <td style={{ padding: "10px 12px", color: "#94a3b8" }}>{row.channel}</td>
+                    <td style={{ padding: "10px 12px", color: "#fca5a5", maxWidth: "360px" }}>{row.error_message}</td>
+                    <td style={{ padding: "10px 12px", color: "#94a3b8", whiteSpace: "nowrap" }}>
+                      {formatDate(row.created_at)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

@@ -92,10 +92,25 @@ class TestBilling:
         resp = client.get("/api/v1/billing/admin/tenants")
         assert resp.status_code in (401, 403)
 
+    def test_billing_admin_plans_requires_auth(self, client):
+        resp = client.get("/api/v1/billing/admin/plans")
+        assert resp.status_code in (401, 403)
+
+    def test_billing_admin_plan_patch_requires_auth(self, client):
+        resp = client.patch(
+            "/api/v1/billing/admin/tenants/default/plan",
+            json={"plan_code": "PRO"},
+        )
+        assert resp.status_code in (401, 403)
+
 
 class TestLeadsAdmin:
     def test_leads_list_requires_auth(self, client):
         resp = client.get("/api/v1/leads")
+        assert resp.status_code in (401, 403)
+
+    def test_notify_failures_requires_auth(self, client):
+        resp = client.get("/api/v1/leads/notify-failures")
         assert resp.status_code in (401, 403)
 
 
