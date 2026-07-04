@@ -173,3 +173,30 @@ def retry_lead_channel(lead: dict[str, Any], channel: str) -> bool:
     if last_exc is not None:
         record_notify_failure(lead_id, channel, str(last_exc))
     return False
+
+
+def get_notify_channel_status() -> list[dict[str, Any]]:
+    """Return whether each notification channel is configured (no secrets exposed)."""
+    return [
+        {
+            "channel": "webhook",
+            "label": "CRM Webhook",
+            "configured": bool(os.environ.get("LEADS_WEBHOOK_URL", "").strip()),
+            "env_var": "LEADS_WEBHOOK_URL",
+        },
+        {
+            "channel": "slack",
+            "label": "Slack",
+            "configured": bool(os.environ.get("LEADS_SLACK_WEBHOOK_URL", "").strip()),
+            "env_var": "LEADS_SLACK_WEBHOOK_URL",
+        },
+        {
+            "channel": "smtp",
+            "label": "이메일 (SMTP)",
+            "configured": bool(
+                os.environ.get("LEADS_NOTIFY_EMAIL", "").strip()
+                and os.environ.get("SMTP_HOST", "").strip()
+            ),
+            "env_var": "LEADS_NOTIFY_EMAIL, SMTP_HOST",
+        },
+    ]

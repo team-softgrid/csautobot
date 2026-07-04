@@ -14,7 +14,7 @@ from leads_db import (
     list_notify_failures,
     update_lead_status,
 )
-from services.lead_notifier import notify_new_lead, retry_lead_channel
+from services.lead_notifier import get_notify_channel_status, notify_new_lead, retry_lead_channel
 
 router = APIRouter(tags=["Leads"])
 
@@ -67,6 +67,13 @@ class NotifyRetryResponse(BaseModel):
     message: str
 
 
+class NotifyChannelStatusItem(BaseModel):
+    channel: str
+    label: str
+    configured: bool
+    env_var: str
+
+
 @router.post("/leads", response_model=LeadCreateResponse, status_code=201)
 def submit_lead(body: LeadCreateRequest):
     email = body.email.strip()
@@ -110,6 +117,13 @@ def patch_lead_status(
     if not row:
         raise HTTPException(status_code=404, detail="Lead not found")
     return LeadItem(**row)
+
+
+@router.get("/leads/notify-channels", response_model=List[NotifyChannelStatusItem])
+def get_notify_channels(
+    _admin: dict = Depends(get_current_admin_user),
+):
+    return [NotifyChannelStatusItem(**row) for row in get_notify_channel_status()]
 
 
 @router.get("/leads/notify-failures", response_model=List[NotifyFailureItem])

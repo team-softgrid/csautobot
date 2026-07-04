@@ -14,6 +14,13 @@ type NotifyFailure = {
   created_at: number;
 };
 
+type NotifyChannelStatus = {
+  channel: string;
+  label: string;
+  configured: boolean;
+  env_var: string;
+};
+
 type Lead = {
   id: number;
   company_name: string;
@@ -54,6 +61,7 @@ export default function AdminLeadsPage() {
   const router = useRouter();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [failures, setFailures] = useState<NotifyFailure[]>([]);
+  const [channels, setChannels] = useState<NotifyChannelStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState<number | null>(null);
@@ -104,6 +112,14 @@ export default function AdminLeadsPage() {
     void (async () => {
       await fetchLeads();
       await fetchFailures();
+      try {
+        const response = await fetch("/api/leads/notify-channels", { cache: "no-store" });
+        if (response.ok) {
+          setChannels((await response.json()) as NotifyChannelStatus[]);
+        }
+      } catch {
+        // optional section
+      }
     })();
   }, [fetchLeads, fetchFailures]);
 
@@ -209,6 +225,47 @@ export default function AdminLeadsPage() {
         >
           {error}
         </div>
+      )}
+
+      {channels.length > 0 && (
+        <section
+          className="glass-panel"
+          style={{ padding: "20px 24px", marginBottom: "20px" }}
+        >
+          <h3 style={{ margin: "0 0 12px", color: "#f8fafc", fontSize: "16px" }}>
+            알림 채널 설정 상태
+          </h3>
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+            {channels.map((ch) => (
+              <div
+                key={ch.channel}
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: "8px",
+                  border: `1px solid ${ch.configured ? "rgba(16,185,129,0.3)" : "rgba(239,68,68,0.3)"}`,
+                  background: ch.configured ? "rgba(16,185,129,0.08)" : "rgba(239,68,68,0.08)",
+                  minWidth: "180px",
+                }}
+              >
+                <div style={{ fontWeight: 600, color: "#f8fafc", fontSize: "14px" }}>
+                  {ch.label}
+                </div>
+                <div
+                  style={{
+                    fontSize: "12px",
+                    marginTop: "4px",
+                    color: ch.configured ? "#86efac" : "#fca5a5",
+                  }}
+                >
+                  {ch.configured ? "설정됨" : "미설정"}
+                </div>
+                <div style={{ fontSize: "11px", color: "#64748b", marginTop: "4px" }}>
+                  {ch.env_var}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
       <div className="glass-panel" style={{ padding: "0", overflow: "hidden" }}>

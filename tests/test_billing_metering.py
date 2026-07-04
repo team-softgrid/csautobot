@@ -68,8 +68,23 @@ class TestBillingMetering:
 
     def test_update_tenant_plan_records_audit(self):
         update_tenant_plan("pytest_audit_tenant", "PRO", changed_by="admin@test.com")
-        audits = list_plan_change_audits(tenant_id="pytest_audit_tenant", limit=10)
-        assert len(audits) >= 1
-        assert audits[0]["old_plan"] == "FREE"
-        assert audits[0]["new_plan"] == "PRO"
-        assert audits[0]["changed_by"] == "admin@test.com"
+        page = list_plan_change_audits(tenant_id="pytest_audit_tenant", limit=10)
+        assert page["total"] >= 1
+        assert len(page["items"]) >= 1
+        assert page["items"][0]["old_plan"] == "FREE"
+        assert page["items"][0]["new_plan"] == "PRO"
+        assert page["items"][0]["changed_by"] == "admin@test.com"
+
+    def test_plan_audit_pagination_and_filter(self):
+        tenant = "pytest_audit_page_tenant"
+        update_tenant_plan(tenant, "PRO", changed_by="admin1")
+        update_tenant_plan(tenant, "ENTERPRISE", changed_by="admin2")
+        page = list_plan_change_audits(tenant_id=tenant, limit=1, offset=0)
+        assert page["total"] >= 2
+        assert len(page["items"]) == 1
+        filtered = list_plan_change_audits(
+            tenant_id=tenant,
+            new_plan="PRO",
+            limit=10,
+        )
+        assert all(item["new_plan"] == "PRO" for item in filtered["items"])

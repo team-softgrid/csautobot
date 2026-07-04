@@ -198,18 +198,25 @@ def update_tenant_plan(
 def list_plan_change_audits(
     *,
     tenant_id: str | None = None,
-    limit: int = 50,
-) -> list[dict[str, Any]]:
+    new_plan: str | None = None,
+    limit: int = 20,
+    offset: int = 0,
+) -> dict[str, Any]:
     with get_db_context() as db:
         query = db.query(AuditLog).filter(AuditLog.action_code == "PLAN_CHANGE")
         if tenant_id:
             query = query.filter(AuditLog.tenant_id == tenant_id)
+        if new_plan:
+            plan = new_plan.upper()
+            query = query.filter(AuditLog.payload_json["new_plan"].as_string() == plan)
+        total = query.count()
         rows = (
             query.order_by(AuditLog.created_at.desc())
+            .offset(offset)
             .limit(limit)
             .all()
         )
-        return [
+        items = [
             {
                 "audit_id": row.audit_id,
                 "tenant_id": row.tenant_id,
@@ -220,3 +227,9 @@ def list_plan_change_audits(
             }
             for row in rows
         ]
+        return {
+            "items": items,
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+        }
