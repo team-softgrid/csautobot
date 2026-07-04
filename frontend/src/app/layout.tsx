@@ -11,6 +11,8 @@ const PAGE_ORDER = [
   { name: "🔎 AS 유사 사례 검색", path: "/search" },
   { name: "💡 AI 견적서 생성기", path: "/quotation" },
   { name: "📂 학습 데이터 관리", path: "/data-management" },
+  { name: "📋 도입 상담 리드", path: "/admin/leads" },
+  { name: "💳 과금 · 사용량", path: "/admin/billing" },
   { name: "👤 사용자 관리", path: "/admin/users" },
   { name: "📬 피드백 모음", path: "/feedback" },
 ];

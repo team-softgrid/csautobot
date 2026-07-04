@@ -31,6 +31,7 @@ class DraftRequest(BaseModel):
     cycle: str
     checklist: List[ChecklistItem]
     memo: str = ""
+    tenant_id: str = "default_tenant"
 
 class DraftResponse(BaseModel):
     draft_text: str
@@ -56,6 +57,15 @@ def get_preset_checklist(target: str = "충전기", cycle: str = "월간"):
 
 @router.post("/inspection/draft", response_model=DraftResponse)
 def create_ai_draft(req: DraftRequest):
+    from services.billing_metering import (
+        FEATURE_AI_GENERATION,
+        check_quota,
+        record_usage,
+    )
+
+    tenant_id = (req.tenant_id or "default_tenant").strip()
+    check_quota(tenant_id, FEATURE_AI_GENERATION)
+
     # Convert ChecklistItem list to list of dict
     checklist_dict = [x.model_dump() for x in req.checklist]
     try:
@@ -65,10 +75,13 @@ def create_ai_draft(req: DraftRequest):
             checklist=checklist_dict,
             memo=req.memo
         )
+        record_usage(tenant_id, FEATURE_AI_GENERATION, model_name="gpt-4o-mini")
         return DraftResponse(
             draft_text=draft.draft_text,
             summary_json=draft.summary_json
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI draft generation failed: {e}")
 

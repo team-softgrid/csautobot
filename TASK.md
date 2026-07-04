@@ -6,9 +6,18 @@
 
 | ID | 태스크 | 상태 |
 |----|--------|:----:|
+| D1 | 점검·견적 AI draft → usage_meter 기록 | done |
+| D2 | `GET/PATCH /api/v1/leads` Admin API | done |
+| D3 | `GET /api/v1/billing/admin/summary` | done |
+| D4 | Admin UI: leads / billing 페이지 | done |
+| D5 | `frontend/src/lib/backend.ts` 프록시 유틸 | done |
+
+## 이전 스프린트 (완료)
+
+| ID | 태스크 | 상태 |
+|----|--------|:----:|
 | A1 | `GET /health` 엔드포인트 | done |
 | A2 | `test_harness.py` ↔ 실제 API 동기화 | done |
-| A3 | `AGENTS.md` 문서 정합 | done |
 | B1 | `POST /api/v1/leads` 도입 상담 API | done |
 | B2 | 랜딩 Contact 폼 → API 연동 | done |
 | C1 | `billing_metering.py` + usage 집계 API | done |
@@ -17,16 +26,16 @@
 ## Done 기준 (AGENTS.md §2)
 
 - [x] `GET /health` → 200
-- [x] `pytest tests/` 22 passed (로컬)
+- [x] `pytest tests/` pass + `--cov-fail-under=60`
 - [x] `cd frontend && npm run build` pass
-- [ ] `pytest --cov-fail-under=60` CI 확인
-- [ ] `.env`, `*.db` Git 미포함 (배포 전 확인)
-- [ ] `gh run watch` CI pass (push 후)
+- [x] CI Harness Gate pass (main)
+- [x] 프로덕션 배포 완료
+- [ ] Admin leads/billing 배포 후 검증
 
 ## 다음 스프린트 (대기)
 
-1. 검색·점검·견적 전 API에 usage_meter 기록 확대
-2. Admin UI: leads 목록 / billing usage 조회
+1. 점검·견적 프론트에 tenant_id 전달
+2. leads 이메일 알림 / CRM 연동
 3. `ERROR.md` 없음 유지
 
 ## Blocked

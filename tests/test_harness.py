@@ -84,6 +84,65 @@ class TestBilling:
         assert "usage" in data
         assert "RAG_SEARCH" in data["usage"]
 
+    def test_billing_admin_requires_auth(self, client):
+        resp = client.get("/api/v1/billing/admin/summary")
+        assert resp.status_code in (401, 403)
+
+
+class TestLeadsAdmin:
+    def test_leads_list_requires_auth(self, client):
+        resp = client.get("/api/v1/leads")
+        assert resp.status_code in (401, 403)
+
+
+class TestInspectionMetering:
+    def test_inspection_draft_records_usage(self, client, mocker):
+        mock_draft = mocker.MagicMock()
+        mock_draft.draft_text = "test draft"
+        mock_draft.summary_json = {"risk": "low"}
+        mocker.patch(
+            "app.routes.inspection.svc.generate_inspection_draft",
+            return_value=mock_draft,
+        )
+        resp = client.post(
+            "/api/v1/inspection/draft",
+            json={
+                "target": "충전기",
+                "cycle": "월간",
+                "checklist": [{"item": "외관", "status": "정상", "note": ""}],
+                "memo": "테스트",
+            },
+        )
+        assert resp.status_code == 200
+        usage_resp = client.get("/api/v1/billing/usage/monthly")
+        assert usage_resp.json()["usage"]["AI_GENERATION"]["used"] >= 1
+
+
+class TestQuotationMetering:
+    def test_quotation_draft_records_usage(self, client, mocker):
+        from services.quotation_service import QuotationDraft
+
+        mocker.patch(
+            "app.routes.quotation.generate_quotation_draft",
+            return_value=QuotationDraft(
+                symptom_summary="증상",
+                likely_cause="원인",
+                parts=[],
+                dispatch_fee=0,
+                labor_fee=0,
+                supply_value=0,
+                vat=0,
+                total_amount=0,
+            ),
+        )
+        resp = client.post(
+            "/api/v1/quotation/draft",
+            json={"query": "충전기 오류", "charger_type": "급속"},
+        )
+        assert resp.status_code == 200
+        usage_resp = client.get("/api/v1/billing/usage/monthly")
+        assert usage_resp.json()["usage"]["AI_GENERATION"]["used"] >= 1
+
 
 class TestSearch:
     def test_search_empty_query_rejected(self, client):

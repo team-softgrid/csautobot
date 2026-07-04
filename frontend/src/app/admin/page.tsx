@@ -35,6 +35,18 @@ export default function AdminHomePage() {
       path: "/admin/users",
       color: "#a855f7",
     },
+    {
+      title: "📋 도입 상담 리드",
+      description: "랜딩 Contact 폼으로 접수된 B2B 도입 문의를 확인하고 상태를 관리합니다.",
+      path: "/admin/leads",
+      color: "#f59e0b",
+    },
+    {
+      title: "💳 과금 · 사용량",
+      description: "테넌트별 월간 RAG 검색·AI 생성 사용량과 플랜 한도를 모니터링합니다.",
+      path: "/admin/billing",
+      color: "#10b981",
+    },
   ];
 
   return (
