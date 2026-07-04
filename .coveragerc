@@ -1,0 +1,22 @@
+[run]
+source = csautobot
+omit =
+    csautobot/app/pages/*
+    csautobot/app/theme.py
+    csautobot/app/ui.py
+    csautobot/streamlit_app.py
+    csautobot/ingest.py
+    csautobot/build_index.py
+    csautobot/inspect_columns.py
+    csautobot/paths.py
+    csautobot/retrieval.py
+    csautobot/normalizer.py
+    csautobot/services/pricing_service.py
+    csautobot/services/quotation_service.py
+    csautobot/services/inspection_service.py
+    csautobot/test_*.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:

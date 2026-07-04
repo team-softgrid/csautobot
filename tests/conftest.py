@@ -1,5 +1,6 @@
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -10,6 +11,8 @@ os.environ.setdefault("ANTHROPIC_API_KEY", "mock-anthropic-key")
 os.environ.setdefault("GOOGLE_API_KEY", "mock-google-key")
 os.environ.setdefault("SECRET_KEY", "test-secret-key-not-for-production")
 os.environ.setdefault("CHROMA_DB_PATH", ":memory:")
+_test_db = Path(tempfile.gettempdir()) / "csautobot_pytest.db"
+os.environ.setdefault("DATABASE_URL", f"sqlite:///{_test_db}")
 
 # csautobot 패키지 경로 추가
 ROOT = Path(__file__).resolve().parent.parent
@@ -17,6 +20,18 @@ CSAUTOBOT = ROOT / "csautobot"
 for p in [str(ROOT), str(CSAUTOBOT)]:
     if p not in sys.path:
         sys.path.insert(0, p)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def init_test_databases():
+    """Harness tests run outside TestClient startup; ensure SQLite schemas exist."""
+    from auth_db import init_auth_db
+    from leads_db import init_leads_db
+    from storage.db import init_db
+
+    init_db()
+    init_auth_db()
+    init_leads_db()
 
 
 @pytest.fixture(scope="session")
