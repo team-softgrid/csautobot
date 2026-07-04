@@ -23,6 +23,7 @@ PLAN_LIMITS: dict[str, dict[str, int | None]] = {
 
 DEFAULT_TENANT_ID = "default_tenant"
 VALID_PLAN_CODES = tuple(PLAN_LIMITS.keys())
+USAGE_ALERT_THRESHOLDS = (80, 90)
 
 
 def _month_start() -> datetime.datetime:
@@ -101,6 +102,31 @@ def record_usage(
         )
 
 
+def _compute_usage_alerts(usage: dict[str, Any]) -> list[dict[str, Any]]:
+    alerts: list[dict[str, Any]] = []
+    for code, feature in usage.items():
+        limit = feature["limit"]
+        used = feature["used"]
+        if limit is None or limit <= 0:
+            continue
+        percent_used = round(used / limit * 100)
+        matched = [t for t in USAGE_ALERT_THRESHOLDS if percent_used >= t]
+        if not matched:
+            continue
+        threshold = max(matched)
+        alerts.append(
+            {
+                "feature_code": code,
+                "used": used,
+                "limit": limit,
+                "percent_used": percent_used,
+                "threshold_percent": threshold,
+                "level": "critical" if threshold >= 90 else "warning",
+            }
+        )
+    return alerts
+
+
 def get_monthly_summary(tenant_id: str = DEFAULT_TENANT_ID) -> dict[str, Any]:
     plan = get_plan_code(tenant_id)
     features = [FEATURE_RAG_SEARCH, FEATURE_AI_GENERATION]
@@ -118,6 +144,8 @@ def get_monthly_summary(tenant_id: str = DEFAULT_TENANT_ID) -> dict[str, Any]:
         "plan_code": plan,
         "period_start": _month_start().isoformat() + "Z",
         "usage": usage,
+        "usage_alerts": _compute_usage_alerts(usage),
+        "alert_thresholds": list(USAGE_ALERT_THRESHOLDS),
     }
 
 

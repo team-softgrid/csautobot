@@ -2,20 +2,20 @@
 
 > AGENTS.md §4-5 자율 루프 상태 저장소. 세션 재개 시 이 파일부터 읽습니다.
 
-## 현재 스프린트 (2026-07-04) — Sprint 7
+## 현재 스프린트 (2026-07-04) — Sprint 8
 
 | ID | 태스크 | 상태 |
 |----|--------|:----:|
-| I1 | leads 알림 채널별 설정 상태 API + UI | done |
-| I2 | billing 감사 로그 페이지네이션 | done |
-| I3 | billing 감사 로그 new_plan 필터 | done |
+| J1 | leads 알림 테스트 발송 (dry-run) API + UI | done |
+| J2 | billing 사용량 임계치 알림 (80%/90%) | done |
+| J3 | Admin billing 임계치 경고 UI | done |
 
 ## 이전 스프린트 (완료)
 
 | ID | 태스크 | 상태 |
 |----|--------|:----:|
+| I1~I3 | channel status + audit pagination | done |
 | H1~H3 | notify retry + plan audit log | done |
-| G1~G3 | 플랜 변경 + dead-letter | done |
 
 ## Done 기준 (AGENTS.md §2)
 
@@ -36,8 +36,8 @@
 
 ## 다음 스프린트 (대기)
 
-1. leads 알림 테스트 발송 (dry-run)
-2. billing 사용량 알림 임계치
+1. billing 임계치 Slack/이메일 알림 발송
+2. leads 채널별 최근 성공/실패 통계
 3. `ERROR.md` 없음 유지
 
 ## Blocked

@@ -14,7 +14,12 @@ from leads_db import (
     list_notify_failures,
     update_lead_status,
 )
-from services.lead_notifier import get_notify_channel_status, notify_new_lead, retry_lead_channel
+from services.lead_notifier import (
+    get_notify_channel_status,
+    notify_new_lead,
+    retry_lead_channel,
+    send_test_notification,
+)
 
 router = APIRouter(tags=["Leads"])
 
@@ -74,6 +79,19 @@ class NotifyChannelStatusItem(BaseModel):
     env_var: str
 
 
+class NotifyTestRequest(BaseModel):
+    channel: Literal["webhook", "slack", "smtp"] = "slack"
+    dry_run: bool = True
+
+
+class NotifyTestResult(BaseModel):
+    channel: str
+    configured: bool
+    dry_run: bool
+    success: bool
+    message: str
+
+
 @router.post("/leads", response_model=LeadCreateResponse, status_code=201)
 def submit_lead(body: LeadCreateRequest):
     email = body.email.strip()
@@ -124,6 +142,15 @@ def get_notify_channels(
     _admin: dict = Depends(get_current_admin_user),
 ):
     return [NotifyChannelStatusItem(**row) for row in get_notify_channel_status()]
+
+
+@router.post("/leads/notify-test", response_model=NotifyTestResult)
+def post_notify_test(
+    body: NotifyTestRequest,
+    _admin: dict = Depends(get_current_admin_user),
+):
+    result = send_test_notification(body.channel, dry_run=body.dry_run)
+    return NotifyTestResult(**result)
 
 
 @router.get("/leads/notify-failures", response_model=List[NotifyFailureItem])

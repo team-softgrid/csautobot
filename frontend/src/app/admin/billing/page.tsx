@@ -19,6 +19,17 @@ type BillingSummary = {
     RAG_SEARCH: UsageFeature;
     AI_GENERATION: UsageFeature;
   };
+  usage_alerts?: UsageAlert[];
+  alert_thresholds?: number[];
+};
+
+type UsageAlert = {
+  feature_code: string;
+  used: number;
+  limit: number;
+  percent_used: number;
+  threshold_percent: number;
+  level: "warning" | "critical";
 };
 
 type TenantOption = {
@@ -336,6 +347,31 @@ export default function AdminBillingPage() {
         <p style={{ color: "#94a3b8" }}>불러오는 중...</p>
       ) : summary ? (
         <>
+          {summary.usage_alerts && summary.usage_alerts.length > 0 && (
+            <div
+              className="glass-panel"
+              style={{
+                padding: "16px 20px",
+                marginBottom: "20px",
+                borderLeft: "4px solid #f59e0b",
+              }}
+            >
+              <div style={{ color: "#fcd34d", fontWeight: 600, marginBottom: "8px" }}>
+                사용량 임계치 알림 ({summary.alert_thresholds?.join("%, ") ?? "80, 90"}%)
+              </div>
+              <ul style={{ margin: 0, paddingLeft: "18px", color: "#fde68a", fontSize: "13px" }}>
+                {summary.usage_alerts.map((alert) => (
+                  <li key={`${alert.feature_code}-${alert.threshold_percent}`}>
+                    {FEATURE_LABELS[alert.feature_code] || alert.feature_code}:{" "}
+                    {alert.percent_used}% 사용 ({alert.used.toLocaleString("ko-KR")} /{" "}
+                    {alert.limit.toLocaleString("ko-KR")}) — {alert.threshold_percent}%{" "}
+                    {alert.level === "critical" ? "위험" : "주의"}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div
             className="glass-panel"
             style={{

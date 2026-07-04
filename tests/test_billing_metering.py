@@ -5,7 +5,9 @@ from fastapi import HTTPException
 from services.billing_metering import (
     FEATURE_RAG_SEARCH,
     PLAN_LIMITS,
+    USAGE_ALERT_THRESHOLDS,
     VALID_PLAN_CODES,
+    _compute_usage_alerts,
     check_quota,
     get_limit,
     get_monthly_summary,
@@ -88,3 +90,23 @@ class TestBillingMetering:
             limit=10,
         )
         assert all(item["new_plan"] == "PRO" for item in filtered["items"])
+
+    def test_usage_alerts_at_threshold(self, mocker):
+        mocker.patch(
+            "services.billing_metering.get_monthly_count",
+            side_effect=lambda _tid, code: 85 if code == FEATURE_RAG_SEARCH else 0,
+        )
+        mocker.patch("services.billing_metering.get_plan_code", return_value="FREE")
+        summary = get_monthly_summary("alert_test_tenant")
+        assert summary["alert_thresholds"] == list(USAGE_ALERT_THRESHOLDS)
+        assert len(summary["usage_alerts"]) >= 1
+        assert summary["usage_alerts"][0]["percent_used"] == 85
+        assert summary["usage_alerts"][0]["level"] == "warning"
+
+    def test_compute_usage_alerts_critical(self):
+        usage = {
+            FEATURE_RAG_SEARCH: {"used": 95, "limit": 100, "remaining": 5},
+        }
+        alerts = _compute_usage_alerts(usage)
+        assert alerts[0]["threshold_percent"] == 90
+        assert alerts[0]["level"] == "critical"
