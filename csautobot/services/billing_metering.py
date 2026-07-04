@@ -118,3 +118,29 @@ def get_monthly_summary(tenant_id: str = DEFAULT_TENANT_ID) -> dict[str, Any]:
         "period_start": _month_start().isoformat() + "Z",
         "usage": usage,
     }
+
+
+def list_tenants() -> list[dict[str, Any]]:
+    """Return registered tenants for admin billing UI."""
+    with get_db_context() as db:
+        rows = (
+            db.query(Tenant)
+            .order_by(Tenant.tenant_id.asc())
+            .all()
+        )
+        if rows:
+            return [
+                {
+                    "tenant_id": t.tenant_id,
+                    "tenant_name": t.tenant_name,
+                    "plan_code": (t.plan_code or "FREE").upper(),
+                }
+                for t in rows
+            ]
+    return [
+        {
+            "tenant_id": DEFAULT_TENANT_ID,
+            "tenant_name": "Default Tenant",
+            "plan_code": get_plan_code(DEFAULT_TENANT_ID),
+        }
+    ]

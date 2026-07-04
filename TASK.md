@@ -6,16 +6,16 @@
 
 | ID | 태스크 | 상태 |
 |----|--------|:----:|
-| E1 | 프론트 search/inspection/quotation → `tenant_id` 전달 | done |
-| E2 | `readApiError` 429 한도 메시지 | done |
-| E3 | `lead_notifier` — SMTP + CRM webhook | done |
+| F1 | Admin billing tenant 선택 UI | done |
+| F2 | `GET /billing/admin/tenants` API | done |
+| F3 | leads Slack webhook 알림 | done |
 
 ## 이전 스프린트 (완료)
 
 | ID | 태스크 | 상태 |
 |----|--------|:----:|
-| D1~D5 | usage metering + Admin leads/billing | done |
-| A1~C2 | Harness + leads + billing v1 | done |
+| E1~E3 | tenant_id + lead_notifier | done |
+| D1~D5 | usage metering + Admin UI | done |
 
 ## Done 기준 (AGENTS.md §2)
 
@@ -29,14 +29,15 @@
 | 변수 | 용도 |
 |------|------|
 | `LEADS_NOTIFY_EMAIL` | 알림 수신 이메일 |
-| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` | SMTP 발송 |
+| `SMTP_*` | SMTP 발송 |
 | `LEADS_WEBHOOK_URL` | CRM webhook (JSON POST) |
-| `NEXT_PUBLIC_TENANT_ID` | 프론트 기본 tenant (미설정 시 `default_tenant`) |
+| `LEADS_SLACK_WEBHOOK_URL` | Slack Incoming Webhook |
+| `NEXT_PUBLIC_TENANT_ID` | 프론트 기본 tenant |
 
 ## 다음 스프린트 (대기)
 
-1. Admin billing — tenant 선택 UI
-2. leads Slack 알림
+1. Admin billing — 플랜 변경 UI
+2. leads 알림 재시도 / dead-letter 로그
 3. `ERROR.md` 없음 유지
 
 ## Blocked

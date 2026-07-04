@@ -88,6 +88,10 @@ class TestBilling:
         resp = client.get("/api/v1/billing/admin/summary")
         assert resp.status_code in (401, 403)
 
+    def test_billing_admin_tenants_requires_auth(self, client):
+        resp = client.get("/api/v1/billing/admin/tenants")
+        assert resp.status_code in (401, 403)
+
 
 class TestLeadsAdmin:
     def test_leads_list_requires_auth(self, client):

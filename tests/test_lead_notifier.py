@@ -47,3 +47,19 @@ class TestLeadNotifier:
         )
         notify_new_lead(SAMPLE_LEAD)
         smtp_mock.assert_not_called()
+
+    def test_slack_called_when_url_set(self, mocker):
+        mock_client = MagicMock()
+        mock_client.__enter__ = MagicMock(return_value=mock_client)
+        mock_client.__exit__ = MagicMock(return_value=False)
+        mocker.patch("services.lead_notifier.httpx.Client", return_value=mock_client)
+        mocker.patch.dict(
+            "os.environ",
+            {"LEADS_SLACK_WEBHOOK_URL": "https://hooks.slack.com/services/TEST"},
+            clear=False,
+        )
+        notify_new_lead(SAMPLE_LEAD)
+        mock_client.post.assert_called_once()
+        args, kwargs = mock_client.post.call_args
+        assert "hooks.slack.com" in args[0]
+        assert kwargs["json"]["text"].startswith("[CSAutobot]")
