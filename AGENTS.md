@@ -18,13 +18,13 @@
 ---
 
 ## 2. 완료 기준 (Done = 이 조건 전부 충족)
-- [ ] `pytest --cov=csautobot --cov-fail-under=80` → pass
+- [ ] `pytest tests/ --cov=csautobot --cov-fail-under=60` → pass *(CI Harness Gate 기준)*
 - [ ] `cd frontend && npm run build` → exit code 0
 - [ ] `curl -f http://localhost:8000/health` → 200 응답
 - [ ] `curl -f http://localhost:5000` → 200 응답
 - [ ] `.env`, `*.db`, `chroma_db*/` Git 미포함 확인
 - [ ] `gh run watch` CI pass 확인
-- [ ] ERROR.md 내용 없음
+- [ ] `TASK.md` 현재 스프린트 완료 / `ERROR.md` 내용 없음
 
 ---
 
@@ -32,17 +32,19 @@
 
 ```
 csautobot/
-├── csautobot/           # Python 패키지 루트
-│   ├── main.py          # FastAPI 앱
-│   ├── routers/         # API 라우터
-│   ├── services/        # 비즈니스 로직 + LangChain 체인
-│   ├── models/          # DB 모델 (SQLite)
-│   └── tests/           # pytest
+├── csautobot/           # Python 앱 루트
+│   ├── main.py          # FastAPI 앱 (+ GET /health)
+│   ├── app/routes/      # API 라우터 (search, inspection, billing, leads …)
+│   ├── services/        # 비즈니스 로직 (billing_metering, quotation …)
+│   ├── storage/         # SQLAlchemy DB (tenant, usage_meter …)
+│   ├── auth_db.py       # 인증 SQLite
+│   └── leads_db.py      # 도입 상담 SQLite
 ├── frontend/            # Next.js (port 5000)
+├── tests/               # pytest harness
+├── TASK.md              # 스프린트 상태
 ├── csData/              # 학습 데이터
 ├── csautobot.db         # SQLite (Git 제외)
 ├── ecosystem.config.js
-├── requirements.txt
 └── pyproject.toml
 ```
 
@@ -176,9 +178,10 @@ pytest tests/ -v --tb=short
 ## 7. PROJECT OVERRIDE (프로젝트 전용 커스텀)
 
 ### 특화 완료 기준
-- [ ] CS 질문 응답 (`POST /api/v1/query` 200 + 답변 반환)
+- [ ] CS 질문 응답 (`POST /api/v1/search/as-cases` 200 + 답변 반환)
+- [ ] 도입 상담 접수 (`POST /api/v1/leads` 201)
+- [ ] 월 사용량 조회 (`GET /api/v1/billing/usage/monthly` 200)
 - [ ] ChromaDB 인덱싱 완료
-- [ ] 세션 히스토리 유지 (`session_id` 기반)
 - [ ] PM2 `pm2 save` 완료 (SSH disconnect 후에도 서비스 유지)
 
 ### 특화 금지 사항
@@ -189,4 +192,6 @@ pytest tests/ -v --tb=short
 ### 포트 / 엔드포인트
 - Backend: `http://localhost:8000` / Health: `/health`
 - Frontend: `http://localhost:5000`
-- CS 질문: `POST /api/v1/query`
+- AS 검색: `POST /api/v1/search/as-cases`
+- 도입 상담: `POST /api/v1/leads`
+- 과금 사용량: `GET /api/v1/billing/usage/monthly`

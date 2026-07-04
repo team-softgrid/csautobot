@@ -541,7 +541,9 @@ ROI ≈ (인건비 절감 + SLA 페널티 회피 + 견적·부품 오류 감소)
 | 구조화 DB | ✅ | SQLite, tenant/site/charger/incident |
 | Web 전환 | 🔄 | Streamlit → Next.js 진행 |
 | 인증·멀티테넌트 | 🔄 | login, tenant 스키마 |
-| 과금·미터링 | ❌ | billing_metering 미구현 |
+| 과금·미터링 | 🔄 | `billing_metering.py` + `/billing/usage/monthly` + 검색 쿼터 |
+| 도입 상담 API | ✅ | `POST /api/v1/leads` + 랜딩 ContactForm |
+| `/health` | ✅ | AGENTS Done 기준 충족 |
 | 로컬 LLM | 📋 | 파일럿 후 전환 계획 |
 
 **수익 전환 관문**: 과금·사용량 로깅·Enterprise 배포 옵션
