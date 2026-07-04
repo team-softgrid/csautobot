@@ -1,14 +1,16 @@
 import re
-from typing import List, Optional
+from typing import List, Literal, Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from leads_db import create_lead
+from auth_service import get_current_admin_user
+from leads_db import create_lead, list_leads, update_lead_status
 
 router = APIRouter(tags=["Leads"])
 
 EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+LEAD_STATUSES = ("NEW", "CONTACTED", "CLOSED")
 
 
 class LeadCreateRequest(BaseModel):
@@ -24,6 +26,22 @@ class LeadCreateResponse(BaseModel):
     id: int
     status: str
     message: str
+
+
+class LeadItem(BaseModel):
+    id: int
+    company_name: str
+    contact_name: str
+    email: str
+    phone: Optional[str] = None
+    interest_plans: str
+    message: Optional[str] = None
+    status: str
+    created_at: float
+
+
+class LeadStatusUpdate(BaseModel):
+    status: Literal["NEW", "CONTACTED", "CLOSED"]
 
 
 @router.post("/leads", response_model=LeadCreateResponse, status_code=201)
@@ -46,3 +64,25 @@ def submit_lead(body: LeadCreateRequest):
         status="NEW",
         message="도입 상담 요청이 접수되었습니다. 영업일 1~2일 내 회신드리겠습니다.",
     )
+
+
+@router.get("/leads", response_model=List[LeadItem])
+def get_leads(
+    limit: int = Query(default=100, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+    _admin: dict = Depends(get_current_admin_user),
+):
+    rows = list_leads(limit=limit, offset=offset)
+    return [LeadItem(**row) for row in rows]
+
+
+@router.patch("/leads/{lead_id}", response_model=LeadItem)
+def patch_lead_status(
+    lead_id: int,
+    body: LeadStatusUpdate,
+    _admin: dict = Depends(get_current_admin_user),
+):
+    row = update_lead_status(lead_id, body.status)
+    if not row:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    return LeadItem(**row)

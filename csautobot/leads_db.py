@@ -65,3 +65,38 @@ def create_lead(
         return dict(row) if row else {"id": lead_id}
     finally:
         conn.close()
+
+
+def list_leads(*, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
+    conn = sqlite3.connect(LEADS_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    try:
+        rows = conn.execute(
+            """
+            SELECT * FROM leads
+            ORDER BY created_at DESC
+            LIMIT ? OFFSET ?
+            """,
+            (limit, offset),
+        ).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()
+
+
+def update_lead_status(lead_id: int, status: str) -> dict[str, Any] | None:
+    conn = sqlite3.connect(LEADS_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE leads SET status = ? WHERE id = ?",
+            (status, lead_id),
+        )
+        if cursor.rowcount == 0:
+            return None
+        conn.commit()
+        row = conn.execute("SELECT * FROM leads WHERE id = ?", (lead_id,)).fetchone()
+        return dict(row) if row else None
+    finally:
+        conn.close()

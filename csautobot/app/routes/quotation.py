@@ -19,6 +19,7 @@ router = APIRouter(tags=["Quotation"])
 class QuotationRequest(BaseModel):
     query: str = Field(description="고장 증상 및 현상")
     charger_type: str = Field(default="급속", description="충전기 구분: 급속 / 완속")
+    tenant_id: str = Field(default="default_tenant", description="테넌트 ID")
 
 class ExportPartItem(BaseModel):
     part_name: str
@@ -37,12 +38,24 @@ class QuotationExportRequest(BaseModel):
 
 @router.post("/quotation/draft", response_model=QuotationDraft)
 def create_quotation_draft(req: QuotationRequest):
+    from services.billing_metering import (
+        FEATURE_AI_GENERATION,
+        check_quota,
+        record_usage,
+    )
+
+    tenant_id = (req.tenant_id or "default_tenant").strip()
+    check_quota(tenant_id, FEATURE_AI_GENERATION)
+
     try:
         draft = generate_quotation_draft(
             query=req.query,
             charger_type=req.charger_type
         )
+        record_usage(tenant_id, FEATURE_AI_GENERATION, model_name="gpt-4o-mini")
         return draft
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI 견적서 생성 실패: {str(e)}")
 
