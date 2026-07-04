@@ -57,6 +57,18 @@ export default function AdminLeadsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [retryingId, setRetryingId] = useState<number | null>(null);
+
+  const fetchFailures = useCallback(async () => {
+    try {
+      const response = await fetch("/api/leads/notify-failures", { cache: "no-store" });
+      if (response.ok) {
+        setFailures((await response.json()) as NotifyFailure[]);
+      }
+    } catch {
+      // optional section — ignore fetch errors
+    }
+  }, []);
 
   const clearSessionAndRedirect = useCallback(async () => {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -91,16 +103,33 @@ export default function AdminLeadsPage() {
   useEffect(() => {
     void (async () => {
       await fetchLeads();
-      try {
-        const response = await fetch("/api/leads/notify-failures", { cache: "no-store" });
-        if (response.ok) {
-          setFailures((await response.json()) as NotifyFailure[]);
-        }
-      } catch {
-        // optional section — ignore fetch errors
-      }
+      await fetchFailures();
     })();
-  }, [fetchLeads]);
+  }, [fetchLeads, fetchFailures]);
+
+  const retryFailure = async (failure: NotifyFailure) => {
+    setRetryingId(failure.id);
+    setError("");
+    try {
+      const response = await fetch(`/api/leads/notify-failures/${failure.id}/retry`, {
+        method: "POST",
+      });
+      if (!response.ok) {
+        throw new Error(await readError(response));
+      }
+      const result = (await response.json()) as { success: boolean; message: string };
+      if (!result.success) {
+        setError(result.message);
+      }
+      await fetchFailures();
+    } catch (retryError) {
+      setError(
+        retryError instanceof Error ? retryError.message : "알림 재전송에 실패했습니다.",
+      );
+    } finally {
+      setRetryingId(null);
+    }
+  };
 
   const updateStatus = async (lead: Lead, status: LeadStatus) => {
     setUpdatingId(lead.id);
@@ -274,6 +303,7 @@ export default function AdminLeadsPage() {
                   <th style={{ padding: "10px 12px", textAlign: "left" }}>채널</th>
                   <th style={{ padding: "10px 12px", textAlign: "left" }}>오류</th>
                   <th style={{ padding: "10px 12px", textAlign: "left" }}>시각</th>
+                  <th style={{ padding: "10px 12px", textAlign: "left" }}>재전송</th>
                 </tr>
               </thead>
               <tbody>
@@ -284,6 +314,25 @@ export default function AdminLeadsPage() {
                     <td style={{ padding: "10px 12px", color: "#fca5a5", maxWidth: "360px" }}>{row.error_message}</td>
                     <td style={{ padding: "10px 12px", color: "#94a3b8", whiteSpace: "nowrap" }}>
                       {formatDate(row.created_at)}
+                    </td>
+                    <td style={{ padding: "10px 12px" }}>
+                      <button
+                        type="button"
+                        disabled={retryingId === row.id || !row.lead_id}
+                        onClick={() => void retryFailure(row)}
+                        style={{
+                          padding: "6px 12px",
+                          borderRadius: "6px",
+                          border: "1px solid rgba(6,182,212,0.3)",
+                          background: "rgba(6,182,212,0.1)",
+                          color: "#06b6d4",
+                          cursor: "pointer",
+                          fontSize: "12px",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {retryingId === row.id ? "전송 중..." : "재전송"}
+                      </button>
                     </td>
                   </tr>
                 ))}

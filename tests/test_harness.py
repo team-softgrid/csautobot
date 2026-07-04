@@ -103,6 +103,10 @@ class TestBilling:
         )
         assert resp.status_code in (401, 403)
 
+    def test_billing_admin_plan_audit_requires_auth(self, client):
+        resp = client.get("/api/v1/billing/admin/plan-audit")
+        assert resp.status_code in (401, 403)
+
 
 class TestLeadsAdmin:
     def test_leads_list_requires_auth(self, client):
@@ -113,9 +117,14 @@ class TestLeadsAdmin:
         resp = client.get("/api/v1/leads/notify-failures")
         assert resp.status_code in (401, 403)
 
+    def test_notify_failure_retry_requires_auth(self, client):
+        resp = client.post("/api/v1/leads/notify-failures/1/retry")
+        assert resp.status_code in (401, 403)
+
 
 class TestInspectionMetering:
     def test_inspection_draft_records_usage(self, client, mocker):
+        mocker.patch("services.billing_metering.check_quota")
         mock_draft = mocker.MagicMock()
         mock_draft.draft_text = "test draft"
         mock_draft.summary_json = {"risk": "low"}
@@ -139,6 +148,7 @@ class TestInspectionMetering:
 
 class TestQuotationMetering:
     def test_quotation_draft_records_usage(self, client, mocker):
+        mocker.patch("services.billing_metering.check_quota")
         from services.quotation_service import QuotationDraft
 
         mocker.patch(
