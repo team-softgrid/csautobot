@@ -18,7 +18,8 @@ router = APIRouter(tags=["Search"])
 
 # Pydantic Schemas
 class SearchRequest(BaseModel):
-    query: str
+    query: str = Field(..., min_length=1, max_length=2000)
+    tenant_id: str = "default_tenant"
     use_web_search: bool = False
     k_hybrid: int = 30
     k_dense: int = 50
@@ -78,6 +79,15 @@ def _run_tavily_search(query: str) -> List[Any]:
 
 @router.post("/search/as-cases", response_model=SearchResponse)
 def search_as_cases(req: SearchRequest):
+    from services.billing_metering import (
+        FEATURE_RAG_SEARCH,
+        check_quota,
+        record_usage,
+    )
+
+    tenant_id = (req.tenant_id or "default_tenant").strip()
+    check_quota(tenant_id, FEATURE_RAG_SEARCH)
+
     index_dir = resolve_chroma_dir(HERE)
     if not index_dir:
         raise HTTPException(status_code=500, detail="Chroma DB index directory not found. Please run build_index.py first.")
@@ -170,6 +180,8 @@ def search_as_cases(req: SearchRequest):
             "page_content": d.page_content,
             "metadata": d.metadata
         })
+
+    record_usage(tenant_id, FEATURE_RAG_SEARCH)
 
     return SearchResponse(
         structured=structured,

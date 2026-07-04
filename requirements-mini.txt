@@ -118,6 +118,7 @@ notebook_shim==0.2.4
 numpy==1.26.4
 oauthlib==3.2.2
 onnxruntime
+openpyxl>=3.1.0
 openai==1.66.5
 opentelemetry-api==1.31.0
 opentelemetry-exporter-otlp-proto-common==1.25.0
@@ -161,6 +162,7 @@ pydeck==0.9.1
 Pygments==2.19.1
 PyMuPDF==1.25.4
 PyMuPDFb==1.24.6
+PyJWT>=2.8.0
 
 pyproject_hooks==1.1.0
 python-dateutil==2.9.0.post0

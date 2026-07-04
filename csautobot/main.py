@@ -35,7 +35,11 @@ from app.routes.dashboard import router as dashboard_router
 from app.routes.feedback import router as feedback_router
 from app.routes.quotation import router as quotation_router
 from app.routes.auth import router as auth_router
+from app.routes.leads import router as leads_router
+from app.routes.billing import router as billing_router
 from auth_db import init_auth_db
+from leads_db import init_leads_db
+from storage.db import init_db
 
 app.include_router(search_router, prefix="/api/v1")
 app.include_router(inspection_router, prefix="/api/v1")
@@ -43,14 +47,22 @@ app.include_router(dashboard_router, prefix="/api/v1")
 app.include_router(feedback_router, prefix="/api/v1")
 app.include_router(quotation_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")
+app.include_router(leads_router, prefix="/api/v1")
+app.include_router(billing_router, prefix="/api/v1")
 
 @app.on_event("startup")
 def on_startup():
+    init_db()
     init_auth_db()
+    init_leads_db()
 
 @app.get("/")
 def read_root():
     return {"status": "online", "service": "CSAutobot API Server"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "service": "CSAutobot API Server"}
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
