@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BarChart3, RefreshCw } from "lucide-react";
+import { DEFAULT_TENANT_ID, getTenantId } from "../../utils";
 
 type UsageFeature = {
   used: number;
@@ -18,6 +19,12 @@ type BillingSummary = {
     RAG_SEARCH: UsageFeature;
     AI_GENERATION: UsageFeature;
   };
+};
+
+type TenantOption = {
+  tenant_id: string;
+  tenant_name: string;
+  plan_code: string;
 };
 
 const FEATURE_LABELS: Record<string, string> = {
@@ -42,6 +49,8 @@ async function readError(response: Response): Promise<string> {
 
 export default function AdminBillingPage() {
   const router = useRouter();
+  const [tenants, setTenants] = useState<TenantOption[]>([]);
+  const [selectedTenantId, setSelectedTenantId] = useState(DEFAULT_TENANT_ID);
   const [summary, setSummary] = useState<BillingSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -51,34 +60,79 @@ export default function AdminBillingPage() {
     router.replace("/login");
   }, [router]);
 
-  const fetchSummary = useCallback(async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const response = await fetch("/api/billing", { cache: "no-store" });
-      if (response.status === 401) {
-        await clearSessionAndRedirect();
-        return;
-      }
-      if (!response.ok) {
-        throw new Error(await readError(response));
-      }
-      const data = (await response.json()) as BillingSummary;
-      setSummary(data);
-    } catch (fetchError) {
-      setError(
-        fetchError instanceof Error
-          ? fetchError.message
-          : "사용량 정보를 불러오지 못했습니다.",
-      );
-    } finally {
-      setLoading(false);
+  const fetchTenants = useCallback(async () => {
+    const response = await fetch("/api/billing/tenants", { cache: "no-store" });
+    if (response.status === 401) {
+      await clearSessionAndRedirect();
+      return [];
     }
+    if (!response.ok) {
+      throw new Error(await readError(response));
+    }
+    return (await response.json()) as TenantOption[];
   }, [clearSessionAndRedirect]);
 
+  const fetchSummary = useCallback(
+    async (tenantId: string) => {
+      setLoading(true);
+      setError("");
+      try {
+        const response = await fetch(
+          `/api/billing?tenant_id=${encodeURIComponent(tenantId)}`,
+          { cache: "no-store" },
+        );
+        if (response.status === 401) {
+          await clearSessionAndRedirect();
+          return;
+        }
+        if (!response.ok) {
+          throw new Error(await readError(response));
+        }
+        const data = (await response.json()) as BillingSummary;
+        setSummary(data);
+      } catch (fetchError) {
+        setSummary(null);
+        setError(
+          fetchError instanceof Error
+            ? fetchError.message
+            : "사용량 정보를 불러오지 못했습니다.",
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [clearSessionAndRedirect],
+  );
+
   useEffect(() => {
-    void fetchSummary();
-  }, [fetchSummary]);
+    const initialTenant = getTenantId();
+    setSelectedTenantId(initialTenant);
+    void (async () => {
+      try {
+        const list = await fetchTenants();
+        setTenants(list);
+        const exists = list.some((t) => t.tenant_id === initialTenant);
+        const tenantId = exists ? initialTenant : list[0]?.tenant_id || DEFAULT_TENANT_ID;
+        setSelectedTenantId(tenantId);
+        await fetchSummary(tenantId);
+      } catch (fetchError) {
+        setError(
+          fetchError instanceof Error
+            ? fetchError.message
+            : "테넌트 목록을 불러오지 못했습니다.",
+        );
+        setLoading(false);
+      }
+    })();
+  }, [fetchTenants, fetchSummary]);
+
+  const handleTenantChange = (tenantId: string) => {
+    setSelectedTenantId(tenantId);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("csautobot_tenant_id", tenantId);
+    }
+    void fetchSummary(tenantId);
+  };
 
   return (
     <div style={{ animation: "fadeIn 0.5s ease-out" }}>
@@ -100,26 +154,51 @@ export default function AdminBillingPage() {
             테넌트별 월간 API 사용량과 플랜 한도를 확인합니다.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => void fetchSummary()}
-          disabled={loading}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "10px 16px",
-            borderRadius: "8px",
-            border: "1px solid rgba(16,185,129,0.3)",
-            background: "rgba(16,185,129,0.1)",
-            color: "#10b981",
-            cursor: "pointer",
-            fontWeight: 600,
-          }}
-        >
-          <RefreshCw size={16} />
-          새로고침
-        </button>
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
+          <select
+            value={selectedTenantId}
+            onChange={(e) => handleTenantChange(e.target.value)}
+            disabled={loading || tenants.length === 0}
+            style={{
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "8px",
+              color: "#f8fafc",
+              padding: "10px 14px",
+              minWidth: "220px",
+            }}
+          >
+            {tenants.length === 0 ? (
+              <option value={selectedTenantId}>{selectedTenantId}</option>
+            ) : (
+              tenants.map((tenant) => (
+                <option key={tenant.tenant_id} value={tenant.tenant_id}>
+                  {tenant.tenant_name} ({tenant.tenant_id}) — {tenant.plan_code}
+                </option>
+              ))
+            )}
+          </select>
+          <button
+            type="button"
+            onClick={() => void fetchSummary(selectedTenantId)}
+            disabled={loading}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "10px 16px",
+              borderRadius: "8px",
+              border: "1px solid rgba(16,185,129,0.3)",
+              background: "rgba(16,185,129,0.1)",
+              color: "#10b981",
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
+          >
+            <RefreshCw size={16} />
+            새로고침
+          </button>
+        </div>
       </header>
 
       {error && (

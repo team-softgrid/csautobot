@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import logging
 import os
 import smtplib
@@ -51,6 +50,44 @@ def _send_webhook(lead: dict[str, Any]) -> None:
         client.post(url, json=payload)
 
 
+def _send_slack(lead: dict[str, Any]) -> None:
+    url = os.environ.get("LEADS_SLACK_WEBHOOK_URL", "").strip()
+    if not url:
+        return
+    company = lead.get("company_name", "신규")
+    contact = lead.get("contact_name", "-")
+    email = lead.get("email", "-")
+    plans = lead.get("interest_plans") or "-"
+    payload = {
+        "text": f"[CSAutobot] 새 도입 상담 — {company}",
+        "blocks": [
+            {
+                "type": "header",
+                "text": {"type": "plain_text", "text": "📋 새 도입 상담 접수"},
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {"type": "mrkdwn", "text": f"*회사*\n{company}"},
+                    {"type": "mrkdwn", "text": f"*담당자*\n{contact}"},
+                    {"type": "mrkdwn", "text": f"*이메일*\n{email}"},
+                    {"type": "mrkdwn", "text": f"*관심 플랜*\n{plans}"},
+                ],
+            },
+        ],
+    }
+    message = lead.get("message")
+    if message:
+        payload["blocks"].append(
+            {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": f"*메시지*\n{message}"},
+            }
+        )
+    with httpx.Client(timeout=10.0) as client:
+        client.post(url, json=payload)
+
+
 def _send_smtp(lead: dict[str, Any]) -> None:
     to_addr = os.environ.get("LEADS_NOTIFY_EMAIL", "").strip()
     smtp_host = os.environ.get("SMTP_HOST", "").strip()
@@ -85,6 +122,10 @@ def notify_new_lead(lead: dict[str, Any]) -> None:
         _send_webhook(lead)
     except Exception as exc:
         logger.warning("Lead webhook failed: %s", exc)
+    try:
+        _send_slack(lead)
+    except Exception as exc:
+        logger.warning("Lead Slack notification failed: %s", exc)
     try:
         _send_smtp(lead)
     except Exception as exc:
