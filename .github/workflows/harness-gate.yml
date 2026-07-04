@@ -4,14 +4,11 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main, "agent/**"]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
-
-# PR merge를 차단하는 필수 게이트입니다.
-# Branch protection → Required status checks에 "CSAutobot Harness" 추가 필요.
 
 jobs:
   csautobot-harness:
@@ -23,19 +20,17 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
           cache: pip
           cache-dependency-path: requirements.txt
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # 운영 의존성
           pip install -r requirements.txt || pip install -r requirements-mini.txt
-          # 테스트 도구
           pip install pytest pytest-cov pytest-mock httpx
 
-      - name: Run harness tests with coverage gate (≥60%)
+      - name: Run harness tests with coverage gate (60 percent)
         env:
           OPENAI_API_KEY: mock-openai-key-for-ci
           ANTHROPIC_API_KEY: mock-anthropic-key
@@ -48,11 +43,10 @@ jobs:
             --cov-report=json:coverage.json \
             --cov-fail-under=60
 
-      - name: Safety: 민감정보 하드코딩 검사
+      - name: Safety check for hardcoded API keys
         run: |
-          echo "=== API 키 하드코딩 검사 ==="
           if grep -rn "sk-[a-zA-Z0-9]\{20,\}" csautobot/ --include="*.py"; then
-            echo "FAIL: 실제 API 키가 소스코드에 하드코딩되어 있습니다."
+            echo "FAIL: API key pattern found in source."
             exit 1
           fi
           echo "PASS"
