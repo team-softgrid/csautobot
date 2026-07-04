@@ -107,6 +107,10 @@ class TestBilling:
         resp = client.get("/api/v1/billing/admin/plan-audit")
         assert resp.status_code in (401, 403)
 
+    def test_billing_admin_usage_alerts_requires_auth(self, client):
+        resp = client.get("/api/v1/billing/admin/usage-alerts")
+        assert resp.status_code in (401, 403)
+
 
 class TestLeadsAdmin:
     def test_leads_list_requires_auth(self, client):
@@ -123,6 +127,13 @@ class TestLeadsAdmin:
 
     def test_notify_channels_requires_auth(self, client):
         resp = client.get("/api/v1/leads/notify-channels")
+        assert resp.status_code in (401, 403)
+
+    def test_notify_test_requires_auth(self, client):
+        resp = client.post(
+            "/api/v1/leads/notify-test",
+            json={"channel": "slack", "dry_run": True},
+        )
         assert resp.status_code in (401, 403)
 
 

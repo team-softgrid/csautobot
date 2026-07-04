@@ -106,6 +106,20 @@ def billing_admin_plan_audit(
     )
 
 
+@router.get("/billing/admin/usage-alerts")
+def billing_admin_usage_alerts(
+    tenant_id: Optional[str] = Query(default=DEFAULT_TENANT_ID),
+    _admin: dict = Depends(get_current_admin_user),
+) -> dict[str, Any]:
+    tid = tenant_id or DEFAULT_TENANT_ID
+    summary = get_monthly_summary(tid)
+    return {
+        "tenant_id": tid,
+        "thresholds": summary["alert_thresholds"],
+        "alerts": summary["usage_alerts"],
+    }
+
+
 @router.get("/billing/admin/summary")
 def billing_admin_summary(
     tenant_id: Optional[str] = Query(default=DEFAULT_TENANT_ID),

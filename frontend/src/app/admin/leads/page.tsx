@@ -66,6 +66,9 @@ export default function AdminLeadsPage() {
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [retryingId, setRetryingId] = useState<number | null>(null);
+  const [testingChannel, setTestingChannel] = useState<string | null>(null);
+  const [dryRun, setDryRun] = useState(true);
+  const [testNotice, setTestNotice] = useState("");
 
   const fetchFailures = useCallback(async () => {
     try {
@@ -144,6 +147,41 @@ export default function AdminLeadsPage() {
       );
     } finally {
       setRetryingId(null);
+    }
+  };
+
+  const testChannel = async (channel: string) => {
+    setTestingChannel(channel);
+    setError("");
+    setTestNotice("");
+    try {
+      const response = await fetch("/api/leads/notify-test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ channel, dry_run: dryRun }),
+      });
+      if (!response.ok) {
+        throw new Error(await readError(response));
+      }
+      const result = (await response.json()) as {
+        success: boolean;
+        message: string;
+        dry_run: boolean;
+      };
+      setTestNotice(
+        result.success
+          ? `${result.dry_run ? "[Dry-run] " : ""}${result.message}`
+          : result.message,
+      );
+      if (!result.success) {
+        setError(result.message);
+      }
+    } catch (testError) {
+      setError(
+        testError instanceof Error ? testError.message : "테스트 발송에 실패했습니다.",
+      );
+    } finally {
+      setTestingChannel(null);
     }
   };
 
@@ -227,14 +265,47 @@ export default function AdminLeadsPage() {
         </div>
       )}
 
+      {testNotice && (
+        <div
+          className="glass-panel"
+          style={{
+            padding: "16px",
+            marginBottom: "16px",
+            borderLeft: "4px solid #10b981",
+            color: "#86efac",
+          }}
+        >
+          {testNotice}
+        </div>
+      )}
+
       {channels.length > 0 && (
         <section
           className="glass-panel"
           style={{ padding: "20px 24px", marginBottom: "20px" }}
         >
-          <h3 style={{ margin: "0 0 12px", color: "#f8fafc", fontSize: "16px" }}>
-            알림 채널 설정 상태
-          </h3>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: "12px",
+              flexWrap: "wrap",
+              marginBottom: "12px",
+            }}
+          >
+            <h3 style={{ margin: 0, color: "#f8fafc", fontSize: "16px" }}>
+              알림 채널 설정 상태
+            </h3>
+            <label style={{ display: "flex", alignItems: "center", gap: "8px", color: "#94a3b8", fontSize: "13px" }}>
+              <input
+                type="checkbox"
+                checked={dryRun}
+                onChange={(e) => setDryRun(e.target.checked)}
+              />
+              Dry-run (설정 확인만)
+            </label>
+          </div>
           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
             {channels.map((ch) => (
               <div
@@ -262,6 +333,24 @@ export default function AdminLeadsPage() {
                 <div style={{ fontSize: "11px", color: "#64748b", marginTop: "4px" }}>
                   {ch.env_var}
                 </div>
+                <button
+                  type="button"
+                  disabled={testingChannel === ch.channel}
+                  onClick={() => void testChannel(ch.channel)}
+                  style={{
+                    marginTop: "8px",
+                    padding: "5px 10px",
+                    borderRadius: "6px",
+                    border: "1px solid rgba(6,182,212,0.3)",
+                    background: "rgba(6,182,212,0.1)",
+                    color: "#06b6d4",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                  }}
+                >
+                  {testingChannel === ch.channel ? "테스트 중..." : "테스트"}
+                </button>
               </div>
             ))}
           </div>

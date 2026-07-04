@@ -17,6 +17,25 @@ from leads_db import record_notify_failure
 logger = logging.getLogger(__name__)
 MAX_NOTIFY_RETRIES = 3
 
+TEST_LEAD: dict[str, Any] = {
+    "id": 0,
+    "company_name": "[테스트] CSAutobot",
+    "contact_name": "관리자",
+    "email": "test@csautobot.local",
+    "phone": "010-0000-0000",
+    "interest_plans": "테스트 발송",
+    "message": "알림 채널 테스트 메시지입니다.",
+    "status": "NEW",
+    "created_at": 0.0,
+}
+
+
+def _is_channel_configured(channel: str) -> bool:
+    for row in get_notify_channel_status():
+        if row["channel"] == channel:
+            return bool(row["configured"])
+    return False
+
 
 def _channel_sender(channel: str) -> Callable[[dict[str, Any]], None] | None:
     senders: dict[str, Callable[[dict[str, Any]], None]] = {
@@ -200,3 +219,50 @@ def get_notify_channel_status() -> list[dict[str, Any]]:
             "env_var": "LEADS_NOTIFY_EMAIL, SMTP_HOST",
         },
     ]
+
+
+def send_test_notification(channel: str, *, dry_run: bool = True) -> dict[str, Any]:
+    """Send or validate a test lead notification for admin diagnostics."""
+    send_fn = _channel_sender(channel)
+    if send_fn is None:
+        return {
+            "channel": channel,
+            "configured": False,
+            "dry_run": dry_run,
+            "success": False,
+            "message": f"알 수 없는 채널: {channel}",
+        }
+    configured = _is_channel_configured(channel)
+    if dry_run:
+        return {
+            "channel": channel,
+            "configured": configured,
+            "dry_run": True,
+            "success": configured,
+            "message": "설정 확인됨 — 실제 발송 없음" if configured else "채널이 설정되지 않았습니다.",
+        }
+    if not configured:
+        return {
+            "channel": channel,
+            "configured": False,
+            "dry_run": False,
+            "success": False,
+            "message": "채널이 설정되지 않았습니다.",
+        }
+    try:
+        send_fn(TEST_LEAD)
+        return {
+            "channel": channel,
+            "configured": True,
+            "dry_run": False,
+            "success": True,
+            "message": "테스트 알림 발송 완료",
+        }
+    except Exception as exc:
+        return {
+            "channel": channel,
+            "configured": True,
+            "dry_run": False,
+            "success": False,
+            "message": str(exc),
+        }
