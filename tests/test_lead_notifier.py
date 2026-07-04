@@ -1,7 +1,7 @@
 """Tests for lead notification service."""
 from unittest.mock import MagicMock, patch
 
-from services.lead_notifier import notify_new_lead, retry_lead_channel
+from services.lead_notifier import get_notify_channel_status, notify_new_lead, retry_lead_channel
 
 SAMPLE_LEAD = {
     "id": 1,
@@ -82,3 +82,19 @@ class TestLeadNotifier:
 
     def test_retry_unknown_channel_returns_false(self):
         assert retry_lead_channel(SAMPLE_LEAD, "unknown") is False
+
+    def test_channel_status_reports_configuration(self):
+        with patch.dict(
+            "os.environ",
+            {
+                "LEADS_WEBHOOK_URL": "https://example.com/hook",
+                "LEADS_SLACK_WEBHOOK_URL": "",
+                "LEADS_NOTIFY_EMAIL": "ops@example.com",
+                "SMTP_HOST": "",
+            },
+            clear=False,
+        ):
+            rows = {row["channel"]: row for row in get_notify_channel_status()}
+        assert rows["webhook"]["configured"] is True
+        assert rows["slack"]["configured"] is False
+        assert rows["smtp"]["configured"] is False

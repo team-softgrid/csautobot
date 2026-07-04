@@ -40,6 +40,13 @@ class PlanAuditItem(BaseModel):
     created_at: str | None
 
 
+class PlanAuditPage(BaseModel):
+    items: list[PlanAuditItem]
+    total: int
+    limit: int
+    offset: int
+
+
 @router.get("/billing/usage/monthly")
 def monthly_usage(tenant_id: Optional[str] = Query(default=DEFAULT_TENANT_ID)) -> dict[str, Any]:
     tid = tenant_id or DEFAULT_TENANT_ID
@@ -77,14 +84,26 @@ def patch_tenant_plan(
     return TenantItem(**row)
 
 
-@router.get("/billing/admin/plan-audit", response_model=list[PlanAuditItem])
+@router.get("/billing/admin/plan-audit", response_model=PlanAuditPage)
 def billing_admin_plan_audit(
     tenant_id: Optional[str] = Query(default=None),
-    limit: int = Query(default=50, ge=1, le=200),
+    new_plan: Optional[Literal["FREE", "PRO", "ENTERPRISE"]] = Query(default=None),
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
     _admin: dict = Depends(get_current_admin_user),
-) -> list[PlanAuditItem]:
-    rows = list_plan_change_audits(tenant_id=tenant_id, limit=limit)
-    return [PlanAuditItem(**row) for row in rows]
+) -> PlanAuditPage:
+    page = list_plan_change_audits(
+        tenant_id=tenant_id,
+        new_plan=new_plan,
+        limit=limit,
+        offset=offset,
+    )
+    return PlanAuditPage(
+        items=[PlanAuditItem(**row) for row in page["items"]],
+        total=page["total"],
+        limit=page["limit"],
+        offset=page["offset"],
+    )
 
 
 @router.get("/billing/admin/summary")

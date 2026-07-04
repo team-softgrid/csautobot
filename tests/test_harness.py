@@ -121,6 +121,10 @@ class TestLeadsAdmin:
         resp = client.post("/api/v1/leads/notify-failures/1/retry")
         assert resp.status_code in (401, 403)
 
+    def test_notify_channels_requires_auth(self, client):
+        resp = client.get("/api/v1/leads/notify-channels")
+        assert resp.status_code in (401, 403)
+
 
 class TestInspectionMetering:
     def test_inspection_draft_records_usage(self, client, mocker):

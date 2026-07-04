@@ -36,6 +36,15 @@ type PlanAuditEntry = {
   created_at: string | null;
 };
 
+type PlanAuditPage = {
+  items: PlanAuditEntry[];
+  total: number;
+  limit: number;
+  offset: number;
+};
+
+const AUDIT_PAGE_SIZE = 10;
+
 const FEATURE_LABELS: Record<string, string> = {
   RAG_SEARCH: "AS 유사 사례 검색",
   AI_GENERATION: "AI 생성 (점검·견적)",
@@ -67,7 +76,14 @@ export default function AdminBillingPage() {
   const [selectedPlan, setSelectedPlan] = useState<PlanCode>("FREE");
   const [savingPlan, setSavingPlan] = useState(false);
   const [notice, setNotice] = useState("");
-  const [auditLog, setAuditLog] = useState<PlanAuditEntry[]>([]);
+  const [auditPage, setAuditPage] = useState<PlanAuditPage>({
+    items: [],
+    total: 0,
+    limit: AUDIT_PAGE_SIZE,
+    offset: 0,
+  });
+  const [auditPlanFilter, setAuditPlanFilter] = useState<"" | PlanCode>("");
+  const [auditOffset, setAuditOffset] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -76,19 +92,29 @@ export default function AdminBillingPage() {
     router.replace("/login");
   }, [router]);
 
-  const fetchAuditLog = useCallback(async (tenantId: string) => {
-    try {
-      const response = await fetch(
-        `/api/billing/plan-audit?tenant_id=${encodeURIComponent(tenantId)}`,
-        { cache: "no-store" },
-      );
-      if (response.ok) {
-        setAuditLog((await response.json()) as PlanAuditEntry[]);
+  const fetchAuditLog = useCallback(
+    async (tenantId: string, offset: number, newPlan: "" | PlanCode) => {
+      try {
+        const params = new URLSearchParams({
+          tenant_id: tenantId,
+          limit: String(AUDIT_PAGE_SIZE),
+          offset: String(offset),
+        });
+        if (newPlan) {
+          params.set("new_plan", newPlan);
+        }
+        const response = await fetch(`/api/billing/plan-audit?${params.toString()}`, {
+          cache: "no-store",
+        });
+        if (response.ok) {
+          setAuditPage((await response.json()) as PlanAuditPage);
+        }
+      } catch {
+        setAuditPage({ items: [], total: 0, limit: AUDIT_PAGE_SIZE, offset: 0 });
       }
-    } catch {
-      setAuditLog([]);
-    }
-  }, []);
+    },
+    [],
+  );
 
   const fetchTenants = useCallback(async () => {
     const response = await fetch("/api/billing/tenants", { cache: "no-store" });
@@ -146,7 +172,7 @@ export default function AdminBillingPage() {
         const tenantId = exists ? initialTenant : list[0]?.tenant_id || DEFAULT_TENANT_ID;
         setSelectedTenantId(tenantId);
         await fetchSummary(tenantId);
-        await fetchAuditLog(tenantId);
+        await fetchAuditLog(tenantId, 0, "");
       } catch (fetchError) {
         setError(
           fetchError instanceof Error
@@ -160,11 +186,24 @@ export default function AdminBillingPage() {
 
   const handleTenantChange = (tenantId: string) => {
     setSelectedTenantId(tenantId);
+    setAuditOffset(0);
+    setAuditPlanFilter("");
     if (typeof window !== "undefined") {
       localStorage.setItem("csautobot_tenant_id", tenantId);
     }
     void fetchSummary(tenantId);
-    void fetchAuditLog(tenantId);
+    void fetchAuditLog(tenantId, 0, "");
+  };
+
+  const handleAuditFilterChange = (plan: "" | PlanCode) => {
+    setAuditPlanFilter(plan);
+    setAuditOffset(0);
+    void fetchAuditLog(selectedTenantId, 0, plan);
+  };
+
+  const handleAuditPageChange = (nextOffset: number) => {
+    setAuditOffset(nextOffset);
+    void fetchAuditLog(selectedTenantId, nextOffset, auditPlanFilter);
   };
 
   const handlePlanSave = async () => {
@@ -187,7 +226,8 @@ export default function AdminBillingPage() {
       const list = await fetchTenants();
       setTenants(list);
       await fetchSummary(selectedTenantId);
-      await fetchAuditLog(selectedTenantId);
+      setAuditOffset(0);
+      await fetchAuditLog(selectedTenantId, 0, auditPlanFilter);
     } catch (saveError) {
       setError(
         saveError instanceof Error ? saveError.message : "플랜 변경에 실패했습니다.",
@@ -418,43 +458,127 @@ export default function AdminBillingPage() {
         </>
       ) : null}
 
-      {auditLog.length > 0 && (
+      {auditPage.total > 0 || auditPlanFilter ? (
         <section className="glass-panel" style={{ padding: "24px", marginTop: "24px" }}>
-          <h3 style={{ margin: "0 0 12px", color: "#f8fafc", fontSize: "16px" }}>
-            플랜 변경 감사 로그
-          </h3>
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
-              <thead>
-                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", color: "#94a3b8" }}>
-                  <th style={{ padding: "10px 12px", textAlign: "left" }}>변경자</th>
-                  <th style={{ padding: "10px 12px", textAlign: "left" }}>이전</th>
-                  <th style={{ padding: "10px 12px", textAlign: "left" }}>변경</th>
-                  <th style={{ padding: "10px 12px", textAlign: "left" }}>시각</th>
-                </tr>
-              </thead>
-              <tbody>
-                {auditLog.map((entry) => (
-                  <tr key={entry.audit_id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                    <td style={{ padding: "10px 12px", color: "#e2e8f0" }}>
-                      {entry.changed_by || "-"}
-                    </td>
-                    <td style={{ padding: "10px 12px", color: "#94a3b8" }}>{entry.old_plan}</td>
-                    <td style={{ padding: "10px 12px", color: "#06b6d4", fontWeight: 600 }}>
-                      {entry.new_plan}
-                    </td>
-                    <td style={{ padding: "10px 12px", color: "#94a3b8", whiteSpace: "nowrap" }}>
-                      {entry.created_at
-                        ? new Date(entry.created_at).toLocaleString("ko-KR")
-                        : "-"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: "12px",
+              flexWrap: "wrap",
+              marginBottom: "12px",
+            }}
+          >
+            <h3 style={{ margin: 0, color: "#f8fafc", fontSize: "16px" }}>
+              플랜 변경 감사 로그
+            </h3>
+            <select
+              value={auditPlanFilter}
+              onChange={(e) => handleAuditFilterChange(e.target.value as "" | PlanCode)}
+              style={{
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                borderRadius: "8px",
+                color: "#f8fafc",
+                padding: "8px 12px",
+              }}
+            >
+              <option value="">전체 플랜</option>
+              {PLAN_OPTIONS.map((plan) => (
+                <option key={plan} value={plan}>
+                  {plan} 로 변경
+                </option>
+              ))}
+            </select>
           </div>
+          {auditPage.items.length === 0 ? (
+            <p style={{ color: "#94a3b8", margin: 0 }}>조건에 맞는 감사 로그가 없습니다.</p>
+          ) : (
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+                <thead>
+                  <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", color: "#94a3b8" }}>
+                    <th style={{ padding: "10px 12px", textAlign: "left" }}>변경자</th>
+                    <th style={{ padding: "10px 12px", textAlign: "left" }}>이전</th>
+                    <th style={{ padding: "10px 12px", textAlign: "left" }}>변경</th>
+                    <th style={{ padding: "10px 12px", textAlign: "left" }}>시각</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {auditPage.items.map((entry) => (
+                    <tr key={entry.audit_id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                      <td style={{ padding: "10px 12px", color: "#e2e8f0" }}>
+                        {entry.changed_by || "-"}
+                      </td>
+                      <td style={{ padding: "10px 12px", color: "#94a3b8" }}>{entry.old_plan}</td>
+                      <td style={{ padding: "10px 12px", color: "#06b6d4", fontWeight: 600 }}>
+                        {entry.new_plan}
+                      </td>
+                      <td style={{ padding: "10px 12px", color: "#94a3b8", whiteSpace: "nowrap" }}>
+                        {entry.created_at
+                          ? new Date(entry.created_at).toLocaleString("ko-KR")
+                          : "-"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {auditPage.total > AUDIT_PAGE_SIZE && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginTop: "16px",
+                gap: "12px",
+              }}
+            >
+              <span style={{ color: "#94a3b8", fontSize: "13px" }}>
+                {auditPage.total.toLocaleString("ko-KR")}건 중{" "}
+                {auditOffset + 1}–{Math.min(auditOffset + AUDIT_PAGE_SIZE, auditPage.total)}
+              </span>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button
+                  type="button"
+                  disabled={auditOffset === 0}
+                  onClick={() => handleAuditPageChange(Math.max(0, auditOffset - AUDIT_PAGE_SIZE))}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "6px",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "rgba(255,255,255,0.05)",
+                    color: "#e2e8f0",
+                    cursor: auditOffset === 0 ? "not-allowed" : "pointer",
+                  }}
+                >
+                  이전
+                </button>
+                <button
+                  type="button"
+                  disabled={auditOffset + AUDIT_PAGE_SIZE >= auditPage.total}
+                  onClick={() => handleAuditPageChange(auditOffset + AUDIT_PAGE_SIZE)}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "6px",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "rgba(255,255,255,0.05)",
+                    color: "#e2e8f0",
+                    cursor:
+                      auditOffset + AUDIT_PAGE_SIZE >= auditPage.total
+                        ? "not-allowed"
+                        : "pointer",
+                  }}
+                >
+                  다음
+                </button>
+              </div>
+            </div>
+          )}
         </section>
-      )}
+      ) : null}
     </div>
   );
 }
