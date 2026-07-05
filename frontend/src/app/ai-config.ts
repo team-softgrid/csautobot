@@ -134,15 +134,23 @@ export async function saveAIConfig(
 export async function testAIProviderConnection(
   provider: AIProvider,
   tenantId: string = "default_tenant",
+  apiKeys: Partial<Record<AIProvider, string>> = {},
 ): Promise<{ status: string; preview?: string; model?: string }> {
   const res = await fetch("/api/ai-settings/test", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ tenant_id: tenantId, provider }),
+    body: JSON.stringify({
+      tenant_id: tenantId,
+      provider,
+      api_keys: apiKeys,
+    }),
   });
   if (!res.ok) {
-    const payload = await res.json().catch(() => ({}));
-    throw new Error((payload as { detail?: string }).detail || "연결 테스트 실패");
+    const payload = (await res.json().catch(() => ({}))) as { detail?: string };
+    if (res.status === 429 && payload.detail) {
+      throw new Error(payload.detail);
+    }
+    throw new Error(payload.detail || "연결 테스트 실패");
   }
   return res.json();
 }
