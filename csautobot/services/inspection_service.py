@@ -269,6 +269,7 @@ def generate_inspection_draft(
     similar_cases: list[dict[str, Any]] | None = None,
     use_web_search: bool = False,
     model_name_llm: str = DEFAULT_MODEL,
+    ai_config: Any | None = None,
 ) -> tuple[InspectionDraft, str, str]:
     """
     LLM 호출 없이도 임포트 가능하도록 OpenAIEmbeddings 등은 지연 로딩.
@@ -309,9 +310,6 @@ def generate_inspection_draft(
         "근거 없는 추측은 금지하며, 체크리스트에 표시된 '주의/이상' 항목과 외부 참고 자료를 종합하여 전문적이고 구체적인 조치 사항을 제시하세요."
     )
 
-    prompt = ChatPromptTemplate.from_messages(
-        [("system", system_prompt), ("human", human_template)]
-    )
     invoke_inputs = {
         "charger_block": charger_block,
         "checklist_block": checklist_block,
@@ -327,39 +325,19 @@ def generate_inspection_draft(
     except ImportError:
         pass
 
-    openai_key = os.environ.get("OPENAI_API_KEY")
-    google_key = os.environ.get("GOOGLE_API_KEY")
+    try:
+        from services.ai_provider import invoke_structured_output
 
-    if not _is_valid_openai_key(openai_key) and not _is_valid_google_key(google_key):
-        offline = _generate_offline_inspection_draft(
-            checklist, memo_text, inspection_target, inspection_cycle
+        draft, used_model = invoke_structured_output(
+            InspectionDraft,
+            system_prompt=system_prompt,
+            human_template=human_template,
+            inputs=invoke_inputs,
+            ai_config=ai_config,
         )
-        return offline, "offline-rules", web_res
-
-    if _is_valid_openai_key(openai_key):
-        try:
-            from langchain_openai import ChatOpenAI
-
-            llm = ChatOpenAI(model=model_name_llm, temperature=0).with_structured_output(
-                InspectionDraft
-            )
-            draft: InspectionDraft = (prompt | llm).invoke(invoke_inputs)
-            return draft, model_name_llm, web_res
-        except Exception as exc:
-            print(f"ChatOpenAI failed in inspection service: {exc}")
-
-    if _is_valid_google_key(google_key):
-        try:
-            from langchain_google_genai import ChatGoogleGenerativeAI
-
-            gemini_model = "gemini-2.0-flash"
-            llm = ChatGoogleGenerativeAI(
-                model=gemini_model, temperature=0
-            ).with_structured_output(InspectionDraft)
-            draft = (prompt | llm).invoke(invoke_inputs)
-            return draft, gemini_model, web_res
-        except Exception as exc:
-            print(f"ChatGoogleGenerativeAI failed in inspection service: {exc}")
+        return draft, used_model, web_res
+    except Exception as exc:
+        print(f"AI draft generation failed, using offline rules: {exc}")
 
     offline = _generate_offline_inspection_draft(
         checklist, memo_text, inspection_target, inspection_cycle

@@ -14,6 +14,7 @@ if str(HERE) not in sys.path:
 from storage.db import get_db
 from storage import repositories as repo
 from services import inspection_service as svc
+from services.ai_provider import AiProviderConfigPayload
 
 router = APIRouter(tags=["Inspection"])
 
@@ -34,6 +35,7 @@ class DraftRequest(BaseModel):
     tenant_id: str = "default_tenant"
     site_name: Optional[str] = None
     inspection_type: str = "정기점검"
+    ai_config: Optional[AiProviderConfigPayload] = None
 
 class DraftResponse(BaseModel):
     draft_text: str
@@ -81,6 +83,7 @@ def create_ai_draft(req: DraftRequest):
             inspection_cycle=req.cycle,
             checklist=checklist_dict,
             memo_text=req.memo,
+            ai_config=req.ai_config,
         )
         record_usage(tenant_id, FEATURE_AI_GENERATION, model_name=used_model or "gpt-4o-mini")
         summary_json = draft_obj.model_dump()

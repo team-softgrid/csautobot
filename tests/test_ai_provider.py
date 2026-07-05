@@ -1,0 +1,69 @@
+"""Tests for AI provider routing."""
+
+from __future__ import annotations
+
+import os
+
+import pytest
+
+from services.ai_provider import (
+    AiProviderConfigPayload,
+    _provider_chain,
+    _resolve_api_key,
+    _resolve_model,
+)
+
+
+class TestAiProviderHelpers:
+    def test_provider_chain_hybrid_default_order(self):
+        cfg = AiProviderConfigPayload(provider="hybrid")
+        assert _provider_chain(cfg) == ["ollama", "claude", "openai", "gemini"]
+
+    def test_provider_chain_single_provider(self):
+        cfg = AiProviderConfigPayload(provider="gemini")
+        assert _provider_chain(cfg) == ["gemini"]
+
+    def test_resolve_api_key_prefers_client_key(self, monkeypatch):
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        key = _resolve_api_key("openai", "sk-client-key-12345678901234567890")
+        assert key == "sk-client-key-12345678901234567890"
+
+    def test_resolve_api_key_falls_back_to_env(self, monkeypatch):
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-env-key")
+        key = _resolve_api_key("claude", None)
+        assert key == "sk-ant-env-key"
+
+    def test_resolve_api_key_ignores_mock_keys(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_API_KEY", "mock-test-key")
+        assert _resolve_api_key("gemini", None) is None
+
+    def test_resolve_model_uses_configured_value(self):
+        cfg = AiProviderConfigPayload(models={"openai": "gpt-4o"})
+        assert _resolve_model("openai", cfg.models) == "gpt-4o"
+
+    def test_resolve_model_default(self):
+        assert _resolve_model("claude", {}) == "claude-sonnet-4-6"
+
+
+class TestInvokeStructuredOutput:
+    def test_raises_when_no_provider_available(self, monkeypatch):
+        from services.ai_provider import invoke_structured_output
+        from services.inspection_service import InspectionDraft
+
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+        monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
+
+        cfg = AiProviderConfigPayload(
+            provider="openai",
+            api_keys={"openai": ""},
+        )
+
+        with pytest.raises(RuntimeError, match="No AI provider available"):
+            invoke_structured_output(
+                InspectionDraft,
+                system_prompt="test",
+                human_template="{charger_block}",
+                inputs={"charger_block": "x"},
+                ai_config=cfg,
+            )

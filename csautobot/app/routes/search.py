@@ -5,9 +5,9 @@ from typing import Any, List, Optional, Union
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from langchain_chroma import Chroma
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import OpenAIEmbeddings
 from retrieval import load_bm25, resolve_chroma_dir, retrieve_reranked
+from services.ai_provider import AiProviderConfigPayload, invoke_structured_output
 
 # Setup python path
 HERE = Path(__file__).resolve().parent.parent.parent
@@ -24,6 +24,7 @@ class SearchRequest(BaseModel):
     k_hybrid: int = 30
     k_dense: int = 50
     k_sparse: int = 50
+    ai_config: AiProviderConfigPayload | None = None
 
 class AnswerSchema(BaseModel):
     symptom_summary: str = Field(description="유사 사례 기준 증상 요약")
@@ -132,46 +133,42 @@ def search_as_cases(req: SearchRequest):
             "[운영 지침] 신뢰도 등급: mid. 답변은 보조용이며 필수 확인 사항을 빠짐없이 적으세요.\n\n"
         )
 
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", SYS),
-        ("human", guard + "[로컬 참고 사례]\n{context}\n\n{web_context}---\n사용자 질문:\n{question}")
-    ])
+    invoke_inputs = {
+        "context": ctx,
+        "web_context": web_ctx,
+        "question": req.query.strip(),
+    }
 
-    llm_success = False
     structured = None
+    try:
+        structured, _model_label = invoke_structured_output(
+            AnswerSchema,
+            system_prompt=SYS,
+            human_template=guard + "[로컬 참고 사례]\n{context}\n\n{web_context}---\n사용자 질문:\n{question}",
+            inputs=invoke_inputs,
+            ai_config=req.ai_config,
+        )
+    except Exception as e2:
+        import logging
+        logging.warning(f"All LLMs failed for as-cases search: {e2}")
+        structured = AnswerSchema(
+            symptom_summary="AI 분석 서비스를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해주세요.",
+            top_causes=[],
+            inspection_steps=["서비스 복구 후 재시도 권장"],
+            parts="사례에 명시 없음",
+            evidence_refs=[],
+            confidence_note="AI 서비스 일시 중단 중 (API 할당량 초과 또는 모델 오류)"
+        )
 
-    if not openai_error_occured:
-        try:
-            from langchain_openai import ChatOpenAI
-            llm = ChatOpenAI(model="gpt-4o-mini", temperature=0).with_structured_output(AnswerSchema)
-            chain = prompt | llm
-            structured = chain.invoke({"context": ctx, "web_context": web_ctx, "question": req.query.strip()})
-            llm_success = True
-        except Exception:
-            pass
-
-    if not llm_success:
-        try:
-            from langchain_google_genai import ChatGoogleGenerativeAI
-            if not os.getenv("GOOGLE_API_KEY"):
-                from dotenv import load_dotenv
-                load_dotenv(HERE / ".env")
-            llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0).with_structured_output(AnswerSchema)
-            chain = prompt | llm
-            structured = chain.invoke({"context": ctx, "web_context": web_ctx, "question": req.query.strip()})
-            llm_success = True
-        except Exception as e2:
-            # LLM 전부 실패 시 오프라인 응답 반환 (500 대신 graceful degradation)
-            import logging
-            logging.warning(f"All LLMs failed for as-cases search: {e2}")
-            structured = AnswerSchema(
-                symptom_summary="AI 분석 서비스를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해주세요.",
-                top_causes=[],
-                inspection_steps=["서비스 복구 후 재시도 권장"],
-                parts="사례에 명시 없음",
-                evidence_refs=[],
-                confidence_note="AI 서비스 일시 중단 중 (API 할당량 초과 또는 모델 오류)"
-            )
+    if structured is None:
+        structured = AnswerSchema(
+            symptom_summary="AI 분석 서비스를 일시적으로 사용할 수 없습니다.",
+            top_causes=[],
+            inspection_steps=[],
+            parts="사례에 명시 없음",
+            evidence_refs=[],
+            confidence_note="AI 서비스 일시 중단",
+        )
 
     # Build response format metadata docs
     metadata_docs = []

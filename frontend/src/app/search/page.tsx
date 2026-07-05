@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { getApiUrl, getTenantId, readApiError } from "../utils";
+import { buildAiConfigPayload } from "../ai-config";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -39,6 +40,7 @@ export default function SearchPage() {
           k_hybrid: kHybrid,
           k_dense: kDense,
           k_sparse: kSparse,
+          ai_config: buildAiConfigPayload(),
         }),
       });
       if (!res.ok) throw new Error(await readApiError(res));
