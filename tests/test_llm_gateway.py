@@ -6,6 +6,7 @@ import pytest
 
 from services.ai_provider import (
     DEFAULT_HYBRID_ORDER,
+    _groq_prefers_json_mode,
     _is_rate_limit_error,
     _resolve_api_key,
     route_by_task,
@@ -22,6 +23,11 @@ class TestFaqShortcut:
 
     def test_unknown_input_returns_none(self):
         assert try_shortcut("완전히 새로운 증상 설명") is None
+
+    def test_partial_match_rfid_card(self):
+        answer = try_shortcut("rfid 카드 인식 안됨")
+        assert answer is not None
+        assert "RFID 리더기" in answer
 
     def test_inspection_draft_from_shortcut(self):
         answer = try_shortcut("출장비 얼마")
@@ -62,6 +68,14 @@ class TestRateLimitDetection:
 
     def test_detects_resource_exhausted(self):
         assert _is_rate_limit_error(Exception("RESOURCE_EXHAUSTED quota"))
+
+
+class TestGroqStructuredOutput:
+    def test_llama_31_uses_json_mode(self):
+        assert _groq_prefers_json_mode("llama-3.1-8b-instant") is True
+
+    def test_gpt_oss_supports_native_schema(self):
+        assert _groq_prefers_json_mode("openai/gpt-oss-120b") is False
 
 
 class TestInspectionFaqIntegration:

@@ -51,7 +51,11 @@ def create_quotation_draft(req: QuotationRequest, db: Session = Depends(get_db))
 
     tenant_id = (req.tenant_id or "default_tenant").strip()
     check_quota(tenant_id, FEATURE_AI_GENERATION)
-    ai_config = resolve_ai_config_for_request(db, tenant_id, req.ai_config)
+    try:
+        ai_config = resolve_ai_config_for_request(db, tenant_id, req.ai_config)
+    except Exception as cfg_exc:
+        print(f"AI config load failed, using env defaults: {cfg_exc}")
+        ai_config = None
 
     try:
         draft = generate_quotation_draft(
