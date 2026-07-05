@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { getApiUrl, getTenantId, readApiError } from "../utils";
+import { buildAiConfigPayload } from "../ai-config";
 
 interface PartItem {
   part_name: string;
@@ -48,6 +49,7 @@ export default function QuotationPage() {
           query: query.trim(),
           charger_type: chargerType,
           tenant_id: getTenantId(),
+          ai_config: buildAiConfigPayload(),
         }),
       });
 

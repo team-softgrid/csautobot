@@ -1,8 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import AiProviderSettingsModal from "./components/AiProviderSettingsModal";
+import { AI_SELECTION_INFO, loadAIConfig } from "./ai-config";
 import "./globals.css";
 
 const PAGE_ORDER = [
@@ -23,6 +25,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [showAISettings, setShowAISettings] = useState(false);
+  const [aiProviderIcon, setAiProviderIcon] = useState("🧩");
+
+  useEffect(() => {
+    setAiProviderIcon(AI_SELECTION_INFO[loadAIConfig().provider].icon);
+  }, []);
 
   const isLandingPage =
     pathname === "/" ||
@@ -156,6 +164,26 @@ export default function RootLayout({
               {/* Logout Button */}
               <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
                 <button
+                  type="button"
+                  onClick={() => setShowAISettings(true)}
+                  style={{
+                    width: "100%",
+                    padding: "10px 16px",
+                    borderRadius: "8px",
+                    color: "#4ade80",
+                    background: "rgba(34, 197, 94, 0.08)",
+                    border: "1px solid rgba(34, 197, 94, 0.2)",
+                    textAlign: "left",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    transition: "all 0.2s",
+                    marginBottom: "10px",
+                  }}
+                >
+                  ⚙️ AI 설정 {aiProviderIcon}
+                </button>
+                <button
                   onClick={async () => {
                     await fetch("/api/auth/logout", { method: "POST" });
                     window.location.href = "/login";
@@ -216,6 +244,11 @@ export default function RootLayout({
             <div style={{ maxWidth: isLandingPage ? "none" : "1200px", margin: "0 auto" }}>{children}</div>
           </main>
         </div>
+        <AiProviderSettingsModal
+          open={showAISettings}
+          onClose={() => setShowAISettings(false)}
+          onSaved={(cfg) => setAiProviderIcon(AI_SELECTION_INFO[cfg.provider].icon)}
+        />
       </body>
     </html>
   );

@@ -5,7 +5,6 @@ from pydantic import BaseModel, Field
 
 from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
-from langchain_core.prompts import ChatPromptTemplate
 
 from retrieval import load_bm25, resolve_chroma_dir, retrieve_reranked
 from services.pricing_service import lookup_part_pricing, get_pricing_list
@@ -164,7 +163,8 @@ def is_valid_google_key(key: str | None) -> bool:
 def generate_quotation_draft(
     query: str,
     charger_type: str = "급속",
-    use_web_search: bool = False
+    use_web_search: bool = False,
+    ai_config: Any | None = None,
 ) -> QuotationDraft:
     """
     RAG similarity search and LLM invocation to generate a quotation draft.
@@ -172,14 +172,10 @@ def generate_quotation_draft(
     # Try loading keys from dotenv first
     from dotenv import load_dotenv
     load_dotenv(BOT_DIR / ".env")
-        
+
     openai_key = os.environ.get("OPENAI_API_KEY")
-    google_key = os.environ.get("GOOGLE_API_KEY")
-        
-    # Check if keys are missing or invalid - if so, run offline fallback immediately
-    if not is_valid_openai_key(openai_key) and not is_valid_google_key(google_key):
-        print("No valid API keys found (missing, placeholder, or invalid format). Running offline quotation draft.")
-        return _generate_offline_quotation_draft(query, charger_type)
+    if not is_valid_openai_key(openai_key):
+        print("OpenAI API key missing or invalid for embeddings. RAG may fail.")
         
     index_dir = resolve_chroma_dir(BOT_DIR)
     if index_dir is None:
@@ -204,53 +200,26 @@ def generate_quotation_draft(
         for p in pricing_list
     )
     
-    # 3. Prompt setup
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", SYS_PROMPT),
-        ("human", HUMAN_PROMPT_TEMPLATE)
-    ])
-    
-    # 4. Invoke LLM with structured output (OpenAI with Gemini fallback)
-    openai_error = rr.details.get("openai_error", False)
-    llm_success = False
-    prediction = None
-    
-    if not openai_error:
-        try:
-            from langchain_openai import ChatOpenAI
-            llm = ChatOpenAI(model="gpt-4o-mini", temperature=0).with_structured_output(LLMPrediction)
-            chain = prompt | llm
-            prediction = chain.invoke({
+    # 3. Prompt setup (handled by ai_provider.invoke_structured_output)
+
+    # 4. Invoke LLM with configured provider chain
+    try:
+        from services.ai_provider import invoke_structured_output
+
+        prediction, _model_label = invoke_structured_output(
+            LLMPrediction,
+            system_prompt=SYS_PROMPT,
+            human_template=HUMAN_PROMPT_TEMPLATE,
+            inputs={
                 "question": query,
                 "charger_type": charger_type,
                 "context": ctx,
-                "pricing_list_text": pricing_list_text
-            })
-            llm_success = True
-        except Exception as e:
-            print(f"ChatOpenAI failed in quotation service: {e}")
-            
-    if not llm_success:
-        try:
-            from langchain_google_genai import ChatGoogleGenerativeAI
-            if not os.getenv("GOOGLE_API_KEY"):
-                from dotenv import load_dotenv
-                load_dotenv(BOT_DIR / ".env")
-            llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0).with_structured_output(LLMPrediction)
-            chain = prompt | llm
-            prediction = chain.invoke({
-                "question": query,
-                "charger_type": charger_type,
-                "context": ctx,
-                "pricing_list_text": pricing_list_text
-            })
-            llm_success = True
-        except Exception as e:
-            print(f"ChatGoogleGenerativeAI failed in quotation service: {e}")
-            
-    # Fallback to offline matching if LLM parsing failed entirely (e.g. invalid API keys or model errors)
-    if not llm_success or prediction is None:
-        print("Both LLM services failed or returned empty. Falling back to offline quotation draft.")
+                "pricing_list_text": pricing_list_text,
+            },
+            ai_config=ai_config,
+        )
+    except Exception as exc:
+        print(f"Quotation LLM failed, falling back to offline draft: {exc}")
         return _generate_offline_quotation_draft(query, charger_type)
 
     # 5. Process predicted parts and map to contract unit prices
