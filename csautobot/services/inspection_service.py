@@ -7,11 +7,11 @@
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any
 
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
 try:
@@ -167,6 +167,93 @@ def _search_web_for_context(manufacturer: str, model_name: str, memo_text: str) 
         return f"(웹 검색 실패: {str(e)})"
 
 
+def _is_valid_openai_key(key: str | None) -> bool:
+    if not key:
+        return False
+    key = key.strip()
+    return key.startswith("sk-") and len(key) > 20
+
+
+def _is_valid_google_key(key: str | None) -> bool:
+    if not key:
+        return False
+    key = key.strip()
+    return key.startswith("AIza") and len(key) > 20
+
+
+def _generate_offline_inspection_draft(
+    checklist: list[dict[str, Any]],
+    memo_text: str | None,
+    inspection_target: str | None,
+    inspection_cycle: str | None,
+) -> InspectionDraft:
+    """LLM/API 장애 시 체크리스트 규칙 기반 초안."""
+    abnormal: list[str] = []
+    caution: list[str] = []
+    for item in checklist:
+        status = (item.get("status") or "").strip()
+        name = item.get("item") or "(항목 미상)"
+        note = (item.get("note") or "").strip()
+        label = f"{name}" + (f" — {note}" if note else "")
+        if status == "이상":
+            abnormal.append(label)
+        elif status == "주의":
+            caution.append(label)
+
+    if abnormal:
+        risk = "high"
+    elif caution:
+        risk = "mid"
+    else:
+        risk = "low"
+
+    key_findings: list[str] = []
+    for label in abnormal[:3]:
+        key_findings.append(f"이상 항목: {label}")
+    for label in caution[:2]:
+        key_findings.append(f"주의 항목: {label}")
+    if not key_findings:
+        target = inspection_target or "점검 대상"
+        key_findings.append(f"{target} 체크리스트상 특이 이상 항목 없음")
+
+    recommended: list[str] = []
+    for label in abnormal:
+        recommended.append(f"{label} — 현장 재점검 및 부품/배선 상태 확인")
+    for label in caution:
+        recommended.append(f"{label} — 다음 주기까지 추적 모니터링")
+    if not recommended:
+        recommended.append("정기 점검 주기에 따라 예방 유지보수 지속")
+
+    parts = [label.split(" —")[0] for label in (abnormal + caution)][:5]
+    if not parts:
+        parts = ["해당 없음"]
+
+    memo = (memo_text or "").strip()
+    inspector_note = memo or (
+        "오프라인 규칙 기반 초안입니다. "
+        "LLM API 한도 초과 또는 키 미설정 시 생성됩니다."
+    )
+    cycle_label = inspection_cycle or "다음"
+    follow_up = (
+        [f"{cycle_label} 주기 재점검 및 이상 항목 추적"]
+        if risk != "low"
+        else ["정기 점검 일정 유지"]
+    )
+
+    return InspectionDraft(
+        overall_risk=risk,
+        key_findings=key_findings[:5],
+        recommended_actions=recommended[:5],
+        parts_to_check=parts,
+        follow_up_items=follow_up,
+        inspector_note=inspector_note,
+        safety_notice=(
+            "본 초안은 AI/API 장애 시 규칙 기반으로 생성되었습니다. "
+            "최종 판단과 조치는 담당 엔지니어가 확인해야 합니다."
+        ),
+    )
+
+
 def generate_inspection_draft(
     *,
     site_name: str | None,
@@ -225,18 +312,59 @@ def generate_inspection_draft(
     prompt = ChatPromptTemplate.from_messages(
         [("system", system_prompt), ("human", human_template)]
     )
-    llm = ChatOpenAI(model=model_name_llm, temperature=0).with_structured_output(InspectionDraft)
-    chain = prompt | llm
-    draft: InspectionDraft = chain.invoke(
-        {
-            "charger_block": charger_block,
-            "checklist_block": checklist_block,
-            "memo_block": memo_block,
-            "similar_block": similar_block,
-            "web_block": web_block,
-        }
+    invoke_inputs = {
+        "charger_block": charger_block,
+        "checklist_block": checklist_block,
+        "memo_block": memo_block,
+        "similar_block": similar_block,
+        "web_block": web_block,
+    }
+
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv(HERE.parent / ".env")
+    except ImportError:
+        pass
+
+    openai_key = os.environ.get("OPENAI_API_KEY")
+    google_key = os.environ.get("GOOGLE_API_KEY")
+
+    if not _is_valid_openai_key(openai_key) and not _is_valid_google_key(google_key):
+        offline = _generate_offline_inspection_draft(
+            checklist, memo_text, inspection_target, inspection_cycle
+        )
+        return offline, "offline-rules", web_res
+
+    if _is_valid_openai_key(openai_key):
+        try:
+            from langchain_openai import ChatOpenAI
+
+            llm = ChatOpenAI(model=model_name_llm, temperature=0).with_structured_output(
+                InspectionDraft
+            )
+            draft: InspectionDraft = (prompt | llm).invoke(invoke_inputs)
+            return draft, model_name_llm, web_res
+        except Exception as exc:
+            print(f"ChatOpenAI failed in inspection service: {exc}")
+
+    if _is_valid_google_key(google_key):
+        try:
+            from langchain_google_genai import ChatGoogleGenerativeAI
+
+            gemini_model = "gemini-2.0-flash"
+            llm = ChatGoogleGenerativeAI(
+                model=gemini_model, temperature=0
+            ).with_structured_output(InspectionDraft)
+            draft = (prompt | llm).invoke(invoke_inputs)
+            return draft, gemini_model, web_res
+        except Exception as exc:
+            print(f"ChatGoogleGenerativeAI failed in inspection service: {exc}")
+
+    offline = _generate_offline_inspection_draft(
+        checklist, memo_text, inspection_target, inspection_cycle
     )
-    return draft, model_name_llm, web_res
+    return offline, "offline-rules", web_res
 
 
 # ---------- 점검 주기별 체크리스트 프리셋 ----------
