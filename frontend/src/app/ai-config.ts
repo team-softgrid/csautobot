@@ -109,6 +109,10 @@ export async function loadAIConfig(tenantId: string = "default_tenant"): Promise
     const res = await fetch(`/api/ai-settings?tenant_id=${encodeURIComponent(tenantId)}`, {
       cache: "no-store",
     });
+    if (res.status === 401 && typeof window !== "undefined") {
+      window.location.href = "/login";
+      return DEFAULT_AI_CONFIG;
+    }
     if (!res.ok) return DEFAULT_AI_CONFIG;
     const data = await res.json();
     return mapServerPayload(data);
