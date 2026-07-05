@@ -7,28 +7,28 @@ Local PM2 version: 7.0.3
 ┌─────┬────────────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
 │ id  │ name                       │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├─────┼────────────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 286 │ aicallcenter-backend       │ default     │ N/A     │ fork    │ 2148     │ 2m     │ 1    │ online    │ 0%       │ 305.7mb  │ Adminis… │ disabled │
-│ 258 │ aicallcenter-caddy         │ default     │ N/A     │ fork    │ 8932     │ 70m    │ 0    │ online    │ 0%       │ 40.5mb   │ Adminis… │ disabled │
-│ 287 │ aicallcenter-frontend      │ default     │ N/A     │ fork    │ 9144     │ 2m     │ 1    │ online    │ 0%       │ 105.9mb  │ Adminis… │ disabled │
-│ 288 │ csautobot-backend          │ default     │ N/A     │ fork    │ 10024    │ 35s    │ 0    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
-│ 289 │ csautobot-frontend         │ default     │ 16.2.9  │ fork    │ 6928     │ 35s    │ 0    │ online    │ 0%       │ 120.6mb  │ Adminis… │ disabled │
-│ 285 │ ocppautomation-frontend    │ default     │ 16.2.3  │ fork    │ 4984     │ 4m     │ 0    │ online    │ 0%       │ 137.9mb  │ Adminis… │ disabled │
+│ 286 │ aicallcenter-backend       │ default     │ N/A     │ fork    │ 2148     │ 27m    │ 1    │ online    │ 0.8%     │ 332.4mb  │ Adminis… │ disabled │
+│ 258 │ aicallcenter-caddy         │ default     │ N/A     │ fork    │ 8932     │ 94m    │ 0    │ online    │ 1.6%     │ 40.2mb   │ Adminis… │ disabled │
+│ 287 │ aicallcenter-frontend      │ default     │ N/A     │ fork    │ 9144     │ 27m    │ 1    │ online    │ 0.8%     │ 117.7mb  │ Adminis… │ disabled │
+│ 290 │ csautobot-backend          │ default     │ N/A     │ fork    │ 5192     │ 2m     │ 0    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
+│ 291 │ csautobot-frontend         │ default     │ 16.2.9  │ fork    │ 7456     │ 2m     │ 0    │ online    │ 0%       │ 120.1mb  │ Adminis… │ disabled │
+│ 285 │ ocppautomation-frontend    │ default     │ 16.2.3  │ fork    │ 4984     │ 28m    │ 0    │ online    │ 0%       │ 138.1mb  │ Adminis… │ disabled │
 └─────┴────────────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
 --- NETSTAT PORTS 5000/8000 ---
-  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       6928
-  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       1252
+  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       7456
+  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       5044
 --- RUNNING PROCESSES ---
 
-   Id       CPU WorkingSet ProcessName
-   --       --- ---------- -----------
- 1640 65.921875   87273472 node       
- 4984  3.421875  144629760 node       
- 6928  1.984375  126427136 node       
- 9144  1.828125  111333376 node       
- 1252  5.671875  173993984 python     
- 2148 16.765625  320589824 python     
- 2152 17.828125  283754496 python     
-10024  0.015625    3129344 python     
+  Id       CPU WorkingSet ProcessName
+  --       --- ---------- -----------
+1640 66.890625   87842816 node       
+4984  6.671875  144822272 node       
+7456    2.1875  125939712 node       
+9144     3.875  123379712 node       
+2148  42.15625  348618752 python     
+2152  25.96875  289296384 python     
+5044  6.796875  172916736 python     
+5192         0    3129344 python     
 
 
 --- SCHEDULED TASKS (PM2) ---

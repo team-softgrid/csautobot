@@ -6,206 +6,206 @@ Local PM2 version: 7.0.3
 
 [TAILING] Tailing last 100 lines for [csautobot-frontend] process (change the value with --lines option)
 C:\Users\Administrator\.pm2\logs\csautobot-frontend-error.log last 100 lines:
-289|csauto | 2026-06-29 09:51 +09:00:     at ignore-listed frames
-289|csauto | 2026-06-29 09:51 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
-289|csauto | 2026-06-29 09:51 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-06-29 09:51 +09:00:     at ignore-listed frames
-289|csauto | 2026-06-29 23:16 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
-289|csauto | 2026-06-29 23:16 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-06-29 23:16 +09:00:     at ignore-listed frames
-289|csauto | 2026-06-29 23:22 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
-289|csauto | 2026-06-29 23:22 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-06-29 23:22 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-01 15:25 +09:00: Error: Failed to find Server Action "ff7f7b92". This request might be from an older or newer deployment.
-289|csauto | 2026-07-01 15:25 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-07-01 15:25 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-01 15:26 +09:00: Error: Failed to find Server Action "6a30c5e9". This request might be from an older or newer deployment.
-289|csauto | 2026-07-01 15:26 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-07-01 15:26 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-01 15:48 +09:00: Error: Failed to find Server Action "0000000000000000000000000000000000000000". This request might be from an older or newer deployment.
-289|csauto | 2026-07-01 15:48 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-07-01 15:48 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-01 15:48 +09:00: Error: Failed to find Server Action "0000000000000000000000000000000000000000". This request might be from an older or newer deployment.
-289|csauto | 2026-07-01 15:48 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-07-01 15:48 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-01 16:04 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
-289|csauto | 2026-07-01 16:04 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-07-01 16:04 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-01 16:04 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
-289|csauto | 2026-07-01 16:04 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-07-01 16:04 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-01 16:04 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
-289|csauto | 2026-07-01 16:04 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-07-01 16:04 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-01 16:41 +09:00: Error: Failed to find Server Action "y". This request might be from an older or newer deployment.
-289|csauto | 2026-07-01 16:41 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-07-01 16:41 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-01 16:43 +09:00: Error: Failed to find Server Action "y". This request might be from an older or newer deployment.
-289|csauto | 2026-07-01 16:43 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-07-01 16:43 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-01 16:44 +09:00: Error: Failed to find Server Action "y". This request might be from an older or newer deployment.
-289|csauto | 2026-07-01 16:44 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-07-01 16:44 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-04 04:16 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
-289|csauto | 2026-07-04 04:16 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-07-04 04:16 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-04 19:31 +09:00: Failed to proxy http://127.0.0.1:8000/api/v1/search/as-cases Error: connect ECONNREFUSED 127.0.0.1:8000
-289|csauto | 2026-07-04 19:31 +09:00:     at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
-289|csauto | 2026-07-04 19:31 +09:00:   errno: -4078,
-289|csauto | 2026-07-04 19:31 +09:00:   code: 'ECONNREFUSED',
-289|csauto | 2026-07-04 19:31 +09:00:   syscall: 'connect',
-289|csauto | 2026-07-04 19:31 +09:00:   address: '127.0.0.1',
-289|csauto | 2026-07-04 19:31 +09:00:   port: 8000
-289|csauto | 2026-07-04 19:31 +09:00: }
-289|csauto | 2026-07-04 19:31 +09:00: Error: connect ECONNREFUSED 127.0.0.1:8000
-289|csauto | 2026-07-04 19:31 +09:00:     at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
-289|csauto | 2026-07-04 19:31 +09:00:   errno: -4078,
-289|csauto | 2026-07-04 19:31 +09:00:   code: 'ECONNREFUSED',
-289|csauto | 2026-07-04 19:31 +09:00:   syscall: 'connect',
-289|csauto | 2026-07-04 19:31 +09:00:   address: '127.0.0.1',
-289|csauto | 2026-07-04 19:31 +09:00:   port: 8000
-289|csauto | 2026-07-04 19:31 +09:00: }
-289|csauto | 2026-07-04 20:51 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
-289|csauto | 2026-07-04 20:51 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-07-04 20:51 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-04 20:51 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
-289|csauto | 2026-07-04 20:51 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-07-04 20:51 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-04 20:51 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
-289|csauto | 2026-07-04 20:51 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-289|csauto | 2026-07-04 20:51 +09:00:     at ignore-listed frames
-289|csauto | 2026-07-05 10:04 +09:00: Failed to proxy http://127.0.0.1:8000/api/v1/search/as-cases Error: socket hang up
-289|csauto | 2026-07-05 10:04 +09:00:     at ignore-listed frames {
-289|csauto | 2026-07-05 10:04 +09:00:   code: 'ECONNRESET'
-289|csauto | 2026-07-05 10:04 +09:00: }
-289|csauto | 2026-07-05 10:04 +09:00: Error: socket hang up
-289|csauto | 2026-07-05 10:04 +09:00:     at ignore-listed frames {
-289|csauto | 2026-07-05 10:04 +09:00:   code: 'ECONNRESET'
-289|csauto | 2026-07-05 10:04 +09:00: }
-289|csauto | 2026-07-05 16:53 +09:00: Failed to proxy http://127.0.0.1:8000/api/v1/quotation/draft Error: socket hang up
-289|csauto | 2026-07-05 16:53 +09:00:     at ignore-listed frames {
-289|csauto | 2026-07-05 16:53 +09:00:   code: 'ECONNRESET'
-289|csauto | 2026-07-05 16:53 +09:00: }
-289|csauto | 2026-07-05 16:53 +09:00: Error: socket hang up
-289|csauto | 2026-07-05 16:53 +09:00:     at ignore-listed frames {
-289|csauto | 2026-07-05 16:53 +09:00:   code: 'ECONNRESET'
-289|csauto | 2026-07-05 16:53 +09:00: }
-289|csauto | 2026-07-05 17:14 +09:00: Failed to proxy http://127.0.0.1:8000/api/v1/quotation/draft Error: socket hang up
-289|csauto | 2026-07-05 17:14 +09:00:     at ignore-listed frames {
-289|csauto | 2026-07-05 17:14 +09:00:   code: 'ECONNRESET'
-289|csauto | 2026-07-05 17:14 +09:00: }
-289|csauto | 2026-07-05 17:14 +09:00: Error: socket hang up
-289|csauto | 2026-07-05 17:14 +09:00:     at ignore-listed frames {
-289|csauto | 2026-07-05 17:14 +09:00:   code: 'ECONNRESET'
-289|csauto | 2026-07-05 17:14 +09:00: }
-289|csauto | 2026-07-05 17:30 +09:00: Failed to proxy http://127.0.0.1:8000/api/v1/quotation/draft Error: socket hang up
-289|csauto | 2026-07-05 17:30 +09:00:     at ignore-listed frames {
-289|csauto | 2026-07-05 17:30 +09:00:   code: 'ECONNRESET'
-289|csauto | 2026-07-05 17:30 +09:00: }
-289|csauto | 2026-07-05 17:30 +09:00: Error: socket hang up
-289|csauto | 2026-07-05 17:30 +09:00:     at ignore-listed frames {
-289|csauto | 2026-07-05 17:30 +09:00:   code: 'ECONNRESET'
-289|csauto | 2026-07-05 17:30 +09:00: }
+291|csauto | 2026-06-29 09:51 +09:00:     at ignore-listed frames
+291|csauto | 2026-06-29 09:51 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+291|csauto | 2026-06-29 09:51 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-06-29 09:51 +09:00:     at ignore-listed frames
+291|csauto | 2026-06-29 23:16 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+291|csauto | 2026-06-29 23:16 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-06-29 23:16 +09:00:     at ignore-listed frames
+291|csauto | 2026-06-29 23:22 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+291|csauto | 2026-06-29 23:22 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-06-29 23:22 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-01 15:25 +09:00: Error: Failed to find Server Action "ff7f7b92". This request might be from an older or newer deployment.
+291|csauto | 2026-07-01 15:25 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-07-01 15:25 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-01 15:26 +09:00: Error: Failed to find Server Action "6a30c5e9". This request might be from an older or newer deployment.
+291|csauto | 2026-07-01 15:26 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-07-01 15:26 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-01 15:48 +09:00: Error: Failed to find Server Action "0000000000000000000000000000000000000000". This request might be from an older or newer deployment.
+291|csauto | 2026-07-01 15:48 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-07-01 15:48 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-01 15:48 +09:00: Error: Failed to find Server Action "0000000000000000000000000000000000000000". This request might be from an older or newer deployment.
+291|csauto | 2026-07-01 15:48 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-07-01 15:48 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-01 16:04 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+291|csauto | 2026-07-01 16:04 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-07-01 16:04 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-01 16:04 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+291|csauto | 2026-07-01 16:04 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-07-01 16:04 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-01 16:04 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+291|csauto | 2026-07-01 16:04 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-07-01 16:04 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-01 16:41 +09:00: Error: Failed to find Server Action "y". This request might be from an older or newer deployment.
+291|csauto | 2026-07-01 16:41 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-07-01 16:41 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-01 16:43 +09:00: Error: Failed to find Server Action "y". This request might be from an older or newer deployment.
+291|csauto | 2026-07-01 16:43 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-07-01 16:43 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-01 16:44 +09:00: Error: Failed to find Server Action "y". This request might be from an older or newer deployment.
+291|csauto | 2026-07-01 16:44 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-07-01 16:44 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-04 04:16 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+291|csauto | 2026-07-04 04:16 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-07-04 04:16 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-04 19:31 +09:00: Failed to proxy http://127.0.0.1:8000/api/v1/search/as-cases Error: connect ECONNREFUSED 127.0.0.1:8000
+291|csauto | 2026-07-04 19:31 +09:00:     at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+291|csauto | 2026-07-04 19:31 +09:00:   errno: -4078,
+291|csauto | 2026-07-04 19:31 +09:00:   code: 'ECONNREFUSED',
+291|csauto | 2026-07-04 19:31 +09:00:   syscall: 'connect',
+291|csauto | 2026-07-04 19:31 +09:00:   address: '127.0.0.1',
+291|csauto | 2026-07-04 19:31 +09:00:   port: 8000
+291|csauto | 2026-07-04 19:31 +09:00: }
+291|csauto | 2026-07-04 19:31 +09:00: Error: connect ECONNREFUSED 127.0.0.1:8000
+291|csauto | 2026-07-04 19:31 +09:00:     at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+291|csauto | 2026-07-04 19:31 +09:00:   errno: -4078,
+291|csauto | 2026-07-04 19:31 +09:00:   code: 'ECONNREFUSED',
+291|csauto | 2026-07-04 19:31 +09:00:   syscall: 'connect',
+291|csauto | 2026-07-04 19:31 +09:00:   address: '127.0.0.1',
+291|csauto | 2026-07-04 19:31 +09:00:   port: 8000
+291|csauto | 2026-07-04 19:31 +09:00: }
+291|csauto | 2026-07-04 20:51 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+291|csauto | 2026-07-04 20:51 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-07-04 20:51 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-04 20:51 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+291|csauto | 2026-07-04 20:51 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-07-04 20:51 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-04 20:51 +09:00: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+291|csauto | 2026-07-04 20:51 +09:00: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+291|csauto | 2026-07-04 20:51 +09:00:     at ignore-listed frames
+291|csauto | 2026-07-05 10:04 +09:00: Failed to proxy http://127.0.0.1:8000/api/v1/search/as-cases Error: socket hang up
+291|csauto | 2026-07-05 10:04 +09:00:     at ignore-listed frames {
+291|csauto | 2026-07-05 10:04 +09:00:   code: 'ECONNRESET'
+291|csauto | 2026-07-05 10:04 +09:00: }
+291|csauto | 2026-07-05 10:04 +09:00: Error: socket hang up
+291|csauto | 2026-07-05 10:04 +09:00:     at ignore-listed frames {
+291|csauto | 2026-07-05 10:04 +09:00:   code: 'ECONNRESET'
+291|csauto | 2026-07-05 10:04 +09:00: }
+291|csauto | 2026-07-05 16:53 +09:00: Failed to proxy http://127.0.0.1:8000/api/v1/quotation/draft Error: socket hang up
+291|csauto | 2026-07-05 16:53 +09:00:     at ignore-listed frames {
+291|csauto | 2026-07-05 16:53 +09:00:   code: 'ECONNRESET'
+291|csauto | 2026-07-05 16:53 +09:00: }
+291|csauto | 2026-07-05 16:53 +09:00: Error: socket hang up
+291|csauto | 2026-07-05 16:53 +09:00:     at ignore-listed frames {
+291|csauto | 2026-07-05 16:53 +09:00:   code: 'ECONNRESET'
+291|csauto | 2026-07-05 16:53 +09:00: }
+291|csauto | 2026-07-05 17:14 +09:00: Failed to proxy http://127.0.0.1:8000/api/v1/quotation/draft Error: socket hang up
+291|csauto | 2026-07-05 17:14 +09:00:     at ignore-listed frames {
+291|csauto | 2026-07-05 17:14 +09:00:   code: 'ECONNRESET'
+291|csauto | 2026-07-05 17:14 +09:00: }
+291|csauto | 2026-07-05 17:14 +09:00: Error: socket hang up
+291|csauto | 2026-07-05 17:14 +09:00:     at ignore-listed frames {
+291|csauto | 2026-07-05 17:14 +09:00:   code: 'ECONNRESET'
+291|csauto | 2026-07-05 17:14 +09:00: }
+291|csauto | 2026-07-05 17:30 +09:00: Failed to proxy http://127.0.0.1:8000/api/v1/quotation/draft Error: socket hang up
+291|csauto | 2026-07-05 17:30 +09:00:     at ignore-listed frames {
+291|csauto | 2026-07-05 17:30 +09:00:   code: 'ECONNRESET'
+291|csauto | 2026-07-05 17:30 +09:00: }
+291|csauto | 2026-07-05 17:30 +09:00: Error: socket hang up
+291|csauto | 2026-07-05 17:30 +09:00:     at ignore-listed frames {
+291|csauto | 2026-07-05 17:30 +09:00:   code: 'ECONNRESET'
+291|csauto | 2026-07-05 17:30 +09:00: }
 
 C:\Users\Administrator\.pm2\logs\csautobot-frontend-out.log last 100 lines:
-289|csauto | 2026-07-02 15:04 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-02 15:04 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-02 15:04 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-02 15:04 +09:00: ✓ Ready in 1207ms
-289|csauto | 2026-07-03 12:04 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-03 12:04 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-03 12:04 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-03 12:04 +09:00: ✓ Ready in 4.2s
-289|csauto | 2026-07-03 12:53 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-03 12:53 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-03 12:53 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-03 12:53 +09:00: ✓ Ready in 1150ms
-289|csauto | 2026-07-04 13:07 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-04 13:07 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-04 13:07 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-04 13:07 +09:00: ✓ Ready in 12.9s
-289|csauto | 2026-07-04 13:25 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-04 13:25 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-04 13:25 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-04 13:25 +09:00: ✓ Ready in 543ms
-289|csauto | 2026-07-04 17:36 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-04 17:36 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-04 17:36 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-04 17:36 +09:00: ✓ Ready in 5.0s
-289|csauto | 2026-07-04 19:16 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-04 19:16 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-04 19:16 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-04 19:16 +09:00: ✓ Ready in 2.6s
-289|csauto | 2026-07-04 19:31 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-04 19:31 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-04 19:31 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-04 19:31 +09:00: ✓ Ready in 3.1s
-289|csauto | 2026-07-04 21:10 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-04 21:10 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-04 21:10 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-04 21:10 +09:00: ✓ Ready in 517ms
-289|csauto | 2026-07-04 21:45 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-04 21:45 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-04 21:45 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-04 21:45 +09:00: ✓ Ready in 535ms
-289|csauto | 2026-07-04 22:47 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-04 22:47 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-04 22:47 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-04 22:47 +09:00: ✓ Ready in 2.1s
-289|csauto | 2026-07-04 23:01 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-04 23:01 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-04 23:01 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-04 23:01 +09:00: ✓ Ready in 558ms
-289|csauto | 2026-07-05 09:12 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-05 09:12 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-05 09:12 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-05 09:12 +09:00: ✓ Ready in 4.1s
-289|csauto | 2026-07-05 09:19 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-05 09:19 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-05 09:19 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-05 09:19 +09:00: ✓ Ready in 1102ms
-289|csauto | 2026-07-05 09:35 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-05 09:35 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-05 09:35 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-05 09:35 +09:00: ✓ Ready in 4.3s
-289|csauto | 2026-07-05 10:01 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-05 10:01 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-05 10:01 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-05 10:01 +09:00: ✓ Ready in 4.0s
-289|csauto | 2026-07-05 10:10 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-05 10:10 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-05 10:10 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-05 10:10 +09:00: ✓ Ready in 2.2s
-289|csauto | 2026-07-05 10:30 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-05 10:30 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-05 10:30 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-05 10:30 +09:00: ✓ Ready in 541ms
-289|csauto | 2026-07-05 15:00 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-05 15:00 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-05 15:00 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-05 15:00 +09:00: ✓ Ready in 7.4s
-289|csauto | 2026-07-05 15:26 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-05 15:26 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-05 15:26 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-05 15:26 +09:00: ✓ Ready in 731ms
-289|csauto | 2026-07-05 16:33 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-05 16:33 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-05 16:33 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-05 16:33 +09:00: ✓ Ready in 785ms
-289|csauto | 2026-07-05 16:50 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-05 16:50 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-05 16:50 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-05 16:50 +09:00: ✓ Ready in 534ms
-289|csauto | 2026-07-05 17:09 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-05 17:09 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-05 17:09 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-05 17:09 +09:00: ✓ Ready in 4.1s
-289|csauto | 2026-07-05 17:25 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-05 17:25 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-05 17:25 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-05 17:25 +09:00: ✓ Ready in 2.1s
-289|csauto | 2026-07-05 17:39 +09:00: ▲ Next.js 16.2.9
-289|csauto | 2026-07-05 17:39 +09:00: - Local:         http://localhost:5000
-289|csauto | 2026-07-05 17:39 +09:00: - Network:       http://0.0.0.0:5000
-289|csauto | 2026-07-05 17:39 +09:00: ✓ Ready in 523ms
+291|csauto | 2026-07-03 12:04 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-03 12:04 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-03 12:04 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-03 12:04 +09:00: ✓ Ready in 4.2s
+291|csauto | 2026-07-03 12:53 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-03 12:53 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-03 12:53 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-03 12:53 +09:00: ✓ Ready in 1150ms
+291|csauto | 2026-07-04 13:07 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-04 13:07 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-04 13:07 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-04 13:07 +09:00: ✓ Ready in 12.9s
+291|csauto | 2026-07-04 13:25 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-04 13:25 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-04 13:25 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-04 13:25 +09:00: ✓ Ready in 543ms
+291|csauto | 2026-07-04 17:36 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-04 17:36 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-04 17:36 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-04 17:36 +09:00: ✓ Ready in 5.0s
+291|csauto | 2026-07-04 19:16 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-04 19:16 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-04 19:16 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-04 19:16 +09:00: ✓ Ready in 2.6s
+291|csauto | 2026-07-04 19:31 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-04 19:31 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-04 19:31 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-04 19:31 +09:00: ✓ Ready in 3.1s
+291|csauto | 2026-07-04 21:10 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-04 21:10 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-04 21:10 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-04 21:10 +09:00: ✓ Ready in 517ms
+291|csauto | 2026-07-04 21:45 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-04 21:45 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-04 21:45 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-04 21:45 +09:00: ✓ Ready in 535ms
+291|csauto | 2026-07-04 22:47 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-04 22:47 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-04 22:47 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-04 22:47 +09:00: ✓ Ready in 2.1s
+291|csauto | 2026-07-04 23:01 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-04 23:01 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-04 23:01 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-04 23:01 +09:00: ✓ Ready in 558ms
+291|csauto | 2026-07-05 09:12 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-05 09:12 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-05 09:12 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-05 09:12 +09:00: ✓ Ready in 4.1s
+291|csauto | 2026-07-05 09:19 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-05 09:19 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-05 09:19 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-05 09:19 +09:00: ✓ Ready in 1102ms
+291|csauto | 2026-07-05 09:35 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-05 09:35 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-05 09:35 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-05 09:35 +09:00: ✓ Ready in 4.3s
+291|csauto | 2026-07-05 10:01 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-05 10:01 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-05 10:01 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-05 10:01 +09:00: ✓ Ready in 4.0s
+291|csauto | 2026-07-05 10:10 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-05 10:10 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-05 10:10 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-05 10:10 +09:00: ✓ Ready in 2.2s
+291|csauto | 2026-07-05 10:30 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-05 10:30 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-05 10:30 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-05 10:30 +09:00: ✓ Ready in 541ms
+291|csauto | 2026-07-05 15:00 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-05 15:00 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-05 15:00 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-05 15:00 +09:00: ✓ Ready in 7.4s
+291|csauto | 2026-07-05 15:26 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-05 15:26 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-05 15:26 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-05 15:26 +09:00: ✓ Ready in 731ms
+291|csauto | 2026-07-05 16:33 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-05 16:33 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-05 16:33 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-05 16:33 +09:00: ✓ Ready in 785ms
+291|csauto | 2026-07-05 16:50 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-05 16:50 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-05 16:50 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-05 16:50 +09:00: ✓ Ready in 534ms
+291|csauto | 2026-07-05 17:09 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-05 17:09 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-05 17:09 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-05 17:09 +09:00: ✓ Ready in 4.1s
+291|csauto | 2026-07-05 17:25 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-05 17:25 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-05 17:25 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-05 17:25 +09:00: ✓ Ready in 2.1s
+291|csauto | 2026-07-05 17:39 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-05 17:39 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-05 17:39 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-05 17:39 +09:00: ✓ Ready in 523ms
+291|csauto | 2026-07-05 18:01 +09:00: ▲ Next.js 16.2.9
+291|csauto | 2026-07-05 18:01 +09:00: - Local:         http://localhost:5000
+291|csauto | 2026-07-05 18:01 +09:00: - Network:       http://0.0.0.0:5000
+291|csauto | 2026-07-05 18:01 +09:00: ✓ Ready in 498ms
 
