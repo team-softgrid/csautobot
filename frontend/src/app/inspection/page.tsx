@@ -102,11 +102,12 @@ export default function InspectionPage() {
           inspection_id: inspectionId,
           tenant_id: getTenantId(),
           site_id: siteId,
+          site_name: siteName,
           inspection_cycle: cycle,
           inspection_type: type,
           checklist,
           memo_text: memo,
-          ai_summary: draft ? JSON.stringify(draft.summary_json) : null,
+          ai_summary: draft?.summary_json ?? null,
         }),
       });
       if (res.ok) {
@@ -116,7 +117,7 @@ export default function InspectionPage() {
           method: "POST",
         });
       } else {
-        alert("점검일지 저장에 실패했습니다.");
+        alert(await readApiError(res));
       }
     } catch (err) {
       alert("점검일지 저장에 실패했습니다.");
