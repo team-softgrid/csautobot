@@ -30,6 +30,7 @@ export default function InspectionPage() {
   const [fbUsefulness, setFbUsefulness] = useState(4);
   const [fbComment, setFbComment] = useState("");
   const [fbSaved, setFbSaved] = useState(false);
+  const [showAiMeta, setShowAiMeta] = useState(false);
 
   useEffect(() => {
     // Generate UUID-like inspection_id on client load
@@ -85,6 +86,7 @@ export default function InspectionPage() {
       }
       const data = await res.json();
       setDraft(data);
+      setShowAiMeta(false);
     } catch (err) {
       alert("AI 초안 생성에 실패했습니다.");
     } finally {
@@ -242,7 +244,27 @@ export default function InspectionPage() {
         <section style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
           
           <div className="glass-panel" style={{ padding: "32px", flex: 1, display: "flex", flexDirection: "column" }}>
-            <h3 style={{ fontSize: "18px", fontWeight: "bold", margin: "0 0 20px 0", color: "#f8fafc" }}>💡 AI 점검 결과 분석 초안</h3>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", gap: "12px" }}>
+              <h3 style={{ fontSize: "18px", fontWeight: "bold", margin: 0, color: "#f8fafc" }}>💡 AI 점검 결과 분석 초안</h3>
+              {draft?.ai_meta && (
+                <button
+                  type="button"
+                  onClick={() => setShowAiMeta(true)}
+                  style={{
+                    padding: "6px 12px",
+                    background: "rgba(255,255,255,0.06)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    borderRadius: "6px",
+                    color: "#94a3b8",
+                    fontSize: "12px",
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  ℹ️ AI 처리 상세
+                </button>
+              )}
+            </div>
             
             {!draft ? (
               <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", color: "#64748b", border: "2px dashed rgba(255,255,255,0.04)", borderRadius: "12px", padding: "40px", textAlign: "center" }}>
@@ -328,6 +350,77 @@ export default function InspectionPage() {
           )}
         </section>
       </div>
+
+      {showAiMeta && draft?.ai_meta && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setShowAiMeta(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.6)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "24px",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="glass-panel"
+            style={{
+              width: "100%",
+              maxWidth: "520px",
+              padding: "24px",
+              maxHeight: "80vh",
+              overflowY: "auto",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h4 style={{ margin: 0, fontSize: "16px", color: "#f8fafc" }}>AI 처리 상세</h4>
+              <button
+                type="button"
+                onClick={() => setShowAiMeta(false)}
+                style={{ background: "none", border: "none", color: "#94a3b8", fontSize: "20px", cursor: "pointer" }}
+              >
+                ×
+              </button>
+            </div>
+            <dl style={{ margin: 0, display: "grid", gridTemplateColumns: "120px 1fr", gap: "10px 12px", fontSize: "13px" }}>
+              <dt style={{ color: "#64748b" }}>API</dt>
+              <dd style={{ margin: 0, color: "#e2e8f0", fontFamily: "monospace" }}>{draft.ai_meta.endpoint}</dd>
+              <dt style={{ color: "#64748b" }}>처리 경로</dt>
+              <dd style={{ margin: 0, color: "#e2e8f0" }}>{draft.ai_meta.generation_path}</dd>
+              <dt style={{ color: "#64748b" }}>Task type</dt>
+              <dd style={{ margin: 0, color: "#e2e8f0" }}>{draft.ai_meta.task_type || "-"}</dd>
+              <dt style={{ color: "#64748b" }}>모델 라벨</dt>
+              <dd style={{ margin: 0, color: "#06b6d4", fontFamily: "monospace" }}>{draft.ai_meta.model_label}</dd>
+              {draft.ai_meta.provider && (
+                <>
+                  <dt style={{ color: "#64748b" }}>프로바이더</dt>
+                  <dd style={{ margin: 0, color: "#e2e8f0" }}>{draft.ai_meta.provider}</dd>
+                </>
+              )}
+              {draft.ai_meta.model_name && (
+                <>
+                  <dt style={{ color: "#64748b" }}>모델</dt>
+                  <dd style={{ margin: 0, color: "#e2e8f0", fontFamily: "monospace" }}>{draft.ai_meta.model_name}</dd>
+                </>
+              )}
+              {draft.ai_meta.provider_chain?.length > 0 && (
+                <>
+                  <dt style={{ color: "#64748b" }}>시도 순서</dt>
+                  <dd style={{ margin: 0, color: "#e2e8f0" }}>{draft.ai_meta.provider_chain.join(" → ")}</dd>
+                </>
+              )}
+              <dt style={{ color: "#64748b" }}>설명</dt>
+              <dd style={{ margin: 0, color: "#cbd5e1", lineHeight: 1.5 }}>{draft.ai_meta.description}</dd>
+            </dl>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
