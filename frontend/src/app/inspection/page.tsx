@@ -75,6 +75,8 @@ export default function InspectionPage() {
           checklist,
           memo,
           tenant_id: getTenantId(),
+          site_name: siteName || null,
+          inspection_type: type,
         }),
       });
       if (!res.ok) {

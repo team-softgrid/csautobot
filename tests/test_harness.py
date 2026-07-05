@@ -148,12 +148,20 @@ class TestLeadsAdmin:
 class TestInspectionMetering:
     def test_inspection_draft_records_usage(self, client, mocker):
         mocker.patch("services.billing_metering.check_quota")
-        mock_draft = mocker.MagicMock()
-        mock_draft.draft_text = "test draft"
-        mock_draft.summary_json = {"risk": "low"}
+        from services.inspection_service import InspectionDraft
+
+        mock_draft = InspectionDraft(
+            overall_risk="low",
+            key_findings=["테스트 관찰"],
+            recommended_actions=["테스트 조치"],
+            parts_to_check=[],
+            follow_up_items=[],
+            inspector_note="테스트 메모",
+            safety_notice="최종 판단은 담당 엔지니어에게 있습니다.",
+        )
         mocker.patch(
             "app.routes.inspection.svc.generate_inspection_draft",
-            return_value=mock_draft,
+            return_value=(mock_draft, "gpt-4o-mini", ""),
         )
         resp = client.post(
             "/api/v1/inspection/draft",
