@@ -29,15 +29,17 @@ export default function RootLayout({
   const [showAISettings, setShowAISettings] = useState(false);
   const [aiProviderIcon, setAiProviderIcon] = useState("🧩");
 
-  useEffect(() => {
-    loadAIConfig(getTenantId()).then((cfg) => {
-      setAiProviderIcon(AI_SELECTION_INFO[cfg.provider].icon);
-    });
-  }, []);
-
   const isLandingPage =
     pathname === "/" ||
     pathname === "/login";
+
+  useEffect(() => {
+    if (!isLandingPage) {
+      loadAIConfig(getTenantId()).then((cfg) => {
+        setAiProviderIcon(AI_SELECTION_INFO[cfg.provider].icon);
+      });
+    }
+  }, [isLandingPage]);
 
   return (
     <html lang="ko">
