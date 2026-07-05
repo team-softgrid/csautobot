@@ -87,6 +87,8 @@ def record_usage(
     input_tokens: int = 0,
     output_tokens: int = 0,
     request_count: int = 1,
+    fallback_provider: str | None = None,
+    shortcut: bool = False,
 ) -> None:
     with get_db_context() as db:
         db.add(
@@ -97,9 +99,32 @@ def record_usage(
                 model_name=model_name,
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
-                request_count=request_count,
+                request_count=0 if shortcut else request_count,
+                fallback_provider=fallback_provider,
+                is_shortcut=1 if shortcut else 0,
             )
         )
+
+
+def get_daily_token_total(tenant_id: str) -> int:
+    """Sum input+output tokens recorded today for the tenant."""
+    start = datetime.datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    with get_db_context() as db:
+        total = (
+            db.query(
+                func.coalesce(
+                    func.sum(UsageMeter.input_tokens + UsageMeter.output_tokens),
+                    0,
+                )
+            )
+            .filter(
+                UsageMeter.tenant_id == tenant_id,
+                UsageMeter.measured_at >= start,
+                UsageMeter.is_shortcut == 0,
+            )
+            .scalar()
+        )
+        return int(total or 0)
 
 
 def _compute_usage_alerts(usage: dict[str, Any]) -> list[dict[str, Any]]:

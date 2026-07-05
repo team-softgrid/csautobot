@@ -26,7 +26,7 @@ class TestTenantAiSettings:
         payload = AiSettingsUpdate(
             tenant_id="tenant_ai_test",
             provider="hybrid",
-            hybrid_providers=["gemini", "openai", "claude", "ollama"],
+            hybrid_providers=["groq", "gemini", "openai", "claude", "ollama"],
             api_keys={
                 "openai": "sk-test-openai-key-1234567890",
                 "gemini": "AIzaSyGeminiTestKey1234567890",

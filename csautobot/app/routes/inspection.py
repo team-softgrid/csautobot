@@ -88,7 +88,16 @@ def create_ai_draft(req: DraftRequest, db: Session = Depends(get_db)):
             memo_text=req.memo,
             ai_config=ai_config,
         )
-        record_usage(tenant_id, FEATURE_AI_GENERATION, model_name=used_model or "gpt-4o-mini")
+        fallback_provider = None
+        if "->" in used_model:
+            fallback_provider = used_model.split("->", 1)[0].split(":")[0]
+        record_usage(
+            tenant_id,
+            FEATURE_AI_GENERATION,
+            model_name=used_model or "gpt-4o-mini",
+            fallback_provider=fallback_provider,
+            shortcut=(used_model == "faq-shortcut"),
+        )
         summary_json = draft_obj.model_dump()
         return DraftResponse(
             draft_text=svc.format_inspection_draft_text(draft_obj),

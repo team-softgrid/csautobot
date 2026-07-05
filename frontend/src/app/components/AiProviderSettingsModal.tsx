@@ -10,6 +10,7 @@ import {
   isAIProvider,
   loadAIConfig,
   saveAIConfig,
+  testAIProviderConnection,
   type AIProvider,
   type AISelectionMode,
   type StoredAIConfig,
@@ -21,13 +22,15 @@ interface Props {
   onSaved?: (config: StoredAIConfig) => void;
 }
 
-const CLOUD_PROVIDERS: AIProvider[] = ["claude", "openai", "gemini"];
+const CLOUD_PROVIDERS: AIProvider[] = ["groq", "claude", "openai", "gemini"];
 
 export default function AiProviderSettingsModal({ open, onClose, onSaved }: Props) {
   const [aiConfig, setAiConfig] = useState<StoredAIConfig>(DEFAULT_AI_CONFIG);
   const [keyInputs, setKeyInputs] = useState<Partial<Record<AIProvider, string>>>({});
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [testing, setTesting] = useState<AIProvider | null>(null);
+  const [testResult, setTestResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -79,6 +82,20 @@ export default function AiProviderSettingsModal({ open, onClose, onSaved }: Prop
     aiConfig.configuredProviders?.includes(provider) ||
     Boolean(aiConfig.credentialHints?.[provider]);
 
+  const handleTestConnection = async (provider: AIProvider) => {
+    setTesting(provider);
+    setTestResult(null);
+    setError(null);
+    try {
+      const result = await testAIProviderConnection(provider, getTenantId());
+      setTestResult(`${AI_PROVIDER_INFO[provider].label} 연결 성공 (${result.model || provider})`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "연결 테스트 실패");
+    } finally {
+      setTesting(null);
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     setError(null);
@@ -116,7 +133,9 @@ export default function AiProviderSettingsModal({ open, onClose, onSaved }: Prop
             placeholder={
               aiConfig.credentialHints?.[provider]
                 ? "변경 시에만 새 키 입력"
-                : "sk-... / AIza... 등 API 키 입력"
+                : provider === "groq"
+                  ? "gsk_... Groq API 키"
+                  : "sk-... / AIza... 등 API 키 입력"
             }
             value={keyInputs[provider] || ""}
             onChange={(e) =>
@@ -237,6 +256,36 @@ export default function AiProviderSettingsModal({ open, onClose, onSaved }: Prop
               </div>
             ))}
           </div>
+          <div className="mt-3">
+            <label className="block text-xs mb-1 text-[#64748b]">일일 토큰 상한 (선택)</label>
+            <input
+              type="number"
+              min={0}
+              value={aiConfig.dailyTokenLimit ?? ""}
+              onChange={(e) =>
+                setAiConfig((prev) => ({
+                  ...prev,
+                  dailyTokenLimit: e.target.value ? Number(e.target.value) : null,
+                }))
+              }
+              placeholder="미설정 시 무제한"
+              className="w-full px-3 py-2 rounded-lg text-xs outline-none bg-[#1a2236] border border-[#1e293b] text-[#f1f5f9] font-mono focus:border-[#06b6d4] transition-colors"
+            />
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {(["groq", "gemini"] as AIProvider[]).map((provider) => (
+              <button
+                key={provider}
+                type="button"
+                disabled={testing !== null}
+                onClick={() => handleTestConnection(provider)}
+                className="px-3 py-1.5 rounded-lg text-xs border border-[#334155] text-[#94a3b8] hover:bg-white/5 disabled:opacity-50"
+              >
+                {testing === provider ? "테스트 중…" : `${AI_PROVIDER_INFO[provider].label} 연결 테스트`}
+              </button>
+            ))}
+          </div>
+          {testResult ? <p className="mt-2 text-xs text-[#4ade80]">{testResult}</p> : null}
           <div className="mt-3">
             <label className="block text-xs mb-1 text-[#64748b]">Ollama Base URL</label>
             <input

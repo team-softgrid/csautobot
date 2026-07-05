@@ -254,6 +254,19 @@ def _generate_offline_inspection_draft(
     )
 
 
+def _draft_from_faq_shortcut(text: str) -> InspectionDraft:
+    lines = [line.strip() for line in text.split("\n") if line.strip()]
+    return InspectionDraft(
+        overall_risk="low",
+        key_findings=[lines[0] if lines else "FAQ 단축 응답"],
+        recommended_actions=lines[:5] or ["FAQ 기준 조치 수행"],
+        parts_to_check=["해당 없음"],
+        follow_up_items=["FAQ 조치 후 현장 재확인"],
+        inspector_note="FAQ exact-match 단축 응답 (LLM 미사용)",
+        safety_notice="본 응답은 FAQ 단축 경로입니다. 최종 판단은 담당 엔지니어가 확인해야 합니다.",
+    )
+
+
 def generate_inspection_draft(
     *,
     site_name: str | None,
@@ -318,6 +331,26 @@ def generate_inspection_draft(
         "web_block": web_block,
     }
 
+    from services.faq_shortcut import try_shortcut
+
+    shortcut_input = (memo_text or "").strip()
+    if not shortcut_input:
+        for item in checklist:
+            note = (item.get("note") or "").strip()
+            if note:
+                shortcut_input = note
+                break
+    faq_answer = try_shortcut(shortcut_input) if shortcut_input else None
+    if faq_answer:
+        offline = _draft_from_faq_shortcut(faq_answer)
+        return offline, "faq-shortcut", web_res
+
+    def _inspection_task_type() -> str:
+        has_issue = any((i.get("status") or "") in ("이상", "주의") for i in checklist)
+        if has_issue or (inspection_cycle or "") in {"분기", "반기", "연간"}:
+            return "inspection_detail"
+        return "inspection_basic"
+
     try:
         from dotenv import load_dotenv
 
@@ -334,6 +367,7 @@ def generate_inspection_draft(
             human_template=human_template,
             inputs=invoke_inputs,
             ai_config=ai_config,
+            task_type=_inspection_task_type(),  # type: ignore[arg-type]
         )
         return draft, used_model, web_res
     except Exception as exc:

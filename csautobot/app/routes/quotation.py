@@ -59,7 +59,13 @@ def create_quotation_draft(req: QuotationRequest, db: Session = Depends(get_db))
             charger_type=req.charger_type,
             ai_config=ai_config,
         )
-        record_usage(tenant_id, FEATURE_AI_GENERATION, model_name="hybrid")
+        is_faq = draft.symptom_summary.startswith("FAQ:")
+        record_usage(
+            tenant_id,
+            FEATURE_AI_GENERATION,
+            model_name="faq-shortcut" if is_faq else "hybrid",
+            shortcut=is_faq,
+        )
         return draft
     except HTTPException:
         raise

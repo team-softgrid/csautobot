@@ -11,7 +11,14 @@ if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
 from auth_service import get_current_user
-from services.tenant_ai_settings import AiSettingsPublic, AiSettingsUpdate, get_public_settings, save_settings
+from services.ai_provider import AIProviderName, test_provider_connection
+from services.tenant_ai_settings import (
+    AiSettingsPublic,
+    AiSettingsUpdate,
+    get_public_settings,
+    load_runtime_config,
+    save_settings,
+)
 from storage.db import get_db
 
 router = APIRouter(tags=["AI Settings"])
@@ -23,7 +30,13 @@ class AiSettingsSaveRequest(BaseModel):
     hybrid_providers: list[str] = []
     models: dict[str, str] = {}
     ollama_base_url: str = "http://localhost:11434"
+    daily_token_limit: int | None = None
     api_keys: dict[str, str] = {}
+
+
+class AiSettingsTestRequest(BaseModel):
+    tenant_id: str = "default_tenant"
+    provider: AIProviderName = "groq"
 
 
 @router.get("/ai-settings", response_model=AiSettingsPublic)
@@ -48,8 +61,23 @@ def update_ai_settings(
             hybrid_providers=req.hybrid_providers,  # type: ignore[arg-type]
             models=req.models,
             ollama_base_url=req.ollama_base_url,
+            daily_token_limit=req.daily_token_limit,
             api_keys=req.api_keys,
         )
         return save_settings(db, payload)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"AI 설정 저장 실패: {exc}") from exc
+
+
+@router.post("/ai-settings/test")
+def test_ai_settings_connection(
+    req: AiSettingsTestRequest,
+    db: Session = Depends(get_db),
+    _user: dict = Depends(get_current_user),
+):
+    try:
+        runtime = load_runtime_config(db, req.tenant_id)
+        runtime.provider = req.provider  # type: ignore[assignment]
+        return test_provider_connection(req.provider, ai_config=runtime)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"연결 테스트 실패: {exc}") from exc

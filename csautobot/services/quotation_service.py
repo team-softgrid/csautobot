@@ -148,6 +148,23 @@ def _generate_offline_quotation_draft(query: str, charger_type: str) -> Quotatio
         total_amount=total_amount
     )
 
+
+def _quotation_from_faq_shortcut(query: str, faq_text: str, charger_type: str) -> QuotationDraft:
+    dispatch_fee = 100000
+    labor_fee = 70000
+    supply_value = dispatch_fee + labor_fee
+    vat = int(supply_value * 0.1)
+    return QuotationDraft(
+        symptom_summary=f"FAQ: {query}",
+        likely_cause=faq_text.split("\n")[0],
+        parts=[],
+        dispatch_fee=dispatch_fee,
+        labor_fee=labor_fee,
+        supply_value=supply_value,
+        vat=vat,
+        total_amount=supply_value + vat,
+    )
+
 def is_valid_openai_key(key: str | None) -> bool:
     if not key:
         return False
@@ -202,6 +219,14 @@ def generate_quotation_draft(
     
     # 3. Prompt setup (handled by ai_provider.invoke_structured_output)
 
+    from services.faq_shortcut import try_shortcut
+
+    faq_answer = try_shortcut(query)
+    if faq_answer:
+        return _quotation_from_faq_shortcut(query, faq_answer, charger_type)
+
+    task_type = "quotation_complex" if len(query) > 80 else "quotation_simple"
+
     # 4. Invoke LLM with configured provider chain
     try:
         from services.ai_provider import invoke_structured_output
@@ -217,6 +242,7 @@ def generate_quotation_draft(
                 "pricing_list_text": pricing_list_text,
             },
             ai_config=ai_config,
+            task_type=task_type,  # type: ignore[arg-type]
         )
     except Exception as exc:
         print(f"Quotation LLM failed, falling back to offline draft: {exc}")
