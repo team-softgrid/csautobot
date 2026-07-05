@@ -23,10 +23,22 @@ jobs:
         with:
           node-version: 20
 
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install Frontend Deps and Build
         run: |
           cd frontend
-          npm install --legacy-peer-deps
+          if [ "${{ steps.cache-npm.outputs.cache-hit }}" != 'true' ]; then
+            echo "Cache not found, running npm install"
+            npm install --legacy-peer-deps
+          fi
           npm run build
           rm -rf node_modules
 
@@ -36,7 +48,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           port: 20022
           username: ${{ secrets.SERVER_USER }}
-          password: ${{ secrets.SERVER_PASSWORD }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             powershell -Command "New-Item -ItemType Directory -Force -Path 'C:\deploy\csautobot'"
 
@@ -60,7 +72,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           port: 20022
           username: ${{ secrets.SERVER_USER }}
-          password: ${{ secrets.SERVER_PASSWORD }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             powershell -Command "try { Stop-Process -Name excel -ErrorAction SilentlyContinue } catch {}; try { pm2 stop csautobot-backend csautobot-frontend -s } catch {}; try { pm2 delete csautobot-backend csautobot-frontend -s } catch {}; Start-Sleep -Seconds 3"
 
@@ -70,7 +82,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           port: 20022
           username: ${{ secrets.SERVER_USER }}
-          password: ${{ secrets.SERVER_PASSWORD }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           source: "csautobot/,requirements-prod.txt,scripts/deploy-remote.ps1,ecosystem.config.js,.env,csautobot_initial.db,frontend/"
           target: "C:/deploy/csautobot"
           strip_components: 0
@@ -81,7 +93,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           port: 20022
           username: ${{ secrets.SERVER_USER }}
-          password: ${{ secrets.SERVER_PASSWORD }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           command_timeout: 30m
           script: |
             powershell -NoProfile -ExecutionPolicy Bypass -Command "C:\deploy\csautobot\scripts\deploy-remote.ps1 > C:\deploy\csautobot\deploy_log.txt 2>&1"
@@ -89,12 +101,13 @@ jobs:
       - name: Fetch Remote PM2 Logs and Push to Git
         if: always()
         run: |
-          sudo apt-get update && sudo apt-get install -y sshpass
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cmd.exe /c set PM2_HOME=C:\\Users\\Administrator\\.pm2 && pm2 logs csautobot-backend --lines 100 --nostream" > pm2_logs.txt || true
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cmd.exe /c set PM2_HOME=C:\\Users\\Administrator\\.pm2 && pm2 logs csautobot-frontend --lines 100 --nostream" > pm2_frontend_logs.txt || true
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cmd.exe /c set PM2_HOME=C:\\Users\\Administrator\\.pm2 && pm2 status" > pm2_status.txt || true
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "powershell -Command \"echo '--- NETSTAT PORTS 5000/8000 ---'; netstat -ano | findstr ':5000 :8000'; echo '--- RUNNING PROCESSES ---'; Get-Process -Name node,python -ErrorAction SilentlyContinue | Format-Table Id,CPU,WorkingSet,ProcessName -AutoSize; echo '--- SCHEDULED TASKS (PM2) ---'; schtasks /query /fo LIST 2>&1 | findstr /i 'pm2'; echo '--- PM2 HOME STATUS ---'; if (Test-Path 'C:\\Users\\Administrator\\.pm2\\dump.pm2') { echo 'dump.pm2 EXISTS'; } else { echo 'dump.pm2 MISSING'; }\"" >> pm2_status.txt || true
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 20022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cmd.exe /c type C:\\deploy\\csautobot\\deploy_log.txt" > deploy_log.txt || true
+          echo "${{ secrets.SERVER_SSH_KEY }}" > private_key && chmod 600 private_key
+          SSH_COMMAND="ssh -o StrictHostKeyChecking=no -p 20022 -i private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}"
+          $SSH_COMMAND "cmd.exe /c set PM2_HOME=C:\\Users\\Administrator\\.pm2 && pm2 logs csautobot-backend --lines 100 --nostream" > pm2_logs.txt || true
+          $SSH_COMMAND "cmd.exe /c set PM2_HOME=C:\\Users\\Administrator\\.pm2 && pm2 logs csautobot-frontend --lines 100 --nostream" > pm2_frontend_logs.txt || true
+          $SSH_COMMAND "cmd.exe /c set PM2_HOME=C:\\Users\\Administrator\\.pm2 && pm2 status" > pm2_status.txt || true
+          $SSH_COMMAND "powershell -Command \"echo '--- NETSTAT PORTS 5000/8000 ---'; netstat -ano | findstr ':5000 :8000'; echo '--- RUNNING PROCESSES ---'; Get-Process -Name node,python -ErrorAction SilentlyContinue | Format-Table Id,CPU,WorkingSet,ProcessName -AutoSize; echo '--- SCHEDULED TASKS (PM2) ---'; schtasks /query /fo LIST 2>&1 | findstr /i 'pm2'; echo '--- PM2 HOME STATUS ---'; if (Test-Path 'C:\\Users\\Administrator\\.pm2\\dump.pm2') { echo 'dump.pm2 EXISTS'; } else { echo 'dump.pm2 MISSING'; }\"" >> pm2_status.txt || true
+          $SSH_COMMAND "cmd.exe /c type C:\\deploy\\csautobot\\deploy_log.txt" > deploy_log.txt || true
           
           git config --global user.name "deploy-bot"
           git config --global user.email "deploy-bot@softgrid.kr"

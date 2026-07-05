@@ -6,6 +6,7 @@ import io
 from app.ui import page_header
 from app.theme import COLOR_PRIMARY, COLOR_ACCENT, COLOR_BG_SOFT, COLOR_TEXT, COLOR_MUTED
 from services.quotation_service import generate_quotation_draft, QuotationDraft, PartDetail
+from services.api_client import export_quotation_excel_api
 from services.pricing_service import lookup_part_pricing
 
 def _init_session_state():
@@ -224,30 +225,22 @@ def render():
             unsafe_allow_html=True
         )
         
-        # CSV Exporter (Excel compatible UTF-8-sig)
-        csv_buffer = io.StringIO()
-        csv_buffer.write("\ufeff")  # UTF-8 BOM
-        
-        csv_buffer.write("=== AI 자동 생성 견적서 ===\n")
-        csv_buffer.write(f"고장 증상 요약,{st.session_state.quote_query.replace(',', ' ')},\n")
-        csv_buffer.write(f"예상 고장 원인,{st.session_state.quote_draft['likely_cause'].replace(',', ' ')},\n\n")
-        
-        csv_buffer.write("구분,품명,규격,단가(원),수량,금액(원)\n")
-        for p in st.session_state.quote_draft["parts"]:
-            total_p = p["unit_price"] * p["qty"]
-            csv_buffer.write(f"{p['category']},{p['part_name']},{p['spec'].replace(',', ' ')},{p['unit_price']},{p['qty']},{total_p}\n")
-            
-        csv_buffer.write(f"기술료,출장 교통비,-,{dispatch_fee},1,{dispatch_fee}\n")
-        csv_buffer.write(f"기술료,작업 공임비,-,{labor_fee},1,{labor_fee}\n\n")
-        
-        csv_buffer.write(f"공급가액 합계,,,,,{supply_value}\n")
-        csv_buffer.write(f"부가세 (VAT 10%),,,,,{vat}\n")
-        csv_buffer.write(f"최종 견적 합계,,,,,{grand_total}\n")
-        
+        # Excel Exporter using Backend API
+        export_payload = {
+            "query": st.session_state.quote_query,
+            "symptom_summary": draft_state["symptom_summary"],
+            "likely_cause": draft_state["likely_cause"],
+            "parts": draft_state["parts"],
+            "dispatch_fee": dispatch_fee,
+            "labor_fee": labor_fee,
+        }
+
+        excel_bytes = export_quotation_excel_api(export_payload)
+
         st.download_button(
-            label="📥 견적서 다운로드 (Excel 호환 CSV)",
-            data=csv_buffer.getvalue(),
-            file_name=f"견적서_{st.session_state.quote_query[:10].replace(' ', '_')}.csv",
-            mime="text/csv",
+            label="📥 견적서 다운로드 (Excel)",
+            data=excel_bytes,
+            file_name=f"견적서_{st.session_state.quote_query[:10].replace(' ', '_')}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             use_container_width=True
         )
