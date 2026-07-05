@@ -209,8 +209,22 @@ class TestQuotationMetering:
         usage_resp = client.get("/api/v1/billing/usage/monthly")
         assert usage_resp.json()["usage"]["AI_GENERATION"]["used"] >= 1
 
-
-class TestSearch:
+    def test_quotation_draft_survives_rag_failure(self, client, mocker):
+        mocker.patch("services.billing_metering.check_quota")
+        mocker.patch(
+            "services.quotation_service.resolve_chroma_dir",
+            side_effect=FileNotFoundError("no index"),
+        )
+        mocker.patch(
+            "services.ai_provider.invoke_structured_output",
+            side_effect=RuntimeError("no llm"),
+        )
+        resp = client.post(
+            "/api/v1/quotation/draft",
+            json={"query": "PLC 모뎀 불량", "charger_type": "급속"},
+        )
+        assert resp.status_code == 200, resp.text
+        assert resp.json()["symptom_summary"]
     def test_search_empty_query_rejected(self, client):
         resp = client.post("/api/v1/search/as-cases", json={"query": ""})
         assert resp.status_code == 422

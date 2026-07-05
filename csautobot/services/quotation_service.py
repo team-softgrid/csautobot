@@ -186,38 +186,9 @@ def generate_quotation_draft(
     """
     RAG similarity search and LLM invocation to generate a quotation draft.
     """
-    # Try loading keys from dotenv first
     from dotenv import load_dotenv
-    load_dotenv(BOT_DIR / ".env")
 
-    openai_key = os.environ.get("OPENAI_API_KEY")
-    if not is_valid_openai_key(openai_key):
-        print("OpenAI API key missing or invalid for embeddings. RAG may fail.")
-        
-    index_dir = resolve_chroma_dir(BOT_DIR)
-    if index_dir is None:
-        raise FileNotFoundError("Chroma DB 인덱스를 찾을 수 없습니다. build_index.py를 실행하십시오.")
-        
-    bm25 = load_bm25(index_dir)
-    emb = OpenAIEmbeddings(model="text-embedding-3-small")
-    vs = _get_vs(index_dir)
-    
-    # 1. RAG search
-    # Run hybrid retrieval
-    rr = retrieve_reranked(
-        query, vs, bm25, emb,
-        k_dense=30, k_sparse=30, k_hybrid=20, k_final=5
-    )
-    ctx = "\n\n---%s---\n\n".join(d.page_content for d in rr.documents)
-    
-    # 2. Get Pricing List Text for LLM reference
-    pricing_list = get_pricing_list()
-    pricing_list_text = "\n".join(
-        f"- 품명: {p['name']} | 규격: {p['spec']} | 구분: {p['category']}"
-        for p in pricing_list
-    )
-    
-    # 3. Prompt setup (handled by ai_provider.invoke_structured_output)
+    load_dotenv(BOT_DIR / ".env")
 
     from services.faq_shortcut import try_shortcut
 
@@ -225,9 +196,30 @@ def generate_quotation_draft(
     if faq_answer:
         return _quotation_from_faq_shortcut(query, faq_answer, charger_type)
 
+    ctx = ""
+    pricing_list = get_pricing_list()
+    pricing_list_text = "\n".join(
+        f"- 품명: {p['name']} | 규격: {p['spec']} | 구분: {p['category']}"
+        for p in pricing_list
+    )
+
+    try:
+        index_dir = resolve_chroma_dir(BOT_DIR)
+        if index_dir is None:
+            raise FileNotFoundError("Chroma DB 인덱스 없음")
+        bm25 = load_bm25(index_dir)
+        emb = OpenAIEmbeddings(model="text-embedding-3-small")
+        vs = _get_vs(index_dir)
+        rr = retrieve_reranked(
+            query, vs, bm25, emb,
+            k_dense=30, k_sparse=30, k_hybrid=20, k_final=5,
+        )
+        ctx = "\n\n---\n\n".join(d.page_content for d in rr.documents)
+    except Exception as exc:
+        print(f"Quotation RAG search failed, continuing without context: {exc}")
+
     task_type = "quotation_complex" if len(query) > 80 else "quotation_simple"
 
-    # 4. Invoke LLM with configured provider chain
     try:
         from services.ai_provider import invoke_structured_output
 
@@ -238,7 +230,7 @@ def generate_quotation_draft(
             inputs={
                 "question": query,
                 "charger_type": charger_type,
-                "context": ctx,
+                "context": ctx or "(유사 사례 없음 — 증상과 단가표만 참고)",
                 "pricing_list_text": pricing_list_text,
             },
             ai_config=ai_config,
