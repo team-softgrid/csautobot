@@ -1,0 +1,75 @@
+"""Tests for FAQ shortcut and LLM gateway enhancements."""
+
+from __future__ import annotations
+
+import pytest
+
+from services.ai_provider import (
+    DEFAULT_HYBRID_ORDER,
+    _is_rate_limit_error,
+    _resolve_api_key,
+    route_by_task,
+)
+from services.faq_shortcut import try_shortcut
+from services.inspection_service import _draft_from_faq_shortcut, generate_inspection_draft
+
+
+class TestFaqShortcut:
+    def test_exact_match_returns_answer(self):
+        answer = try_shortcut("충전기 안됨")
+        assert answer is not None
+        assert "차단기" in answer
+
+    def test_unknown_input_returns_none(self):
+        assert try_shortcut("완전히 새로운 증상 설명") is None
+
+    def test_inspection_draft_from_shortcut(self):
+        answer = try_shortcut("출장비 얼마")
+        assert answer
+        draft = _draft_from_faq_shortcut(answer)
+        assert draft.overall_risk == "low"
+        assert draft.recommended_actions
+
+
+class TestTaskRouting:
+    def test_default_hybrid_order_starts_with_groq(self):
+        assert DEFAULT_HYBRID_ORDER[0] == "groq"
+
+    def test_inspection_detail_prefers_gemini(self):
+        cfg = route_by_task("inspection_detail")
+        assert cfg.hybrid_providers[0] == "gemini"
+
+    def test_inspection_basic_prefers_groq(self):
+        cfg = route_by_task("inspection_basic")
+        assert cfg.hybrid_providers[0] == "groq"
+
+    def test_groq_env_key_csautobot(self, monkeypatch):
+        monkeypatch.setenv("GROQ_API_KEY_CSAUTOBOT", "gsk-test-key-1234567890")
+        monkeypatch.delenv("GROQ_API_KEY", raising=False)
+        assert _resolve_api_key("groq", None) == "gsk-test-key-1234567890"
+
+
+class TestRateLimitDetection:
+    def test_detects_429(self):
+        assert _is_rate_limit_error(Exception("Error 429 Too Many Requests"))
+
+    def test_detects_resource_exhausted(self):
+        assert _is_rate_limit_error(Exception("RESOURCE_EXHAUSTED quota"))
+
+
+class TestInspectionFaqIntegration:
+    def test_generate_draft_uses_faq_shortcut_without_llm(self, monkeypatch):
+        def fail_llm(*args, **kwargs):
+            raise AssertionError("LLM should not be called")
+
+        monkeypatch.setattr("services.ai_provider.invoke_structured_output", fail_llm)
+        draft, model, _ = generate_inspection_draft(
+            site_name="테스트",
+            charger_id=None,
+            manufacturer=None,
+            model_name=None,
+            checklist=[{"item": "외관", "status": "정상", "note": ""}],
+            memo_text="충전기 안됨",
+        )
+        assert model == "faq-shortcut"
+        assert draft.recommended_actions

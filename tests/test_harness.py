@@ -242,14 +242,16 @@ class TestInspection:
 
     def test_save_inspection_log_without_tenant_row(self, client, db_session):
         from storage.repositories import Tenant
+        import uuid
 
         db_session.query(Tenant).filter(Tenant.tenant_id == "default_tenant").delete()
         db_session.commit()
+        inspection_id = f"ins-harness-{uuid.uuid4().hex[:8]}"
 
         resp = client.post(
             "/api/v1/inspection/log",
             json={
-                "inspection_id": "ins-harness-save",
+                "inspection_id": inspection_id,
                 "tenant_id": "default_tenant",
                 "site_id": "site-seoulforest",
                 "site_name": "서울숲 충전소",
@@ -261,7 +263,7 @@ class TestInspection:
             },
         )
         assert resp.status_code == 200, resp.text
-        assert resp.json()["inspection_id"] == "ins-harness-save"
+        assert resp.json()["inspection_id"] == inspection_id
 
     def test_offline_inspection_draft_from_checklist(self):
         from services.inspection_service import _generate_offline_inspection_draft

@@ -2,15 +2,20 @@
  * AI provider settings — preferences on server, API keys encrypted per tenant.
  */
 
-export type AIProvider = "claude" | "openai" | "gemini" | "ollama";
+export type AIProvider = "claude" | "openai" | "gemini" | "groq" | "ollama";
 export type AISelectionMode = AIProvider | "hybrid";
 
-export const AI_PROVIDER_ORDER: AIProvider[] = ["gemini", "openai", "claude", "ollama"];
+export const AI_PROVIDER_ORDER: AIProvider[] = ["groq", "gemini", "openai", "claude", "ollama"];
 
 export const AI_PROVIDER_INFO: Record<
   AIProvider,
   { label: string; description: string; icon: string }
 > = {
+  groq: {
+    label: "Groq (Llama 3.1 8B)",
+    description: "Ultra-fast inference, csautobot 전용 키 권장",
+    icon: "⚡",
+  },
   claude: {
     label: "Claude (Anthropic)",
     description: "200K context, best for long documents",
@@ -23,7 +28,7 @@ export const AI_PROVIDER_INFO: Record<
   },
   gemini: {
     label: "Google Gemini",
-    description: "Fast, cost-effective",
+    description: "Fast, cost-effective, Korean quality",
     icon: "🔵",
   },
   ollama: {
@@ -50,6 +55,7 @@ export interface StoredAIConfig {
   hybridProviders?: AIProvider[];
   models: Partial<Record<AIProvider, string>>;
   ollamaBaseUrl?: string;
+  dailyTokenLimit?: number | null;
   configuredProviders?: AIProvider[];
   credentialHints?: Partial<Record<AIProvider, string>>;
 }
@@ -58,12 +64,14 @@ export const DEFAULT_AI_CONFIG: StoredAIConfig = {
   provider: "hybrid",
   hybridProviders: [...AI_PROVIDER_ORDER],
   models: {
+    groq: "llama-3.1-8b-instant",
     claude: "claude-sonnet-4-6",
     openai: "gpt-4o",
     gemini: "gemini-2.0-flash",
     ollama: "qwen3:8b",
   },
   ollamaBaseUrl: "http://localhost:11434",
+  dailyTokenLimit: null,
   configuredProviders: [],
   credentialHints: {},
 };
@@ -78,6 +86,7 @@ function mapServerPayload(data: Record<string, unknown>): StoredAIConfig {
     hybridProviders: (data.hybrid_providers as AIProvider[]) || [...AI_PROVIDER_ORDER],
     models: { ...DEFAULT_AI_CONFIG.models, ...((data.models as Record<string, string>) || {}) },
     ollamaBaseUrl: (data.ollama_base_url as string) || "http://localhost:11434",
+    dailyTokenLimit: (data.daily_token_limit as number | null | undefined) ?? null,
     configuredProviders: (data.configured_providers as AIProvider[]) || [],
     credentialHints: (data.credential_hints as Partial<Record<AIProvider, string>>) || {},
   };
@@ -110,6 +119,7 @@ export async function saveAIConfig(
       hybrid_providers: config.hybridProviders?.length ? config.hybridProviders : AI_PROVIDER_ORDER,
       models: config.models,
       ollama_base_url: config.ollamaBaseUrl || "http://localhost:11434",
+      daily_token_limit: config.dailyTokenLimit ?? null,
       api_keys: apiKeys,
     }),
   });
@@ -119,4 +129,20 @@ export async function saveAIConfig(
   }
   const data = await res.json();
   return mapServerPayload(data);
+}
+
+export async function testAIProviderConnection(
+  provider: AIProvider,
+  tenantId: string = "default_tenant",
+): Promise<{ status: string; preview?: string; model?: string }> {
+  const res = await fetch("/api/ai-settings/test", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ tenant_id: tenantId, provider }),
+  });
+  if (!res.ok) {
+    const payload = await res.json().catch(() => ({}));
+    throw new Error((payload as { detail?: string }).detail || "연결 테스트 실패");
+  }
+  return res.json();
 }

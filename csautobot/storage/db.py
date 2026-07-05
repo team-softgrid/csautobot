@@ -78,4 +78,42 @@ def init_db():
     # Import repositories to ensure all SQLAlchemy models are registered on Base.metadata
     from storage import repositories  # noqa: F401
     Base.metadata.create_all(bind=engine)
+    _apply_lightweight_migrations()
+
+
+def _apply_lightweight_migrations() -> None:
+    """Add columns introduced after initial deploy (no Alembic)."""
+    from sqlalchemy import inspect, text
+
+    insp = inspect(engine)
+    dialect = engine.dialect.name
+
+    def _add_column(table: str, column: str, ddl_sqlite: str, ddl_mysql: str) -> None:
+        if table not in insp.get_table_names():
+            return
+        existing = {c["name"] for c in insp.get_columns(table)}
+        if column in existing:
+            return
+        ddl = ddl_mysql if dialect.startswith("mysql") else ddl_sqlite
+        with engine.begin() as conn:
+            conn.execute(text(ddl))
+
+    _add_column(
+        "usage_meter",
+        "fallback_provider",
+        "ALTER TABLE usage_meter ADD COLUMN fallback_provider VARCHAR(50)",
+        "ALTER TABLE usage_meter ADD COLUMN fallback_provider VARCHAR(50) NULL",
+    )
+    _add_column(
+        "usage_meter",
+        "is_shortcut",
+        "ALTER TABLE usage_meter ADD COLUMN is_shortcut INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE usage_meter ADD COLUMN is_shortcut INT NOT NULL DEFAULT 0",
+    )
+    _add_column(
+        "tenant_ai_settings",
+        "daily_token_limit",
+        "ALTER TABLE tenant_ai_settings ADD COLUMN daily_token_limit INTEGER",
+        "ALTER TABLE tenant_ai_settings ADD COLUMN daily_token_limit INT NULL",
+    )
 

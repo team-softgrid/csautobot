@@ -64,6 +64,7 @@ class TenantAiSettings(Base):
     ollama_base_url = Column(String(255), nullable=False, default="http://localhost:11434")
     credentials_encrypted = Column(Text, nullable=True)
     credential_hints = Column(JSON, nullable=True)
+    daily_token_limit = Column(Integer, default=None)
     updated_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
     tenant = relationship("Tenant", back_populates="ai_settings")
@@ -215,6 +216,8 @@ class UsageMeter(Base):
     input_tokens = Column(Integer, default=0)
     output_tokens = Column(Integer, default=0)
     request_count = Column(Integer, nullable=False, default=1)
+    fallback_provider = Column(String(50), default=None)
+    is_shortcut = Column(Integer, nullable=False, default=0)
     measured_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     
     # Relationships

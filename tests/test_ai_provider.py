@@ -17,7 +17,7 @@ from services.ai_provider import (
 class TestAiProviderHelpers:
     def test_provider_chain_hybrid_default_order(self):
         cfg = AiProviderConfigPayload(provider="hybrid")
-        assert _provider_chain(cfg) == ["gemini", "openai", "claude", "ollama"]
+        assert _provider_chain(cfg) == ["groq", "gemini", "openai", "claude", "ollama"]
 
     def test_provider_chain_single_provider(self):
         cfg = AiProviderConfigPayload(provider="gemini")
@@ -43,6 +43,9 @@ class TestAiProviderHelpers:
 
     def test_resolve_model_default(self):
         assert _resolve_model("claude", {}) == "claude-sonnet-4-6"
+
+    def test_resolve_model_groq_default(self):
+        assert _resolve_model("groq", {}) == "llama-3.1-8b-instant"
 
 
 class TestInvokeStructuredOutput:
