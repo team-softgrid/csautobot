@@ -88,8 +88,15 @@ def _resolve_model(provider: AIProviderName, models: dict[str, str]) -> str:
 def _provider_chain(config: AiProviderConfigPayload | None) -> list[AIProviderName]:
     cfg = config or AiProviderConfigPayload()
     if cfg.provider == "hybrid":
-        order = ensure_groq_first_hybrid_order(cfg.hybrid_providers)
-        return order
+        order = [
+            p for p in (cfg.hybrid_providers or DEFAULT_HYBRID_ORDER)
+            if p in DEFAULT_MODELS  # type: ignore[comparison-overlap]
+        ]
+        if not order:
+            order = list(DEFAULT_HYBRID_ORDER)
+        if "groq" in order:
+            return ["groq", *[p for p in order if p != "groq"]]
+        return ["groq", *order]
     if cfg.provider in DEFAULT_MODELS:
         return [cfg.provider]  # type: ignore[list-item]
     return list(DEFAULT_HYBRID_ORDER)
