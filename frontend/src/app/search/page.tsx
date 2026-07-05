@@ -154,10 +154,22 @@ export default function SearchPage() {
       {result && (
         <div style={{ display: "flex", flexDirection: "column", gap: "24px", animation: "fadeIn 0.4s" }}>
           
-          {/* OpenAI Fallback Warn Banner */}
-          {result.openai_error && (
+          {/* Status banners — embedding(RAG) vs LLM are separate */}
+          {result.embedding_degraded && (
             <div style={{ background: "rgba(245, 158, 11, 0.1)", border: "1px solid #f59e0b", borderRadius: "8px", padding: "16px", color: "#f59e0b", fontSize: "14px" }}>
-              ⚠️ OpenAI API Key 한도 초과(insufficient_quota)로 인해 현재 **로컬 키워드 매칭(BM25) 검색** 및 **Google Gemini-1.5-Flash 모델**로 우회하여 안전하게 서비스를 제공하고 있습니다.
+              ⚠️ <strong>벡터 검색(RAG)</strong>은 서버 OpenAI Embedding 할당량 초과로 BM25 키워드 검색만 사용 중입니다.
+              Groq는 답변 생성용이며 임베딩 검색을 대체하지 않습니다.
+            </div>
+          )}
+          {result.llm_error && (
+            <div style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid #ef4444", borderRadius: "8px", padding: "16px", color: "#fca5a5", fontSize: "14px" }}>
+              ⚠️ AI 답변 생성 실패 — AI 설정에서 <strong>Groq API 키</strong> 저장 및 연결 테스트를 확인해 주세요.
+              (Gemini 무료 tier quota 0이면 Groq 1순위 사용 권장)
+            </div>
+          )}
+          {!result.llm_error && result.llm_model && (
+            <div style={{ background: "rgba(16, 185, 129, 0.08)", border: "1px solid #10b981", borderRadius: "8px", padding: "12px 16px", color: "#6ee7b7", fontSize: "13px" }}>
+              ✓ 답변 생성: {result.llm_model}
             </div>
           )}
 
