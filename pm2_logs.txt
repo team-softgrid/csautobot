@@ -6,167 +6,167 @@ Local PM2 version: 7.0.3
 
 [TAILING] Tailing last 100 lines for [csautobot-backend] process (change the value with --lines option)
 C:\Users\Administrator\.pm2\logs\csautobot-backend-error.log last 100 lines:
-294|csauto | 2026-07-04 19:31 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-04 19:31 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-04 19:31 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
-294|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
-294|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
-294|csauto | 2026-07-04 21:10 +09:00: INFO:     Started server process [6308]
-294|csauto | 2026-07-04 21:10 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-04 21:10 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-04 21:10 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-04 21:45 +09:00: INFO:     Started server process [9164]
-294|csauto | 2026-07-04 21:45 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-04 21:45 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-04 21:45 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-04 22:47 +09:00: INFO:     Started server process [8932]
-294|csauto | 2026-07-04 22:47 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-04 22:47 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-04 22:47 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-04 23:01 +09:00: INFO:     Started server process [3864]
-294|csauto | 2026-07-04 23:01 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-04 23:01 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-04 23:01 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 09:12 +09:00: INFO:     Started server process [5248]
-294|csauto | 2026-07-05 09:12 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 09:12 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 09:12 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 09:19 +09:00: INFO:     Started server process [8384]
-294|csauto | 2026-07-05 09:19 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 09:19 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 09:19 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 09:35 +09:00: INFO:     Started server process [2752]
-294|csauto | 2026-07-05 09:35 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 09:35 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 09:35 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 10:01 +09:00: INFO:     Started server process [2012]
-294|csauto | 2026-07-05 10:01 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 10:01 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 10:01 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 10:04 +09:00: C:\deploy\csautobot\csautobot\app\routes\search.py:72: LangChainDeprecationWarning: The class `TavilySearchResults` was deprecated in LangChain 0.3.25 and will be removed in 1.0. An updated version of the class exists in the `langchain-tavily package and should be used instead. To use it run `pip install -U `langchain-tavily` and import as `from `langchain_tavily import TavilySearch``.
-294|csauto | 2026-07-05 10:04 +09:00:   search = TavilySearchResults(max_results=5)
-294|csauto | 2026-07-05 10:05 +09:00: WARNING:root:All LLMs failed for as-cases search: Error calling model 'gemini-2.0-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 1.801220277s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '1s'}]}}
-294|csauto | 2026-07-05 10:11 +09:00: INFO:     Started server process [9032]
-294|csauto | 2026-07-05 10:11 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 10:11 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 10:11 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 10:30 +09:00: INFO:     Started server process [6580]
-294|csauto | 2026-07-05 10:30 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 10:30 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 10:30 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 12:21 +09:00: WARNING:  Invalid HTTP request received.
-294|csauto | 2026-07-05 12:21 +09:00: WARNING:  Invalid HTTP request received.
-294|csauto | 2026-07-05 15:00 +09:00: INFO:     Started server process [1056]
-294|csauto | 2026-07-05 15:00 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 15:00 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 15:00 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 15:07 +09:00: C:\deploy\csautobot\csautobot\app\routes\search.py:76: LangChainDeprecationWarning: The class `TavilySearchResults` was deprecated in LangChain 0.3.25 and will be removed in 1.0. An updated version of the class exists in the `langchain-tavily package and should be used instead. To use it run `pip install -U `langchain-tavily` and import as `from `langchain_tavily import TavilySearch``.
-294|csauto | 2026-07-05 15:07 +09:00:   search = TavilySearchResults(max_results=5)
-294|csauto | 2026-07-05 15:08 +09:00: WARNING:root:All LLMs failed for as-cases search: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CciQmx9Q8TcMLcM1AFUyn'}
-294|csauto | 2026-07-05 15:26 +09:00: INFO:     Started server process [6604]
-294|csauto | 2026-07-05 15:26 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 15:26 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 15:26 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 15:46 +09:00: WARNING:  Invalid HTTP request received.
-294|csauto | 2026-07-05 15:49 +09:00: WARNING:  Invalid HTTP request received.
-294|csauto | 2026-07-05 16:34 +09:00: INFO:     Started server process [4952]
-294|csauto | 2026-07-05 16:34 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 16:34 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 16:34 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 16:45 +09:00: WARNING:  Invalid HTTP request received.
-294|csauto | 2026-07-05 16:50 +09:00: INFO:     Started server process [4336]
-294|csauto | 2026-07-05 16:50 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 16:50 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 16:50 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 17:09 +09:00: INFO:     Started server process [6744]
-294|csauto | 2026-07-05 17:09 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 17:09 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 17:09 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 17:25 +09:00: INFO:     Started server process [7132]
-294|csauto | 2026-07-05 17:25 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 17:25 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 17:25 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 17:39 +09:00: INFO:     Started server process [1252]
-294|csauto | 2026-07-05 17:39 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 17:39 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 17:39 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 17:48 +09:00: C:\deploy\csautobot\csautobot\app\routes\search.py:76: LangChainDeprecationWarning: The class `TavilySearchResults` was deprecated in LangChain 0.3.25 and will be removed in 1.0. An updated version of the class exists in the `langchain-tavily package and should be used instead. To use it run `pip install -U `langchain-tavily` and import as `from `langchain_tavily import TavilySearch``.
-294|csauto | 2026-07-05 17:48 +09:00:   search = TavilySearchResults(max_results=5)
-294|csauto | 2026-07-05 17:49 +09:00: WARNING:root:All LLMs failed for as-cases search: model 'qwen3:8b' not found (status code: 404)
-294|csauto | 2026-07-05 18:02 +09:00: INFO:     Started server process [5044]
-294|csauto | 2026-07-05 18:02 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 18:02 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 18:02 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 18:15 +09:00: INFO:     Started server process [9816]
-294|csauto | 2026-07-05 18:15 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 18:15 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 18:15 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-294|csauto | 2026-07-05 18:40 +09:00: INFO:     Started server process [1492]
-294|csauto | 2026-07-05 18:40 +09:00: INFO:     Waiting for application startup.
-294|csauto | 2026-07-05 18:40 +09:00: INFO:     Application startup complete.
-294|csauto | 2026-07-05 18:40 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
+296|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
+296|csauto | 2026-07-04 21:10 +09:00: INFO:     Started server process [6308]
+296|csauto | 2026-07-04 21:10 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-04 21:10 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-04 21:10 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-04 21:45 +09:00: INFO:     Started server process [9164]
+296|csauto | 2026-07-04 21:45 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-04 21:45 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-04 21:45 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-04 22:47 +09:00: INFO:     Started server process [8932]
+296|csauto | 2026-07-04 22:47 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-04 22:47 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-04 22:47 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-04 23:01 +09:00: INFO:     Started server process [3864]
+296|csauto | 2026-07-04 23:01 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-04 23:01 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-04 23:01 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 09:12 +09:00: INFO:     Started server process [5248]
+296|csauto | 2026-07-05 09:12 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 09:12 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 09:12 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 09:19 +09:00: INFO:     Started server process [8384]
+296|csauto | 2026-07-05 09:19 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 09:19 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 09:19 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 09:35 +09:00: INFO:     Started server process [2752]
+296|csauto | 2026-07-05 09:35 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 09:35 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 09:35 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 10:01 +09:00: INFO:     Started server process [2012]
+296|csauto | 2026-07-05 10:01 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 10:01 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 10:01 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 10:04 +09:00: C:\deploy\csautobot\csautobot\app\routes\search.py:72: LangChainDeprecationWarning: The class `TavilySearchResults` was deprecated in LangChain 0.3.25 and will be removed in 1.0. An updated version of the class exists in the `langchain-tavily package and should be used instead. To use it run `pip install -U `langchain-tavily` and import as `from `langchain_tavily import TavilySearch``.
+296|csauto | 2026-07-05 10:04 +09:00:   search = TavilySearchResults(max_results=5)
+296|csauto | 2026-07-05 10:05 +09:00: WARNING:root:All LLMs failed for as-cases search: Error calling model 'gemini-2.0-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 1.801220277s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '1s'}]}}
+296|csauto | 2026-07-05 10:11 +09:00: INFO:     Started server process [9032]
+296|csauto | 2026-07-05 10:11 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 10:11 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 10:11 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 10:30 +09:00: INFO:     Started server process [6580]
+296|csauto | 2026-07-05 10:30 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 10:30 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 10:30 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 12:21 +09:00: WARNING:  Invalid HTTP request received.
+296|csauto | 2026-07-05 12:21 +09:00: WARNING:  Invalid HTTP request received.
+296|csauto | 2026-07-05 15:00 +09:00: INFO:     Started server process [1056]
+296|csauto | 2026-07-05 15:00 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 15:00 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 15:00 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 15:07 +09:00: C:\deploy\csautobot\csautobot\app\routes\search.py:76: LangChainDeprecationWarning: The class `TavilySearchResults` was deprecated in LangChain 0.3.25 and will be removed in 1.0. An updated version of the class exists in the `langchain-tavily package and should be used instead. To use it run `pip install -U `langchain-tavily` and import as `from `langchain_tavily import TavilySearch``.
+296|csauto | 2026-07-05 15:07 +09:00:   search = TavilySearchResults(max_results=5)
+296|csauto | 2026-07-05 15:08 +09:00: WARNING:root:All LLMs failed for as-cases search: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CciQmx9Q8TcMLcM1AFUyn'}
+296|csauto | 2026-07-05 15:26 +09:00: INFO:     Started server process [6604]
+296|csauto | 2026-07-05 15:26 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 15:26 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 15:26 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 15:46 +09:00: WARNING:  Invalid HTTP request received.
+296|csauto | 2026-07-05 15:49 +09:00: WARNING:  Invalid HTTP request received.
+296|csauto | 2026-07-05 16:34 +09:00: INFO:     Started server process [4952]
+296|csauto | 2026-07-05 16:34 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 16:34 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 16:34 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 16:45 +09:00: WARNING:  Invalid HTTP request received.
+296|csauto | 2026-07-05 16:50 +09:00: INFO:     Started server process [4336]
+296|csauto | 2026-07-05 16:50 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 16:50 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 16:50 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 17:09 +09:00: INFO:     Started server process [6744]
+296|csauto | 2026-07-05 17:09 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 17:09 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 17:09 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 17:25 +09:00: INFO:     Started server process [7132]
+296|csauto | 2026-07-05 17:25 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 17:25 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 17:25 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 17:39 +09:00: INFO:     Started server process [1252]
+296|csauto | 2026-07-05 17:39 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 17:39 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 17:39 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 17:48 +09:00: C:\deploy\csautobot\csautobot\app\routes\search.py:76: LangChainDeprecationWarning: The class `TavilySearchResults` was deprecated in LangChain 0.3.25 and will be removed in 1.0. An updated version of the class exists in the `langchain-tavily package and should be used instead. To use it run `pip install -U `langchain-tavily` and import as `from `langchain_tavily import TavilySearch``.
+296|csauto | 2026-07-05 17:48 +09:00:   search = TavilySearchResults(max_results=5)
+296|csauto | 2026-07-05 17:49 +09:00: WARNING:root:All LLMs failed for as-cases search: model 'qwen3:8b' not found (status code: 404)
+296|csauto | 2026-07-05 18:02 +09:00: INFO:     Started server process [5044]
+296|csauto | 2026-07-05 18:02 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 18:02 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 18:02 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 18:15 +09:00: INFO:     Started server process [9816]
+296|csauto | 2026-07-05 18:15 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 18:15 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 18:15 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 18:40 +09:00: INFO:     Started server process [1492]
+296|csauto | 2026-07-05 18:40 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 18:40 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 18:40 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+296|csauto | 2026-07-05 18:44 +09:00: INFO:     Started server process [7728]
+296|csauto | 2026-07-05 18:44 +09:00: INFO:     Waiting for application startup.
+296|csauto | 2026-07-05 18:44 +09:00: INFO:     Application startup complete.
+296|csauto | 2026-07-05 18:44 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 
 C:\Users\Administrator\.pm2\logs\csautobot-backend-out.log last 100 lines:
-294|csauto | ��� Ŀ����/�� (�Ǻ�, ����, LED)", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 3, "üũ����Ʈ����": "���÷���/��ġ ���� ����", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 4, "üũ����Ʈ����": "RFID/QR ���� ���� ����", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 5, "üũ����Ʈ����": "����/���� ���� (���� �� ������)", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 6, "üũ����Ʈ����": "��� ���� (LTE/�̴��� ��ȣ)", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 7, "üũ����Ʈ����": "�ֱ� ���� �ڵ� �̷� Ȯ��", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 8, "üũ����Ʈ����": "���� û��/��/���� ����", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 9, "üũ����Ʈ����": "��� �������󺧡�QR ��ƼĿ ����", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 10, "üũ����Ʈ����": "��ġ ȯ�� (ħ�� ����, ����, ���ټ�)", "���˰��": "����"}]}, "�����Ͼ�޸�": "", "����AS���": "", "�߰�����": ""}. Got: 3 validation errors for InspectionDraft
-294|csauto | 2026-07-05 17:44 +09:00: overall_risk
-294|csauto | 2026-07-05 17:44 +09:00:   Field required [type=missing, input_value={'�����Ҹ�': '����... '', '�߰�����': ''}, input_type=dict]
-294|csauto | 2026-07-05 17:44 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
-294|csauto | 2026-07-05 17:44 +09:00: inspector_note
-294|csauto | 2026-07-05 17:44 +09:00:   Field required [type=missing, input_value={'�����Ҹ�': '����... '', '�߰�����': ''}, input_type=dict]
-294|csauto | 2026-07-05 17:44 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
-294|csauto | 2026-07-05 17:44 +09:00: safety_notice
-294|csauto | 2026-07-05 17:44 +09:00:   Field required [type=missing, input_value={'�����Ҹ�': '����... '', '�߰�����': ''}, input_type=dict]
-294|csauto | 2026-07-05 17:44 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
-294|csauto | 2026-07-05 17:44 +09:00: 
-294|csauto | 2026-07-05 17:45 +09:00: [ai_provider] gemini failed: Error calling model 'gemini-2.0-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 55.601697548s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '55s'}]}}
-294|csauto | 2026-07-05 17:45 +09:00: 
-294|csauto | 2026-07-05 17:45 +09:00: [ai_provider] fallback ollama failed: model 'qwen3:8b' not found (status code: 404)
-294|csauto | 2026-07-05 17:45 +09:00: AI draft generation failed, using offline rules: model 'qwen3:8b' not found (status code: 404)
-294|csauto | 2026-07-05 17:45 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 200 OK
-294|csauto | 2026-07-05 17:48 +09:00: Warning: Dense retrieval failed, falling back to sparse. Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
-294|csauto | 2026-07-05 17:48 +09:00: 
-294|csauto | 2026-07-05 17:48 +09:00: Warning: Rerank by embedding failed, using original order. Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
-294|csauto | 2026-07-05 17:48 +09:00: [ai_provider] groq failed: Error code: 413 - {'error': {'message': 'Request too large for model `llama-3.1-8b-instant` in organization `org_01j8bztes3eemt9ykw35hjjdxj` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Requested 7052, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
-294|csauto | 2026-07-05 17:49 +09:00: [ai_provider] fallback gemini failed: Error calling model 'gemini-2.0-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 20.689981442s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '20s'}]}}
-294|csauto | 2026-07-05 17:49 +09:00: 
-294|csauto | 2026-07-05 17:49 +09:00: [ai_provider] fallback ollama failed: model 'qwen3:8b' not found (status code: 404)
-294|csauto | 2026-07-05 17:49 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/search/as-cases HTTP/1.1" 200 OK
-294|csauto | 2026-07-05 17:50 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-294|csauto | 2026-07-05 17:50 +09:00: [ai_provider] groq failed: Failed to parse InspectionDraft from completion {"�����Ҹ�": "���｣ ������", "������ID": "", "������/��": "", "���˴��": "������", "��������": "��������", "�����ֱ�": "����", "��������": {"���赵": "����", "������ġ": ["������ ID Ȯ�� �� ��� �ʿ�"], "���˰��": [{"üũ����Ʈ��ȣ": 1, "üũ����Ʈ����": "����/�ܰ� ���� (�ļ�, �̹���, ����)", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 2, "üũ����Ʈ����": "���� Ŀ����/�� (�Ǻ�, ����, LED)", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 3, "üũ����Ʈ����": "���÷���/��ġ ���� ����", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 4, "üũ����Ʈ����": "RFID/QR ���� ���� ����", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 5, "üũ����Ʈ����": "����/���� ���� (���� �� ������)", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 6, "üũ����Ʈ����": "��� ���� (LTE/�̴��� ��ȣ)", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 7, "üũ����Ʈ����": "�ֱ� ���� �ڵ� �̷� Ȯ��", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 8, "üũ����Ʈ����": "���� û��/��/���� ����", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 9, "üũ����Ʈ����": "��� �������󺧡�QR ��ƼĿ ����", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 10, "üũ����Ʈ����": "��ġ ȯ�� (ħ�� ����, ����, ���ټ�)", "���˰��": "����"}]}, "�����Ͼ�޸�": "", "����AS���": "", "�߰�����": ""}. Got: 3 validation errors for InspectionDraft
-294|csauto | 2026-07-05 17:50 +09:00: overall_risk
-294|csauto | 2026-07-05 17:50 +09:00:   Field required [type=missing, input_value={'�����Ҹ�': '����... '', '�߰�����': ''}, input_type=dict]
-294|csauto | 2026-07-05 17:50 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
-294|csauto | 2026-07-05 17:50 +09:00: inspector_note
-294|csauto | 2026-07-05 17:50 +09:00:   Field required [type=missing, input_value={'�����Ҹ�': '����... '', '�߰�����': ''}, input_type=dict]
-294|csauto | 2026-07-05 17:50 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
-294|csauto | 2026-07-05 17:50 +09:00: safety_notice
-294|csauto | 2026-07-05 17:50 +09:00:   Field required [type=missing, input_value={'�����Ҹ�': '����... '', '�߰�����': ''}, input_type=dict]
-294|csauto | 2026-07-05 17:50 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
-294|csauto | 2026-07-05 17:50 +09:00: For troubleshooting, visit: https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE 
-294|csauto | 2026-07-05 17:51 +09:00: [ai_provider] gemini failed: Error calling model 'gemini-2.0-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 33.81634513s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '33s'}]}}
-294|csauto | 2026-07-05 17:51 +09:00: 
-294|csauto | 2026-07-05 17:51 +09:00: [ai_provider] fallback ollama failed: model 'qwen3:8b' not found (status code: 404)
-294|csauto | 2026-07-05 17:51 +09:00: 
-294|csauto | 2026-07-05 17:51 +09:00: AI draft generation failed, using offline rules: model 'qwen3:8b' not found (status code: 404)
-294|csauto | 2026-07-05 17:51 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 200 OK
-294|csauto | 2026-07-05 17:53 +09:00: [ai_provider] groq failed: Failed to parse InspectionDraft from completion {"��������": {"������": "���｣ ������", "������ID": "(���Է�)", "������/��": "- / -", "���� ���": "������", "���� ����": "��������", "���� �ֱ�": "����", "÷�� ���� ��": 0}, "üũ����Ʈ ���": [{"�׸�": "����/�ܰ� ����", "���": "����"}, {"�׸�": "���� Ŀ����/��", "���": "����"}, {"�׸�": "���÷���/��ġ ���� ����", "���": "�̻�"}, {"�׸�": "RFID/QR ���� ����", "���": "����"}, {"�׸�": "����/���� ����", "���": "�̻�"}, {"�׸�": "��� ����", "���": "����"}, {"�׸�": "�ֱ� ���� �ڵ� �̷� Ȯ��", "���": "����"}, {"�׸�": "���� û��/��/���� ����", "���": "����"}, {"�׸�": "��� �������󺧡�QR ��ƼĿ ����", "���": "����"}, {"�׸�": "��ġ ȯ��", "���": "����"}], "���赵 �� ���� ��ġ": [{"���赵": "��", "�׸�": "���÷���/��ġ ���� ����", "���� ��ġ": "���÷��̿� ��ġ��ũ���� �۵��� Ȯ���ϰ�, �ʿ� �� ��ü �Ǵ� ���� ����"}, {"���赵": "��", "�׸�": "����/���� ����", "���� ��ġ": "������ ���� ���¸� Ȯ���ϰ�, �ʿ� �� ���� �Ǵ� ��ü ����. �������� Ȯ���� �ʿ���"}], "���� �Ǵ� �� �ð�": "����/���� ���� ���� �Ǵܰ� �ð��� �ݵ�� ��� �����Ͼ �����ؾ� ��"}. Got: 3 validation errors for InspectionDraft
-294|csauto | 2026-07-05 17:53 +09:00: overall_risk
-294|csauto | 2026-07-05 17:53 +09:00:   Field required [type=missing, input_value={'��������': {'����...�� �����ؾ� ��'}, input_type=dict]
-294|csauto | 2026-07-05 17:53 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
-294|csauto | 2026-07-05 17:53 +09:00: inspector_note
-294|csauto | 2026-07-05 17:53 +09:00:   Field required [type=missing, input_value={'��������': {'����...�� �����ؾ� ��'}, input_type=dict]
-294|csauto | 2026-07-05 17:53 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
-294|csauto | 2026-07-05 17:53 +09:00: safety_notice
-294|csauto | 2026-07-05 17:53 +09:00:   Field required [type=missing, input_value={'��������': {'����...�� �����ؾ� ��'}, input_type=dict]
-294|csauto | 2026-07-05 17:53 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
-294|csauto | 2026-07-05 17:53 +09:00: 
-294|csauto | 2026-07-05 17:54 +09:00: [ai_provider] gemini failed: Error calling model 'gemini-2.0-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 30.423135145s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '30s'}]}}
-294|csauto | 2026-07-05 17:54 +09:00: [ai_provider] fallback ollama failed: model 'qwen3:8b' not found (status code: 404)
-294|csauto | 2026-07-05 17:54 +09:00: AI draft generation failed, using offline rules: model 'qwen3:8b' not found (status code: 404)
-294|csauto | 2026-07-05 17:54 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 200 OK
-294|csauto | 2026-07-05 18:29 +09:00: INFO:     127.0.0.1:51032 - "GET /api/v1/ai-settings?tenant_id=default_tenant HTTP/1.1" 200 OK
-294|csauto | 2026-07-05 18:31 +09:00: INFO:     45.205.1.247:48998 - "GET / HTTP/1.1" 200 OK
-294|csauto | 2026-07-05 18:37 +09:00: INFO:     115.139.182.217:58345 - "GET /health HTTP/1.1" 200 OK
-294|csauto | 2026-07-05 18:40 +09:00: INFO:     127.0.0.1:53087 - "GET / HTTP/1.1" 200 OK
+296|csauto | e.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '20s'}]}}
+296|csauto | 2026-07-05 17:49 +09:00: 
+296|csauto | 2026-07-05 17:49 +09:00: [ai_provider] fallback ollama failed: model 'qwen3:8b' not found (status code: 404)
+296|csauto | 2026-07-05 17:49 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/search/as-cases HTTP/1.1" 200 OK
+296|csauto | 2026-07-05 17:50 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+296|csauto | 2026-07-05 17:50 +09:00: [ai_provider] groq failed: Failed to parse InspectionDraft from completion {"�����Ҹ�": "���｣ ������", "������ID": "", "������/��": "", "���˴��": "������", "��������": "��������", "�����ֱ�": "����", "��������": {"���赵": "����", "������ġ": ["������ ID Ȯ�� �� ��� �ʿ�"], "���˰��": [{"üũ����Ʈ��ȣ": 1, "üũ����Ʈ����": "����/�ܰ� ���� (�ļ�, �̹���, ����)", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 2, "üũ����Ʈ����": "���� Ŀ����/�� (�Ǻ�, ����, LED)", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 3, "üũ����Ʈ����": "���÷���/��ġ ���� ����", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 4, "üũ����Ʈ����": "RFID/QR ���� ���� ����", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 5, "üũ����Ʈ����": "����/���� ���� (���� �� ������)", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 6, "üũ����Ʈ����": "��� ���� (LTE/�̴��� ��ȣ)", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 7, "üũ����Ʈ����": "�ֱ� ���� �ڵ� �̷� Ȯ��", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 8, "üũ����Ʈ����": "���� û��/��/���� ����", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 9, "üũ����Ʈ����": "��� �������󺧡�QR ��ƼĿ ����", "���˰��": "����"}, {"üũ����Ʈ��ȣ": 10, "üũ����Ʈ����": "��ġ ȯ�� (ħ�� ����, ����, ���ټ�)", "���˰��": "����"}]}, "�����Ͼ�޸�": "", "����AS���": "", "�߰�����": ""}. Got: 3 validation errors for InspectionDraft
+296|csauto | 2026-07-05 17:50 +09:00: overall_risk
+296|csauto | 2026-07-05 17:50 +09:00:   Field required [type=missing, input_value={'�����Ҹ�': '����... '', '�߰�����': ''}, input_type=dict]
+296|csauto | 2026-07-05 17:50 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
+296|csauto | 2026-07-05 17:50 +09:00: inspector_note
+296|csauto | 2026-07-05 17:50 +09:00:   Field required [type=missing, input_value={'�����Ҹ�': '����... '', '�߰�����': ''}, input_type=dict]
+296|csauto | 2026-07-05 17:50 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
+296|csauto | 2026-07-05 17:50 +09:00: safety_notice
+296|csauto | 2026-07-05 17:50 +09:00:   Field required [type=missing, input_value={'�����Ҹ�': '����... '', '�߰�����': ''}, input_type=dict]
+296|csauto | 2026-07-05 17:50 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
+296|csauto | 2026-07-05 17:50 +09:00: For troubleshooting, visit: https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE 
+296|csauto | 2026-07-05 17:51 +09:00: [ai_provider] gemini failed: Error calling model 'gemini-2.0-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 33.81634513s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '33s'}]}}
+296|csauto | 2026-07-05 17:51 +09:00: 
+296|csauto | 2026-07-05 17:51 +09:00: [ai_provider] fallback ollama failed: model 'qwen3:8b' not found (status code: 404)
+296|csauto | 2026-07-05 17:51 +09:00: 
+296|csauto | 2026-07-05 17:51 +09:00: AI draft generation failed, using offline rules: model 'qwen3:8b' not found (status code: 404)
+296|csauto | 2026-07-05 17:51 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 200 OK
+296|csauto | 2026-07-05 17:53 +09:00: [ai_provider] groq failed: Failed to parse InspectionDraft from completion {"��������": {"������": "���｣ ������", "������ID": "(���Է�)", "������/��": "- / -", "���� ���": "������", "���� ����": "��������", "���� �ֱ�": "����", "÷�� ���� ��": 0}, "üũ����Ʈ ���": [{"�׸�": "����/�ܰ� ����", "���": "����"}, {"�׸�": "���� Ŀ����/��", "���": "����"}, {"�׸�": "���÷���/��ġ ���� ����", "���": "�̻�"}, {"�׸�": "RFID/QR ���� ����", "���": "����"}, {"�׸�": "����/���� ����", "���": "�̻�"}, {"�׸�": "��� ����", "���": "����"}, {"�׸�": "�ֱ� ���� �ڵ� �̷� Ȯ��", "���": "����"}, {"�׸�": "���� û��/��/���� ����", "���": "����"}, {"�׸�": "��� �������󺧡�QR ��ƼĿ ����", "���": "����"}, {"�׸�": "��ġ ȯ��", "���": "����"}], "���赵 �� ���� ��ġ": [{"���赵": "��", "�׸�": "���÷���/��ġ ���� ����", "���� ��ġ": "���÷��̿� ��ġ��ũ���� �۵��� Ȯ���ϰ�, �ʿ� �� ��ü �Ǵ� ���� ����"}, {"���赵": "��", "�׸�": "����/���� ����", "���� ��ġ": "������ ���� ���¸� Ȯ���ϰ�, �ʿ� �� ���� �Ǵ� ��ü ����. �������� Ȯ���� �ʿ���"}], "���� �Ǵ� �� �ð�": "����/���� ���� ���� �Ǵܰ� �ð��� �ݵ�� ��� �����Ͼ �����ؾ� ��"}. Got: 3 validation errors for InspectionDraft
+296|csauto | 2026-07-05 17:53 +09:00: overall_risk
+296|csauto | 2026-07-05 17:53 +09:00:   Field required [type=missing, input_value={'��������': {'����...�� �����ؾ� ��'}, input_type=dict]
+296|csauto | 2026-07-05 17:53 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
+296|csauto | 2026-07-05 17:53 +09:00: inspector_note
+296|csauto | 2026-07-05 17:53 +09:00:   Field required [type=missing, input_value={'��������': {'����...�� �����ؾ� ��'}, input_type=dict]
+296|csauto | 2026-07-05 17:53 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
+296|csauto | 2026-07-05 17:53 +09:00: safety_notice
+296|csauto | 2026-07-05 17:53 +09:00:   Field required [type=missing, input_value={'��������': {'����...�� �����ؾ� ��'}, input_type=dict]
+296|csauto | 2026-07-05 17:53 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
+296|csauto | 2026-07-05 17:53 +09:00: 
+296|csauto | 2026-07-05 17:54 +09:00: [ai_provider] gemini failed: Error calling model 'gemini-2.0-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 30.423135145s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '30s'}]}}
+296|csauto | 2026-07-05 17:54 +09:00: [ai_provider] fallback ollama failed: model 'qwen3:8b' not found (status code: 404)
+296|csauto | 2026-07-05 17:54 +09:00: AI draft generation failed, using offline rules: model 'qwen3:8b' not found (status code: 404)
+296|csauto | 2026-07-05 17:54 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 200 OK
+296|csauto | 2026-07-05 18:29 +09:00: INFO:     127.0.0.1:51032 - "GET /api/v1/ai-settings?tenant_id=default_tenant HTTP/1.1" 200 OK
+296|csauto | 2026-07-05 18:31 +09:00: INFO:     45.205.1.247:48998 - "GET / HTTP/1.1" 200 OK
+296|csauto | 2026-07-05 18:37 +09:00: INFO:     115.139.182.217:58345 - "GET /health HTTP/1.1" 200 OK
+296|csauto | 2026-07-05 18:40 +09:00: INFO:     127.0.0.1:53087 - "GET / HTTP/1.1" 200 OK
+296|csauto | 2026-07-05 18:40 +09:00: INFO:     115.139.182.217:56767 - "GET /health HTTP/1.1" 200 OK
+296|csauto | 2026-07-05 18:41 +09:00: INFO:     127.0.0.1:53158 - "GET /api/v1/ai-settings?tenant_id=default_tenant HTTP/1.1" 200 OK
+296|csauto | 2026-07-05 18:41 +09:00: INFO:     127.0.0.1:53158 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+296|csauto | 2026-07-05 18:41 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+296|csauto | 2026-07-05 18:41 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+296|csauto | 2026-07-05 18:41 +09:00: [ai_provider] groq failed: Failed to parse InspectionDraft from completion {"��������": {"������": "���｣ ������", "������ID": "���Է�", "������/��": "- / -", "���� ���": "������", "���� ����": "��������", "���� �ֱ�": "����", "÷�� ���� ��": 0}, "üũ����Ʈ ���": [{"�׸�": "����/�ܰ� ����", "���": "�̻�", "���": "�ļ�, �̹���, ���� Ȯ��"}, {"�׸�": "���� Ŀ����/��", "���": "����", "���": ""}, {"�׸�": "���÷���/��ġ", "���": "����", "���": ""}, {"�׸�": "RFID/QR ���� ����", "���": "����", "���": ""}, {"�׸�": "����/���� ����", "���": "�̻�", "���": "������ Ȯ�� �ʿ�"}, {"�׸�": "��� ����", "���": "����", "���": ""}, {"�׸�": "�ֱ� ���� �ڵ� �̷�", "���": "����", "���": ""}, {"�׸�": "���� û��/��/����", "���": "����", "���": ""}, {"�׸�": "��� �������󺧡�QR ��ƼĿ", "���": "����", "���": ""}, {"�׸�": "��ġ ȯ��", "���": "����", "���": ""}], "���赵": "��", "���� ��ġ": ["����/�ܰ� ���� �̻� ���� ���� �Ǵ� ��ü", "����/���� ���� �̻� ���� ���� �� ����", "����/���� ���� ���� �Ǵܰ� �ð��� ��� �����Ͼ �����ؾ� ��"], "�����Ͼ� �޸�": "", "���� �ڷ�": "���� ���� AS ��� ����"}. Got: 3 validation errors for InspectionDraft
+296|csauto | 2026-07-05 18:41 +09:00: overall_risk
+296|csauto | 2026-07-05 18:41 +09:00:   Field required [type=missing, input_value={'��������': {'����...�� AS ��� ����'}, input_type=dict]
+296|csauto | 2026-07-05 18:41 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
+296|csauto | 2026-07-05 18:41 +09:00: inspector_note
+296|csauto | 2026-07-05 18:41 +09:00:   Field required [type=missing, input_value={'��������': {'����...�� AS ��� ����'}, input_type=dict]
+296|csauto | 2026-07-05 18:41 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
+296|csauto | 2026-07-05 18:41 +09:00: safety_notice
+296|csauto | 2026-07-05 18:41 +09:00:   Field required [type=missing, input_value={'��������': {'����...�� AS ��� ����'}, input_type=dict]
+296|csauto | 2026-07-05 18:41 +09:00:     For further information visit https://errors.pydantic.dev/2.13/v/missing
+296|csauto | 2026-07-05 18:41 +09:00: For troubleshooting, visit: https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE 
+296|csauto | 2026-07-05 18:41 +09:00: [ai_provider] gemini failed: Error calling model 'gemini-2.0-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 5.037291351s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '5s'}]}}
+296|csauto | 2026-07-05 18:41 +09:00: AI draft generation failed, using offline rules: Error calling model 'gemini-2.0-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 5.037291351s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '5s'}]}}
+296|csauto | 2026-07-05 18:41 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 200 OK
+296|csauto | 2026-07-05 18:44 +09:00: INFO:     127.0.0.1:53395 - "GET / HTTP/1.1" 200 OK
 
