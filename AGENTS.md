@@ -1,4 +1,4 @@
-# AGENTS.md — csautobot
+﻿# AGENTS.md — csautobot
 # team-softgrid AI Harness v1.0
 # 병합: CLAUDE.md + .cursorrules + .continuerules → 단일 마스터 룰
 # CS 자동화 봇 — LangChain 기반 고객지원 자동 응대 시스템
@@ -58,6 +58,19 @@ csautobot/
 - `deploy.yml`, `deploy-remote.ps1` 사용자 확인 없이 수정 금지
 - Port 8000 / 5000 변경 금지
 
+
+### 4-2b. 작업 전 현황 보고 (필수)
+
+**모든 구현·수정·리팩토링 작업 전 아래 형식으로 보고 후 승인 대기:**
+
+`
+현재 상태: 어떤 방식으로 동작하는가 (파일명:라인 포함)
+현재 문제: 문제점 또는 한계
+개선 방향: 무엇을 어떻게 바꾸는가
+변경 범위: 수정 파일 목록, 기존 동작 영향 여부
+진행할까요?
+`
+보고 없이 코드 작성 금지 — 사용자 승인 후에만 구현 시작.
 ### 4-2. 배포 격리 규칙 (서버 공유 — 절대 준수)
 이 서버(211.237.13.172)에는 **csautobot, aiCallCenter, aiCsms** 3개 프로젝트가 동시 운영됩니다.
 
