@@ -6,206 +6,206 @@ Local PM2 version: 7.0.3
 
 [TAILING] Tailing last 100 lines for [csautobot-backend] process (change the value with --lines option)
 C:\Users\Administrator\.pm2\logs\csautobot-backend-error.log last 100 lines:
-251|csauto | 2026-07-04 04:06 +09:00:     self._sock.shutdown(socket.SHUT_RDWR)
-251|csauto | 2026-07-04 04:06 +09:00:     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-251|csauto | 2026-07-04 04:06 +09:00: ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
-251|csauto | 2026-07-04 04:08 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 04:31 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 04:31 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 04:31 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 04:49 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 05:10 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 05:28 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 06:35 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 06:42 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 06:48 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 06:55 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 07:02 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 07:04 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 07:33 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 07:33 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 11:54 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 11:54 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 11:54 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 12:08 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 12:09 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 12:14 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 13:07 +09:00: INFO:     Started server process [8780]
-251|csauto | 2026-07-04 13:07 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-04 13:07 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-04 13:07 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-04 13:25 +09:00: INFO:     Started server process [9616]
-251|csauto | 2026-07-04 13:25 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-04 13:25 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-04 13:25 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-04 14:10 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 14:10 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 14:12 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 14:20 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 14:20 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 17:21 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 17:21 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 17:36 +09:00: INFO:     Started server process [1048]
-251|csauto | 2026-07-04 17:36 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-04 17:36 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-04 17:36 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-04 18:26 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 19:16 +09:00: INFO:     Started server process [7452]
-251|csauto | 2026-07-04 19:16 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-04 19:16 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-04 19:16 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-04 19:31 +09:00: INFO:     Started server process [5584]
-251|csauto | 2026-07-04 19:31 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-04 19:31 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-04 19:31 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-04 21:10 +09:00: INFO:     Started server process [6308]
-251|csauto | 2026-07-04 21:10 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-04 21:10 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-04 21:10 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-04 21:45 +09:00: INFO:     Started server process [9164]
-251|csauto | 2026-07-04 21:45 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-04 21:45 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-04 21:45 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-04 22:47 +09:00: INFO:     Started server process [8932]
-251|csauto | 2026-07-04 22:47 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-04 22:47 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-04 22:47 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-04 23:01 +09:00: INFO:     Started server process [3864]
-251|csauto | 2026-07-04 23:01 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-04 23:01 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-04 23:01 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-05 09:12 +09:00: INFO:     Started server process [5248]
-251|csauto | 2026-07-05 09:12 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-05 09:12 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-05 09:12 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-05 09:19 +09:00: INFO:     Started server process [8384]
-251|csauto | 2026-07-05 09:19 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-05 09:19 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-05 09:19 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-05 09:35 +09:00: INFO:     Started server process [2752]
-251|csauto | 2026-07-05 09:35 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-05 09:35 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-05 09:35 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-05 10:01 +09:00: INFO:     Started server process [2012]
-251|csauto | 2026-07-05 10:01 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-05 10:01 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-05 10:01 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-05 10:04 +09:00: C:\deploy\csautobot\csautobot\app\routes\search.py:72: LangChainDeprecationWarning: The class `TavilySearchResults` was deprecated in LangChain 0.3.25 and will be removed in 1.0. An updated version of the class exists in the `langchain-tavily package and should be used instead. To use it run `pip install -U `langchain-tavily` and import as `from `langchain_tavily import TavilySearch``.
-251|csauto | 2026-07-05 10:04 +09:00:   search = TavilySearchResults(max_results=5)
-251|csauto | 2026-07-05 10:05 +09:00: WARNING:root:All LLMs failed for as-cases search: Error calling model 'gemini-2.0-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 1.801220277s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '1s'}]}}
-251|csauto | 2026-07-05 10:11 +09:00: INFO:     Started server process [9032]
-251|csauto | 2026-07-05 10:11 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-05 10:11 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-05 10:11 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-05 10:30 +09:00: INFO:     Started server process [6580]
-251|csauto | 2026-07-05 10:30 +09:00: INFO:     Waiting for application startup.
-251|csauto | 2026-07-05 10:30 +09:00: INFO:     Application startup complete.
-251|csauto | 2026-07-05 10:30 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-251|csauto | 2026-07-05 12:21 +09:00: WARNING:  Invalid HTTP request received.
-251|csauto | 2026-07-05 12:21 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 06:42 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 06:48 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 06:55 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 07:02 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 07:04 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 07:33 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 07:33 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 11:54 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 11:54 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 11:54 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 12:08 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 12:09 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 12:14 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 13:07 +09:00: INFO:     Started server process [8780]
+254|csauto | 2026-07-04 13:07 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-04 13:07 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-04 13:07 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-04 13:25 +09:00: INFO:     Started server process [9616]
+254|csauto | 2026-07-04 13:25 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-04 13:25 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-04 13:25 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-04 14:10 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 14:10 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 14:12 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 14:20 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 14:20 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 17:21 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 17:21 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 17:36 +09:00: INFO:     Started server process [1048]
+254|csauto | 2026-07-04 17:36 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-04 17:36 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-04 17:36 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-04 18:26 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 19:16 +09:00: INFO:     Started server process [7452]
+254|csauto | 2026-07-04 19:16 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-04 19:16 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-04 19:16 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-04 19:31 +09:00: INFO:     Started server process [5584]
+254|csauto | 2026-07-04 19:31 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-04 19:31 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-04 19:31 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-04 21:10 +09:00: INFO:     Started server process [6308]
+254|csauto | 2026-07-04 21:10 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-04 21:10 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-04 21:10 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-04 21:45 +09:00: INFO:     Started server process [9164]
+254|csauto | 2026-07-04 21:45 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-04 21:45 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-04 21:45 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-04 22:47 +09:00: INFO:     Started server process [8932]
+254|csauto | 2026-07-04 22:47 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-04 22:47 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-04 22:47 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-04 23:01 +09:00: INFO:     Started server process [3864]
+254|csauto | 2026-07-04 23:01 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-04 23:01 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-04 23:01 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-05 09:12 +09:00: INFO:     Started server process [5248]
+254|csauto | 2026-07-05 09:12 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-05 09:12 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-05 09:12 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-05 09:19 +09:00: INFO:     Started server process [8384]
+254|csauto | 2026-07-05 09:19 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-05 09:19 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-05 09:19 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-05 09:35 +09:00: INFO:     Started server process [2752]
+254|csauto | 2026-07-05 09:35 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-05 09:35 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-05 09:35 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-05 10:01 +09:00: INFO:     Started server process [2012]
+254|csauto | 2026-07-05 10:01 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-05 10:01 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-05 10:01 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-05 10:04 +09:00: C:\deploy\csautobot\csautobot\app\routes\search.py:72: LangChainDeprecationWarning: The class `TavilySearchResults` was deprecated in LangChain 0.3.25 and will be removed in 1.0. An updated version of the class exists in the `langchain-tavily package and should be used instead. To use it run `pip install -U `langchain-tavily` and import as `from `langchain_tavily import TavilySearch``.
+254|csauto | 2026-07-05 10:04 +09:00:   search = TavilySearchResults(max_results=5)
+254|csauto | 2026-07-05 10:05 +09:00: WARNING:root:All LLMs failed for as-cases search: Error calling model 'gemini-2.0-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 1.801220277s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '1s'}]}}
+254|csauto | 2026-07-05 10:11 +09:00: INFO:     Started server process [9032]
+254|csauto | 2026-07-05 10:11 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-05 10:11 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-05 10:11 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-05 10:30 +09:00: INFO:     Started server process [6580]
+254|csauto | 2026-07-05 10:30 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-05 10:30 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-05 10:30 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-05 12:21 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-05 12:21 +09:00: WARNING:  Invalid HTTP request received.
+254|csauto | 2026-07-05 15:00 +09:00: INFO:     Started server process [1056]
+254|csauto | 2026-07-05 15:00 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-05 15:00 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-05 15:00 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+254|csauto | 2026-07-05 15:07 +09:00: C:\deploy\csautobot\csautobot\app\routes\search.py:76: LangChainDeprecationWarning: The class `TavilySearchResults` was deprecated in LangChain 0.3.25 and will be removed in 1.0. An updated version of the class exists in the `langchain-tavily package and should be used instead. To use it run `pip install -U `langchain-tavily` and import as `from `langchain_tavily import TavilySearch``.
+254|csauto | 2026-07-05 15:07 +09:00:   search = TavilySearchResults(max_results=5)
+254|csauto | 2026-07-05 15:08 +09:00: WARNING:root:All LLMs failed for as-cases search: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CciQmx9Q8TcMLcM1AFUyn'}
+254|csauto | 2026-07-05 15:26 +09:00: INFO:     Started server process [6604]
+254|csauto | 2026-07-05 15:26 +09:00: INFO:     Waiting for application startup.
+254|csauto | 2026-07-05 15:26 +09:00: INFO:     Application startup complete.
+254|csauto | 2026-07-05 15:26 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 
 C:\Users\Administrator\.pm2\logs\csautobot-backend-out.log last 100 lines:
-251|csauto | 2026-07-04 19:29 +09:00: INFO:     127.0.0.1:52985 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 19:29 +09:00: INFO:     127.0.0.1:52985 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 19:29 +09:00: INFO:     127.0.0.1:52990 - "GET /api/v1/users HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 19:31 +09:00: INFO:     115.139.182.217:51608 - "GET /health HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 19:32 +09:00: INFO:     115.139.182.217:53043 - "GET /health HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 20:05 +09:00: INFO:     45.205.1.245:45684 - "GET / HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:47950 - "GET / HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:35840 - "GET / HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:35848 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-251|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:50896 - "POST /mcp HTTP/1.1" 404 Not Found
-251|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:50900 - "POST /jsonrpc HTTP/1.1" 404 Not Found
-251|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:50910 - "POST / HTTP/1.1" 405 Method Not Allowed
-251|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:53450 - "GET /wiki HTTP/1.1" 404 Not Found
-251|csauto | 2026-07-04 21:10 +09:00: INFO:     127.0.0.1:57858 - "GET / HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 21:43 +09:00: INFO:     35.230.59.51:52542 - "GET / HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 21:43 +09:00: INFO:     136.118.202.160:44118 - "GET / HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 21:45 +09:00: INFO:     127.0.0.1:59686 - "GET / HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:28 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/leads HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/leads/notify-failures HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/leads/notify-channels HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61893 - "GET /api/v1/users HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:28 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/feedbacks HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:29 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:48 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62895 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62895 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62895 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62903 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads/notify-failures HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads/notify-channels HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads HTTP/1.1" 200 OK
-251|csauto | 2026-07-04 23:01 +09:00: INFO:     127.0.0.1:63539 - "GET / HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 09:17 +09:00: INFO:     127.0.0.1:60057 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 09:17 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 09:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 09:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 09:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%BB%A4%EB%84%A5%ED%84%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 09:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%BB%A4%EB%84%A5%ED%84%B0&cycle=%EC%9D%BC%EA%B0%84 HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 09:23 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 500 Internal Server Error
-251|csauto | 2026-07-05 09:23 +09:00: INFO:     127.0.0.1:60519 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 09:23 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 09:24 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 09:24 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 500 Internal Server Error
-251|csauto | 2026-07-05 09:24 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 09:49 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 09:49 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 500 Internal Server Error
-251|csauto | 2026-07-05 10:02 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:03 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 500 Internal Server Error
-251|csauto | 2026-07-05 10:04 +09:00: Warning: Dense retrieval failed, falling back to sparse. Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
-251|csauto | 2026-07-05 10:04 +09:00: Warning: Rerank by embedding failed, using original order. Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62935 - "GET /api/v1/leads HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62935 - "GET /api/v1/leads/notify-failures HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62935 - "GET /api/v1/leads/notify-channels HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62935 - "GET /api/v1/leads/notify-stats HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/leads HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/leads/notify-failures HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/leads/notify-channels HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/leads/notify-stats HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62963 - "GET /api/v1/users HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/feedbacks HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:04 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:30 +09:00: INFO:     127.0.0.1:64383 - "GET / HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:38 +09:00: INFO:     68.183.109.250:42058 - "GET / HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 10:38 +09:00: INFO:     68.183.109.250:42070 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-251|csauto | 2026-07-05 12:14 +09:00: INFO:     104.248.196.141:60140 - "GET / HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 12:14 +09:00: INFO:     104.248.196.141:60146 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-251|csauto | 2026-07-05 12:42 +09:00: INFO:     163.192.193.212:10896 - "HEAD / HTTP/1.1" 405 Method Not Allowed
-251|csauto | 2026-07-05 12:42 +09:00: INFO:     163.192.193.212:10914 - "GET / HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%A3%BC%EA%B0%84 HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/leads HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/leads/notify-failures HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/leads/notify-channels HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/leads/notify-stats HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61185 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/users HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/users HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61185 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
-251|csauto | 2026-07-05 14:59 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/feedbacks HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 21:45 +09:00: INFO:     127.0.0.1:59686 - "GET / HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:28 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/leads HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/leads/notify-failures HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/leads/notify-channels HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61893 - "GET /api/v1/users HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:28 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/feedbacks HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:29 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:48 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62895 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62895 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62895 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62903 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads/notify-failures HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads/notify-channels HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads HTTP/1.1" 200 OK
+254|csauto | 2026-07-04 23:01 +09:00: INFO:     127.0.0.1:63539 - "GET / HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 09:17 +09:00: INFO:     127.0.0.1:60057 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 09:17 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 09:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 09:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 09:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%BB%A4%EB%84%A5%ED%84%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 09:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%BB%A4%EB%84%A5%ED%84%B0&cycle=%EC%9D%BC%EA%B0%84 HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 09:23 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 500 Internal Server Error
+254|csauto | 2026-07-05 09:23 +09:00: INFO:     127.0.0.1:60519 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 09:23 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 09:24 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 09:24 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 500 Internal Server Error
+254|csauto | 2026-07-05 09:24 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 09:49 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 09:49 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 500 Internal Server Error
+254|csauto | 2026-07-05 10:02 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:03 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 500 Internal Server Error
+254|csauto | 2026-07-05 10:04 +09:00: Warning: Dense retrieval failed, falling back to sparse. Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+254|csauto | 2026-07-05 10:04 +09:00: Warning: Rerank by embedding failed, using original order. Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62935 - "GET /api/v1/leads HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62935 - "GET /api/v1/leads/notify-failures HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62935 - "GET /api/v1/leads/notify-channels HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62935 - "GET /api/v1/leads/notify-stats HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/leads HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/leads/notify-failures HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/leads/notify-channels HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/leads/notify-stats HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62944 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     127.0.0.1:62963 - "GET /api/v1/users HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/feedbacks HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:04 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:30 +09:00: INFO:     127.0.0.1:64383 - "GET / HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:38 +09:00: INFO:     68.183.109.250:42058 - "GET / HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 10:38 +09:00: INFO:     68.183.109.250:42070 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+254|csauto | 2026-07-05 12:14 +09:00: INFO:     104.248.196.141:60140 - "GET / HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 12:14 +09:00: INFO:     104.248.196.141:60146 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+254|csauto | 2026-07-05 12:42 +09:00: INFO:     163.192.193.212:10896 - "HEAD / HTTP/1.1" 405 Method Not Allowed
+254|csauto | 2026-07-05 12:42 +09:00: INFO:     163.192.193.212:10914 - "GET / HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%A3%BC%EA%B0%84 HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/leads HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/leads/notify-failures HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/leads/notify-channels HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/leads/notify-stats HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61185 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/users HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61172 - "GET /api/v1/users HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:58 +09:00: INFO:     127.0.0.1:61185 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 14:59 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/feedbacks HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 15:03 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 15:03 +09:00: INFO:     127.0.0.1:61509 - "GET /api/v1/ai-settings?tenant_id=default_tenant HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 15:05 +09:00: INFO:     127.0.0.1:61651 - "GET /api/v1/ai-settings?tenant_id=default_tenant HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 15:05 +09:00: INFO:     34.100.136.50:41904 - "GET / HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 15:06 +09:00: INFO:     127.0.0.1:61695 - "PUT /api/v1/ai-settings HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 15:06 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 15:06 +09:00: [ai_provider] claude failed: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CciQenFeFfoxhj8VuDGDr'}
+254|csauto | 2026-07-05 15:06 +09:00: AI draft generation failed, using offline rules: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CciQenFeFfoxhj8VuDGDr'}
+254|csauto | 2026-07-05 15:06 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 15:06 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/log HTTP/1.1" 500 Internal Server Error
+254|csauto | 2026-07-05 15:08 +09:00: Warning: Dense retrieval failed, falling back to sparse. Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+254|csauto | 2026-07-05 15:08 +09:00: Warning: Rerank by embedding failed, using original order. Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+254|csauto | 2026-07-05 15:08 +09:00: [ai_provider] claude failed: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CciQmx9Q8TcMLcM1AFUyn'}
+254|csauto | 2026-07-05 15:08 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/search/as-cases HTTP/1.1" 200 OK
+254|csauto | 2026-07-05 15:26 +09:00: INFO:     34.100.136.50:45874 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+254|csauto | 2026-07-05 15:26 +09:00: INFO:     127.0.0.1:62791 - "GET / HTTP/1.1" 200 OK
 
