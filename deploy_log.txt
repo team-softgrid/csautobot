@@ -1,11 +1,19 @@
 Requirement already satisfied: pip in .\.venv\Lib\site-packages (26.1.2)
-Requirement already satisfied: setuptools in .\.venv\Lib\site-packages (82.0.1)
+Requirement already satisfied: setuptools in .\.venv\Lib\site-packages (83.0.0)
+python.exe : WARNING: Cache entry deserialization failed, entry ignored
+위치 C:\deploy\csautobot\scripts\deploy-remote.ps1:13 문자:5
++     & $FilePath @Arguments
++     ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (WARNING: Cache ..., entry ignored:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
 Requirement already satisfied: wheel in .\.venv\Lib\site-packages (0.47.0)
+WARNING: Cache entry deserialization failed, entry ignored
 Requirement already satisfied: packaging>=24.0 in .\.venv\Lib\site-packages (from wheel) (26.2)
 Requirement already satisfied: streamlit>=1.43.2 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 1)) (1.58.0)
 Requirement already satisfied: altair>=5.5.0 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 2)) (6.2.2)
 Requirement already satisfied: pandas>=2.2.3 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 3)) (3.0.4)
-Requirement already satisfied: numpy>=1.26.4 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 4)) (2.5.0)
+Requirement already satisfied: numpy>=1.26.4 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 4)) (2.5.1)
 Requirement already satisfied: openpyxl>=3.1.5 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 5)) (3.1.5)
 Requirement already satisfied: python-dotenv>=1.0.1 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 7)) (1.2.2)
 Requirement already satisfied: PyYAML>=6.0.2 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 8)) (6.0.3)
