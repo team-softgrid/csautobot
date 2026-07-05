@@ -7,27 +7,58 @@ Local PM2 version: 7.0.3
 ┌─────┬────────────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
 │ id  │ name                       │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├─────┼────────────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 249 │ aicallcenter-backend       │ default     │ N/A     │ fork    │ 8584     │ 26m    │ 1    │ online    │ 0%       │ 314.2mb  │ Adminis… │ disabled │
-│ 240 │ aicallcenter-caddy         │ default     │ N/A     │ fork    │ 4212     │ 2h     │ 0    │ online    │ 0%       │ 38.8mb   │ Adminis… │ disabled │
-│ 250 │ aicallcenter-frontend      │ default     │ N/A     │ fork    │ 6904     │ 26m    │ 1    │ online    │ 0%       │ 118.6mb  │ Adminis… │ disabled │
-│ 254 │ csautobot-backend          │ default     │ N/A     │ fork    │ 2992     │ 28s    │ 0    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
-│ 255 │ csautobot-frontend         │ default     │ 16.2.9  │ fork    │ 4808     │ 28s    │ 0    │ online    │ 0%       │ 117.5mb  │ Adminis… │ disabled │
-│ 253 │ ocppautomation-frontend    │ default     │ 16.2.3  │ fork    │ 2496     │ 21m    │ 0    │ online    │ 0%       │ 126.2mb  │ Adminis… │ disabled │
+│ 261 │ aicallcenter-backend       │ default     │ N/A     │ fork    │ 1816     │ 23s    │ 1    │ online    │ 0%       │ 227.1mb  │ Adminis… │ disabled │
+│ 258 │ aicallcenter-caddy         │ default     │ N/A     │ fork    │ 8932     │ 4m     │ 0    │ online    │ 0%       │ 40.0mb   │ Adminis… │ disabled │
+│ 262 │ aicallcenter-frontend      │ default     │ N/A     │ fork    │ 2112     │ 21s    │ 1    │ online    │ 0%       │ 103.9mb  │ Adminis… │ disabled │
+│ 259 │ csautobot-backend          │ default     │ N/A     │ fork    │ 5644     │ 41s    │ 0    │ online    │ 0%       │ 3.0mb    │ Adminis… │ disabled │
+│ 260 │ csautobot-frontend         │ default     │ 16.2.9  │ fork    │ 9280     │ 41s    │ 0    │ online    │ 0%       │ 138.4mb  │ Adminis… │ disabled │
+│ 253 │ ocppautomation-frontend    │ default     │ 16.2.3  │ fork    │ 2496     │ 89m    │ 0    │ online    │ 0%       │ 140.1mb  │ Adminis… │ disabled │
 └─────┴────────────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
 --- NETSTAT PORTS 5000/8000 ---
-  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       4808
-  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       6604
+  TCP    0.0.0.0:5000           0.0.0.0:0              LISTENING       9280
+  TCP    0.0.0.0:8000           0.0.0.0:0              LISTENING       4952
+  TCP    127.0.0.1:3306         127.0.0.1:50002        TIME_WAIT       0
+  TCP    127.0.0.1:3306         127.0.0.1:50003        TIME_WAIT       0
+  TCP    127.0.0.1:3306         127.0.0.1:50004        TIME_WAIT       0
+  TCP    127.0.0.1:3306         127.0.0.1:50005        TIME_WAIT       0
+  TCP    127.0.0.1:3306         127.0.0.1:50006        TIME_WAIT       0
+  TCP    127.0.0.1:3306         127.0.0.1:50007        TIME_WAIT       0
+  TCP    127.0.0.1:3306         127.0.0.1:50009        TIME_WAIT       0
+  TCP    127.0.0.1:5000         127.0.0.1:49941        TIME_WAIT       0
+  TCP    127.0.0.1:5000         127.0.0.1:49942        TIME_WAIT       0
+  TCP    127.0.0.1:5000         127.0.0.1:49964        TIME_WAIT       0
+  TCP    127.0.0.1:5000         127.0.0.1:49965        TIME_WAIT       0
+  TCP    127.0.0.1:5000         127.0.0.1:50049        TIME_WAIT       0
+  TCP    127.0.0.1:5000         127.0.0.1:50058        TIME_WAIT       0
+  TCP    127.0.0.1:5000         127.0.0.1:50060        TIME_WAIT       0
+  TCP    127.0.0.1:5000         127.0.0.1:50061        TIME_WAIT       0
+  TCP    127.0.0.1:5000         127.0.0.1:50062        TIME_WAIT       0
+  TCP    127.0.0.1:5000         127.0.0.1:50063        TIME_WAIT       0
+  TCP    127.0.0.1:5000         127.0.0.1:50064        ESTABLISHED     9280
+  TCP    127.0.0.1:5000         127.0.0.1:50065        TIME_WAIT       0
+  TCP    127.0.0.1:5000         127.0.0.1:50066        TIME_WAIT       0
+  TCP    127.0.0.1:8000         127.0.0.1:49943        TIME_WAIT       0
+  TCP    127.0.0.1:8000         127.0.0.1:49966        TIME_WAIT       0
+  TCP    127.0.0.1:8000         127.0.0.1:50068        TIME_WAIT       0
+  TCP    127.0.0.1:8000         127.0.0.1:50087        ESTABLISHED     4952
+  TCP    127.0.0.1:49945        127.0.0.1:8000         TIME_WAIT       0
+  TCP    127.0.0.1:50000        127.0.0.1:3306         TIME_WAIT       0
+  TCP    127.0.0.1:50001        127.0.0.1:3306         TIME_WAIT       0
+  TCP    127.0.0.1:50008        127.0.0.1:3306         TIME_WAIT       0
+  TCP    127.0.0.1:50064        127.0.0.1:5000         ESTABLISHED     8932
+  TCP    127.0.0.1:50070        127.0.0.1:8000         TIME_WAIT       0
+  TCP    127.0.0.1:50087        127.0.0.1:8000         ESTABLISHED     9280
 --- RUNNING PROCESSES ---
 
   Id       CPU WorkingSet ProcessName
   --       --- ---------- -----------
-1640 62.546875   87396352 node       
-2496   3.90625  132292608 node       
-4808   1.84375  123260928 node       
-6904  3.578125  124354560 node       
-2992  0.015625    3125248 python     
-6604  4.921875  174436352 python     
-8584 37.828125  329453568 python     
+1640 63.484375   87699456 node       
+2112     1.625  109293568 node       
+2496    5.0625  146874368 node       
+9280  2.609375  145145856 node       
+1816   11.5625  264318976 python     
+4952   8.21875  220479488 python     
+5644         0    3137536 python     
 
 
 --- SCHEDULED TASKS (PM2) ---
