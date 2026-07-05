@@ -22,15 +22,7 @@ Requirement already satisfied: pymysql>=1.1.0 in .\.venv\Lib\site-packages (from
 Requirement already satisfied: cryptography>=42.0.0 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 20)) (49.0.0)
 Requirement already satisfied: langchain-google-genai>=2.1.0 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 21)) (4.2.6)
 Requirement already satisfied: langchain-anthropic>=0.3.9 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 22)) (1.4.8)
-python.exe : WARNING: Cache entry deserialization failed, entry ignored
-위치 C:\deploy\csautobot\scripts\deploy-remote.ps1:13 문자:5
-+     & $FilePath @Arguments
-+     ~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (WARNING: Cache ..., entry ignored:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
-Collecting langchain-ollama>=0.3.0 (from -r C:\deploy\csautobot\requirements-prod.txt (line 23))
-  Using cached langchain_ollama-1.1.0-py3-none-any.whl.metadata (3.0 kB)
+Requirement already satisfied: langchain-ollama>=0.3.0 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 23)) (1.1.0)
 Requirement already satisfied: google-generativeai>=0.8.0 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 24)) (0.8.6)
 Requirement already satisfied: fastapi>=0.110.0 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 25)) (0.139.0)
 Requirement already satisfied: uvicorn>=0.28.0 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 26)) (0.50.0)
@@ -126,9 +118,7 @@ Requirement already satisfied: google-auth<3.0.0,>=2.48.1 in .\.venv\Lib\site-pa
 Requirement already satisfied: pyasn1-modules>=0.2.1 in .\.venv\Lib\site-packages (from google-auth<3.0.0,>=2.48.1->google-auth[requests]<3.0.0,>=2.48.1->google-genai<3.0.0,>=1.65.0->langchain-google-genai>=2.1.0->-r C:\deploy\csautobot\requirements-prod.txt (line 21)) (0.4.2)
 Requirement already satisfied: anthropic<1.0.0,>=0.96.0 in .\.venv\Lib\site-packages (from langchain-anthropic>=0.3.9->-r C:\deploy\csautobot\requirements-prod.txt (line 22)) (0.116.0)
 Requirement already satisfied: docstring-parser<1,>=0.15 in .\.venv\Lib\site-packages (from anthropic<1.0.0,>=0.96.0->langchain-anthropic>=0.3.9->-r C:\deploy\csautobot\requirements-prod.txt (line 22)) (0.18.0)
-WARNING: Cache entry deserialization failed, entry ignored
-Collecting ollama<1.0.0,>=0.6.1 (from langchain-ollama>=0.3.0->-r C:\deploy\csautobot\requirements-prod.txt (line 23))
-  Using cached ollama-0.6.2-py3-none-any.whl.metadata (5.8 kB)
+Requirement already satisfied: ollama<1.0.0,>=0.6.1 in .\.venv\Lib\site-packages (from langchain-ollama>=0.3.0->-r C:\deploy\csautobot\requirements-prod.txt (line 23)) (0.6.2)
 Requirement already satisfied: google-ai-generativelanguage==0.6.15 in .\.venv\Lib\site-packages (from google-generativeai>=0.8.0->-r C:\deploy\csautobot\requirements-prod.txt (line 24)) (0.6.15)
 Requirement already satisfied: google-api-core in .\.venv\Lib\site-packages (from google-generativeai>=0.8.0->-r C:\deploy\csautobot\requirements-prod.txt (line 24)) (2.25.2)
 Requirement already satisfied: google-api-python-client in .\.venv\Lib\site-packages (from google-generativeai>=0.8.0->-r C:\deploy\csautobot\requirements-prod.txt (line 24)) (2.197.0)
@@ -165,13 +155,8 @@ Requirement already satisfied: google-auth-httplib2<1.0.0,>=0.2.0 in .\.venv\Lib
 Requirement already satisfied: uritemplate<5,>=3.0.1 in .\.venv\Lib\site-packages (from google-api-python-client->google-generativeai>=0.8.0->-r C:\deploy\csautobot\requirements-prod.txt (line 24)) (4.2.0)
 Requirement already satisfied: pyparsing<4,>=3.1 in .\.venv\Lib\site-packages (from httplib2<1.0.0,>=0.19.0->google-api-python-client->google-generativeai>=0.8.0->-r C:\deploy\csautobot\requirements-prod.txt (line 24)) (3.3.2)
 Requirement already satisfied: oauthlib>=3.0.0 in .\.venv\Lib\site-packages (from requests-oauthlib->kubernetes>=28.1.0->chromadb>=0.6.3->-r C:\deploy\csautobot\requirements-prod.txt (line 15)) (3.3.1)
-Using cached langchain_ollama-1.1.0-py3-none-any.whl (31 kB)
-Using cached ollama-0.6.2-py3-none-any.whl (15 kB)
-Installing collected packages: ollama, langchain-ollama
 
-Successfully installed langchain-ollama-1.1.0 ollama-0.6.2
-
-up to date, audited 363 packages in 4s
+up to date, audited 363 packages in 5s
 
 145 packages are looking for funding
   run `npm fund` for details
