@@ -42,7 +42,10 @@ class SearchResponse(BaseModel):
     confidence: float
     level: str
     candidate_count: int
-    openai_error: bool
+    openai_error: bool  # legacy: embedding(OpenAI) degraded to BM25-only
+    embedding_degraded: bool = False
+    llm_error: bool = False
+    llm_model: str | None = None
     web_results: List[Any] = []
     metadata_docs: List[Any] = []
 
@@ -144,14 +147,18 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
     }
 
     structured = None
+    llm_success = False
+    model_label: str | None = None
     try:
-        structured, _model_label = invoke_structured_output(
+        structured, model_label = invoke_structured_output(
             AnswerSchema,
             system_prompt=SYS,
             human_template=guard + "[로컬 참고 사례]\n{context}\n\n{web_context}---\n사용자 질문:\n{question}",
             inputs=invoke_inputs,
             ai_config=ai_config,
+            task_type="general",
         )
+        llm_success = True
     except Exception as e2:
         import logging
         logging.warning(f"All LLMs failed for as-cases search: {e2}")
@@ -161,7 +168,7 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
             inspection_steps=["서비스 복구 후 재시도 권장"],
             parts="사례에 명시 없음",
             evidence_refs=[],
-            confidence_note="AI 서비스 일시 중단 중 (API 할당량 초과 또는 모델 오류)"
+            confidence_note="AI 서비스 일시 중단 중 (Groq/Gemini 키·할당량 확인 필요)",
         )
 
     if structured is None:
@@ -182,14 +189,22 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
             "metadata": d.metadata
         })
 
-    record_usage(tenant_id, FEATURE_RAG_SEARCH)
+    embedding_degraded = bool(openai_error_occured)
+
+    try:
+        record_usage(tenant_id, FEATURE_RAG_SEARCH)
+    except Exception as usage_exc:
+        print(f"Usage metering failed (search still returned): {usage_exc}")
 
     return SearchResponse(
         structured=structured,
         confidence=rr.confidence,
         level=rr.level,
         candidate_count=rr.details.get("candidate_count", 0),
-        openai_error=openai_error_occured or not llm_success,
+        openai_error=embedding_degraded,
+        embedding_degraded=embedding_degraded,
+        llm_error=not llm_success,
+        llm_model=model_label,
         web_results=web_results,
-        metadata_docs=metadata_docs
+        metadata_docs=metadata_docs,
     )
