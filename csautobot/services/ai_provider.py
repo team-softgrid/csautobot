@@ -288,7 +288,6 @@ def invoke_with_fallback(
     chain_providers = _provider_chain(cfg)
     last_error: Exception | None = None
     fallback_provider: str | None = None
-    primary_hit_rate_limit = False
 
     for provider in chain_providers:
         model = _resolve_model(provider, cfg.models)
@@ -312,31 +311,6 @@ def invoke_with_fallback(
         except Exception as exc:
             last_error = exc
             print(f"[ai_provider] {provider} failed: {exc}")
-            if _is_rate_limit_error(exc) and not primary_hit_rate_limit:
-                primary_hit_rate_limit = True
-                fb_order = rate_limit_fallback_order or ["gemini", "ollama"]
-                for fb in fb_order:
-                    if fb in chain_providers:
-                        continue
-                    fb_model = _resolve_model(fb, cfg.models)
-                    fb_key = _resolve_api_key(fb, cfg.api_keys.get(fb))
-                    if fb != "ollama" and not fb_key:
-                        continue
-                    try:
-                        result = _invoke_structured_on_provider(
-                            prompt,
-                            provider=fb,
-                            model=fb_model,
-                            api_key=fb_key,
-                            base_url=cfg.ollama_base_url if fb == "ollama" else None,
-                            output_model=output_model,
-                            inputs=inputs,
-                        )
-                        fallback_provider = provider
-                        return result, f"{provider}->{fb}:{fb_model}", fallback_provider
-                    except Exception as fb_exc:
-                        last_error = fb_exc
-                        print(f"[ai_provider] fallback {fb} failed: {fb_exc}")
 
     if last_error:
         raise last_error
