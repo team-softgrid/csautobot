@@ -32,6 +32,8 @@ class DraftRequest(BaseModel):
     checklist: List[ChecklistItem]
     memo: str = ""
     tenant_id: str = "default_tenant"
+    site_name: Optional[str] = None
+    inspection_type: str = "정기점검"
 
 class DraftResponse(BaseModel):
     draft_text: str
@@ -69,16 +71,22 @@ def create_ai_draft(req: DraftRequest):
     # Convert ChecklistItem list to list of dict
     checklist_dict = [x.model_dump() for x in req.checklist]
     try:
-        draft = svc.generate_inspection_draft(
-            target=req.target,
-            cycle=req.cycle,
+        draft_obj, used_model, _web_res = svc.generate_inspection_draft(
+            site_name=req.site_name,
+            charger_id=None,
+            manufacturer=None,
+            model_name=None,
+            inspection_target=req.target,
+            inspection_type=req.inspection_type,
+            inspection_cycle=req.cycle,
             checklist=checklist_dict,
-            memo=req.memo
+            memo_text=req.memo,
         )
-        record_usage(tenant_id, FEATURE_AI_GENERATION, model_name="gpt-4o-mini")
+        record_usage(tenant_id, FEATURE_AI_GENERATION, model_name=used_model or "gpt-4o-mini")
+        summary_json = draft_obj.model_dump()
         return DraftResponse(
-            draft_text=draft.draft_text,
-            summary_json=draft.summary_json
+            draft_text=svc.format_inspection_draft_text(draft_obj),
+            summary_json=summary_json,
         )
     except HTTPException:
         raise

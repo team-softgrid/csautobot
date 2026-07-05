@@ -48,6 +48,24 @@ class InspectionDraft(BaseModel):
     )
 
 
+def format_inspection_draft_text(draft: InspectionDraft) -> str:
+    """프론트/API용 점검 초안 본문 텍스트."""
+    sections: list[str] = [f"[전반 위험도] {draft.overall_risk.upper()}"]
+    if draft.key_findings:
+        sections.append("[핵심 관찰]\n" + "\n".join(f"- {item}" for item in draft.key_findings))
+    if draft.recommended_actions:
+        sections.append("[권장 조치]\n" + "\n".join(f"- {item}" for item in draft.recommended_actions))
+    if draft.parts_to_check:
+        sections.append("[점검·교체 후보 부품]\n" + "\n".join(f"- {item}" for item in draft.parts_to_check))
+    if draft.follow_up_items:
+        sections.append("[후속 모니터링]\n" + "\n".join(f"- {item}" for item in draft.follow_up_items))
+    if draft.inspector_note:
+        sections.append(f"[엔지니어 메모]\n{draft.inspector_note}")
+    if draft.safety_notice:
+        sections.append(f"[안전 고지]\n{draft.safety_notice}")
+    return "\n\n".join(sections)
+
+
 def _load_system_prompt() -> str:
     """YAML 에서 system 프롬프트 로드. PyYAML 없으면 기본 문자열."""
     if yaml and PROMPT_PATH.is_file():
