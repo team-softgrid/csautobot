@@ -1,0 +1,48 @@
+# Promptfoo — csautobot CS자동화봇 프롬프트 품질 게이트
+
+description: "csautobot CS 자동화봇 프롬프트 품질 검증"
+
+providers:
+  - id: echo
+    label: "Mock Provider (CI용)"
+
+prompts:
+  - label: "CS 봇 응답"
+    raw: "{{input}}"
+
+tests:
+  - description: "점검 일정 응답 — 담당자 언급"
+    vars:
+      input: "담당 엔지니어가 24시간 내 연락 드리겠습니다."
+    assert:
+      - type: javascript
+        value: "output.includes('엔지니어') || output.includes('담당')"
+      - type: javascript
+        value: "output.length >= 15"
+
+  - description: "긴급 출동 응답 — 시간 언급"
+    vars:
+      input: "가장 가까운 엔지니어를 배정하여 2시간 내 도착하도록 하겠습니다."
+    assert:
+      - type: javascript
+        value: "output.includes('시간') || output.includes('배정')"
+
+  - description: "응답에 민감 정보 없음"
+    vars:
+      input: "고객님의 문의를 접수하였습니다."
+    assert:
+      - type: not-contains
+        value: "sk-"
+      - type: not-contains
+        value: "password"
+      - type: not-contains
+        value: "DATABASE_URL"
+
+  - description: "모호한 답변 패턴 없음"
+    vars:
+      input: "담당 부서에서 확인 후 안내 드리겠습니다."
+    assert:
+      - type: not-contains
+        value: "잘 모르겠습니다"
+      - type: not-contains
+        value: "확실하지 않습니다"
