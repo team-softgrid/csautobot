@@ -1,14 +1,6 @@
 Requirement already satisfied: pip in .\.venv\Lib\site-packages (26.1.2)
 Requirement already satisfied: setuptools in .\.venv\Lib\site-packages (83.0.0)
-python.exe : WARNING: Cache entry deserialization failed, entry ignored
-위치 C:\deploy\csautobot\scripts\deploy-remote.ps1:13 문자:5
-+     & $FilePath @Arguments
-+     ~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (WARNING: Cache ..., entry ignored:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
 Requirement already satisfied: wheel in .\.venv\Lib\site-packages (0.47.0)
-WARNING: Cache entry deserialization failed, entry ignored
 Requirement already satisfied: packaging>=24.0 in .\.venv\Lib\site-packages (from wheel) (26.2)
 Requirement already satisfied: streamlit>=1.43.2 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 1)) (1.58.0)
 Requirement already satisfied: altair>=5.5.0 in .\.venv\Lib\site-packages (from -r C:\deploy\csautobot\requirements-prod.txt (line 2)) (6.2.2)

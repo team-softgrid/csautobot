@@ -6,206 +6,206 @@ Local PM2 version: 7.0.3
 
 [TAILING] Tailing last 100 lines for [csautobot-backend] process (change the value with --lines option)
 C:\Users\Administrator\.pm2\logs\csautobot-backend-out.log last 100 lines:
-218|csauto | 2026-07-04 04:04 +09:00: INFO:     172.105.23.29:57004 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 04:06 +09:00: INFO:     45.56.72.126:54268 - "GET / HTTP/1.0" 200 OK
-218|csauto | 2026-07-04 04:32 +09:00: INFO:     212.73.148.38:54436 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 04:45 +09:00: INFO:     212.73.148.31:46230 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 05:10 +09:00: INFO:     94.231.206.135:42507 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 05:12 +09:00: INFO:     94.231.206.206:44259 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 06:48 +09:00: INFO:     207.154.201.114:7988 - "GET /cgi-bin/authLogin.cgi HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 07:12 +09:00: INFO:     87.236.176.94:58147 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 09:49 +09:00: INFO:     45.205.1.223:55430 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 12:09 +09:00: INFO:     115.231.78.11:33506 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 12:09 +09:00: INFO:     115.231.78.11:33544 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 12:09 +09:00: INFO:     115.231.78.11:33606 - "GET /robots.txt HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 12:41 +09:00: INFO:     45.205.1.243:56144 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 12:51 +09:00: INFO:     127.0.0.1:65349 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 12:51 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 12:51 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 13:08 +09:00: INFO:     115.139.182.217:51807 - "GET /health HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 13:25 +09:00: INFO:     127.0.0.1:50719 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 13:26 +09:00: INFO:     115.139.182.217:56603 - "GET /health HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 13:26 +09:00: INFO:     115.139.182.217:56606 - "GET /api/v1/billing/admin/summary HTTP/1.1" 401 Unauthorized
-218|csauto | 2026-07-04 13:26 +09:00: INFO:     115.139.182.217:56607 - "GET /api/v1/leads HTTP/1.1" 401 Unauthorized
-218|csauto | 2026-07-04 14:04 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/feedbacks HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 14:04 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 14:10 +09:00: INFO:     66.132.172.206:41554 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 14:10 +09:00: INFO:     66.132.172.206:41582 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 14:12 +09:00: INFO:     66.132.172.206:53126 - "POST /mcp HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 14:12 +09:00: INFO:     66.132.172.206:53130 - "POST /jsonrpc HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 14:12 +09:00: INFO:     66.132.172.206:53146 - "POST / HTTP/1.1" 405 Method Not Allowed
-218|csauto | 2026-07-04 14:12 +09:00: INFO:     66.132.172.206:55304 - "GET /robots.txt HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 14:20 +09:00: INFO:     172.234.174.245:57504 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 14:20 +09:00: INFO:     172.234.174.245:57520 - "GET /login HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 14:20 +09:00: INFO:     172.234.174.245:57530 - "GET /AGENTS.md HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 17:36 +09:00: INFO:     115.139.182.217:59304 - "GET /health HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 17:38 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 17:38 +09:00: INFO:     127.0.0.1:63152 - "GET /api/v1/billing/admin/summary HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 17:38 +09:00: INFO:     127.0.0.1:63152 - "GET /api/v1/leads HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 18:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 18:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 18:22 +09:00: INFO:     127.0.0.1:65397 - "GET /api/v1/billing/admin/summary HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 18:22 +09:00: INFO:     127.0.0.1:65397 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 18:22 +09:00: INFO:     127.0.0.1:65398 - "GET /api/v1/users HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 18:22 +09:00: INFO:     127.0.0.1:65397 - "GET /api/v1/billing/admin/summary HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 18:26 +09:00: INFO:     195.184.76.51:34219 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 18:28 +09:00: INFO:     195.184.76.235:44303 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 19:13 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:13 +09:00: INFO:     127.0.0.1:51821 - "GET /api/v1/leads HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:13 +09:00: INFO:     127.0.0.1:51821 - "GET /api/v1/billing/admin/summary HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:13 +09:00: INFO:     127.0.0.1:51821 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:13 +09:00: INFO:     127.0.0.1:51824 - "GET /api/v1/users HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:13 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/feedbacks HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:16 +09:00: INFO:     127.0.0.1:52030 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:22 +09:00: INFO:     127.0.0.1:52490 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:22 +09:00: INFO:     127.0.0.1:52490 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:22 +09:00: INFO:     127.0.0.1:52490 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:29 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/feedbacks HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:29 +09:00: INFO:     127.0.0.1:52985 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:29 +09:00: INFO:     127.0.0.1:52985 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:29 +09:00: INFO:     127.0.0.1:52985 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:29 +09:00: INFO:     127.0.0.1:52990 - "GET /api/v1/users HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:31 +09:00: INFO:     115.139.182.217:51608 - "GET /health HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 19:32 +09:00: INFO:     115.139.182.217:53043 - "GET /health HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 20:05 +09:00: INFO:     45.205.1.245:45684 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:47950 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:35840 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:35848 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:50896 - "POST /mcp HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:50900 - "POST /jsonrpc HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:50910 - "POST / HTTP/1.1" 405 Method Not Allowed
-218|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:53450 - "GET /wiki HTTP/1.1" 404 Not Found
-218|csauto | 2026-07-04 21:10 +09:00: INFO:     127.0.0.1:57858 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 21:43 +09:00: INFO:     35.230.59.51:52542 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 21:43 +09:00: INFO:     136.118.202.160:44118 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 21:45 +09:00: INFO:     127.0.0.1:59686 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:28 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/leads HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/leads/notify-failures HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/leads/notify-channels HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61893 - "GET /api/v1/users HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:28 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/feedbacks HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:29 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:48 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62895 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62895 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62895 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62903 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads/notify-failures HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads/notify-channels HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads HTTP/1.1" 200 OK
-218|csauto | 2026-07-04 23:01 +09:00: INFO:     127.0.0.1:63539 - "GET / HTTP/1.1" 200 OK
-218|csauto | 2026-07-05 09:17 +09:00: INFO:     127.0.0.1:60057 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
-218|csauto | 2026-07-05 09:17 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 12:09 +09:00: INFO:     115.231.78.11:33544 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+223|csauto | 2026-07-04 12:09 +09:00: INFO:     115.231.78.11:33606 - "GET /robots.txt HTTP/1.1" 404 Not Found
+223|csauto | 2026-07-04 12:41 +09:00: INFO:     45.205.1.243:56144 - "GET / HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 12:51 +09:00: INFO:     127.0.0.1:65349 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 12:51 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 12:51 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 13:08 +09:00: INFO:     115.139.182.217:51807 - "GET /health HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 13:25 +09:00: INFO:     127.0.0.1:50719 - "GET / HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 13:26 +09:00: INFO:     115.139.182.217:56603 - "GET /health HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 13:26 +09:00: INFO:     115.139.182.217:56606 - "GET /api/v1/billing/admin/summary HTTP/1.1" 401 Unauthorized
+223|csauto | 2026-07-04 13:26 +09:00: INFO:     115.139.182.217:56607 - "GET /api/v1/leads HTTP/1.1" 401 Unauthorized
+223|csauto | 2026-07-04 14:04 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/feedbacks HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 14:04 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 14:10 +09:00: INFO:     66.132.172.206:41554 - "GET / HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 14:10 +09:00: INFO:     66.132.172.206:41582 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+223|csauto | 2026-07-04 14:12 +09:00: INFO:     66.132.172.206:53126 - "POST /mcp HTTP/1.1" 404 Not Found
+223|csauto | 2026-07-04 14:12 +09:00: INFO:     66.132.172.206:53130 - "POST /jsonrpc HTTP/1.1" 404 Not Found
+223|csauto | 2026-07-04 14:12 +09:00: INFO:     66.132.172.206:53146 - "POST / HTTP/1.1" 405 Method Not Allowed
+223|csauto | 2026-07-04 14:12 +09:00: INFO:     66.132.172.206:55304 - "GET /robots.txt HTTP/1.1" 404 Not Found
+223|csauto | 2026-07-04 14:20 +09:00: INFO:     172.234.174.245:57504 - "GET / HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 14:20 +09:00: INFO:     172.234.174.245:57520 - "GET /login HTTP/1.1" 404 Not Found
+223|csauto | 2026-07-04 14:20 +09:00: INFO:     172.234.174.245:57530 - "GET /AGENTS.md HTTP/1.1" 404 Not Found
+223|csauto | 2026-07-04 17:36 +09:00: INFO:     115.139.182.217:59304 - "GET /health HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 17:38 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 17:38 +09:00: INFO:     127.0.0.1:63152 - "GET /api/v1/billing/admin/summary HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 17:38 +09:00: INFO:     127.0.0.1:63152 - "GET /api/v1/leads HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 18:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 18:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 18:22 +09:00: INFO:     127.0.0.1:65397 - "GET /api/v1/billing/admin/summary HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 18:22 +09:00: INFO:     127.0.0.1:65397 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 18:22 +09:00: INFO:     127.0.0.1:65398 - "GET /api/v1/users HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 18:22 +09:00: INFO:     127.0.0.1:65397 - "GET /api/v1/billing/admin/summary HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 18:26 +09:00: INFO:     195.184.76.51:34219 - "GET / HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 18:28 +09:00: INFO:     195.184.76.235:44303 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+223|csauto | 2026-07-04 19:13 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:13 +09:00: INFO:     127.0.0.1:51821 - "GET /api/v1/leads HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:13 +09:00: INFO:     127.0.0.1:51821 - "GET /api/v1/billing/admin/summary HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:13 +09:00: INFO:     127.0.0.1:51821 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:13 +09:00: INFO:     127.0.0.1:51824 - "GET /api/v1/users HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:13 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/feedbacks HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:16 +09:00: INFO:     127.0.0.1:52030 - "GET / HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:22 +09:00: INFO:     127.0.0.1:52490 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:22 +09:00: INFO:     127.0.0.1:52490 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:22 +09:00: INFO:     127.0.0.1:52490 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:29 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/feedbacks HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:29 +09:00: INFO:     127.0.0.1:52985 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:29 +09:00: INFO:     127.0.0.1:52985 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:29 +09:00: INFO:     127.0.0.1:52985 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:29 +09:00: INFO:     127.0.0.1:52990 - "GET /api/v1/users HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:31 +09:00: INFO:     115.139.182.217:51608 - "GET /health HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 19:32 +09:00: INFO:     115.139.182.217:53043 - "GET /health HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 20:05 +09:00: INFO:     45.205.1.245:45684 - "GET / HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:47950 - "GET / HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:35840 - "GET / HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:35848 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+223|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:50896 - "POST /mcp HTTP/1.1" 404 Not Found
+223|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:50900 - "POST /jsonrpc HTTP/1.1" 404 Not Found
+223|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:50910 - "POST / HTTP/1.1" 405 Method Not Allowed
+223|csauto | 2026-07-04 20:39 +09:00: INFO:     199.45.154.157:53450 - "GET /wiki HTTP/1.1" 404 Not Found
+223|csauto | 2026-07-04 21:10 +09:00: INFO:     127.0.0.1:57858 - "GET / HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 21:43 +09:00: INFO:     35.230.59.51:52542 - "GET / HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 21:43 +09:00: INFO:     136.118.202.160:44118 - "GET / HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 21:45 +09:00: INFO:     127.0.0.1:59686 - "GET / HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:28 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/leads HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/leads/notify-failures HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61875 - "GET /api/v1/leads/notify-channels HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61892 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:28 +09:00: INFO:     127.0.0.1:61893 - "GET /api/v1/users HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:28 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/feedbacks HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:29 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:48 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62895 - "GET /api/v1/billing/admin/tenants HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62895 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62895 - "GET /api/v1/billing/admin/plan-audit?tenant_id=default_tenant&limit=10&offset=0 HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62903 - "GET /api/v1/billing/admin/summary?tenant_id=default_tenant HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads/notify-failures HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads/notify-channels HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 22:48 +09:00: INFO:     127.0.0.1:62916 - "GET /api/v1/leads HTTP/1.1" 200 OK
+223|csauto | 2026-07-04 23:01 +09:00: INFO:     127.0.0.1:63539 - "GET / HTTP/1.1" 200 OK
+223|csauto | 2026-07-05 09:17 +09:00: INFO:     127.0.0.1:60057 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+223|csauto | 2026-07-05 09:17 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+223|csauto | 2026-07-05 09:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+223|csauto | 2026-07-05 09:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+223|csauto | 2026-07-05 09:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%BB%A4%EB%84%A5%ED%84%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+223|csauto | 2026-07-05 09:22 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%BB%A4%EB%84%A5%ED%84%B0&cycle=%EC%9D%BC%EA%B0%84 HTTP/1.1" 200 OK
+223|csauto | 2026-07-05 09:23 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 500 Internal Server Error
+223|csauto | 2026-07-05 09:23 +09:00: INFO:     127.0.0.1:60519 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+223|csauto | 2026-07-05 09:23 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+223|csauto | 2026-07-05 09:24 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/inspection/preset?target=%EC%B6%A9%EC%A0%84%EA%B8%B0&cycle=%EC%9B%94%EA%B0%84 HTTP/1.1" 200 OK
+223|csauto | 2026-07-05 09:24 +09:00: INFO:     115.139.182.217:0 - "POST /api/v1/inspection/draft HTTP/1.1" 500 Internal Server Error
+223|csauto | 2026-07-05 09:24 +09:00: INFO:     115.139.182.217:0 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
 
 C:\Users\Administrator\.pm2\logs\csautobot-backend-error.log last 100 lines:
-218|csauto | 2026-07-04 02:21 +09:00: ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
-218|csauto | 2026-07-04 02:21 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 02:21 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 02:21 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 04:06 +09:00: Exception in callback _ProactorBasePipeTransport._call_connection_lost()
-218|csauto | 2026-07-04 04:06 +09:00: handle: <Handle _ProactorBasePipeTransport._call_connection_lost()>
-218|csauto | 2026-07-04 04:06 +09:00: Traceback (most recent call last):
-218|csauto | 2026-07-04 04:06 +09:00:   File "C:\PYTHON314\Lib\asyncio\events.py", line 94, in _run
-218|csauto | 2026-07-04 04:06 +09:00:     self._context.run(self._callback, *self._args)
-218|csauto | 2026-07-04 04:06 +09:00:     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-218|csauto | 2026-07-04 04:06 +09:00:   File "C:\PYTHON314\Lib\asyncio\proactor_events.py", line 165, in _call_connection_lost
-218|csauto | 2026-07-04 04:06 +09:00:     self._sock.shutdown(socket.SHUT_RDWR)
-218|csauto | 2026-07-04 04:06 +09:00:     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-218|csauto | 2026-07-04 04:06 +09:00: ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
-218|csauto | 2026-07-04 04:06 +09:00: Exception in callback _ProactorBasePipeTransport._call_connection_lost()
-218|csauto | 2026-07-04 04:06 +09:00: handle: <Handle _ProactorBasePipeTransport._call_connection_lost()>
-218|csauto | 2026-07-04 04:06 +09:00: Traceback (most recent call last):
-218|csauto | 2026-07-04 04:06 +09:00:   File "C:\PYTHON314\Lib\asyncio\events.py", line 94, in _run
-218|csauto | 2026-07-04 04:06 +09:00:     self._context.run(self._callback, *self._args)
-218|csauto | 2026-07-04 04:06 +09:00:     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-218|csauto | 2026-07-04 04:06 +09:00:   File "C:\PYTHON314\Lib\asyncio\proactor_events.py", line 165, in _call_connection_lost
-218|csauto | 2026-07-04 04:06 +09:00:     self._sock.shutdown(socket.SHUT_RDWR)
-218|csauto | 2026-07-04 04:06 +09:00:     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-218|csauto | 2026-07-04 04:06 +09:00: ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
-218|csauto | 2026-07-04 04:08 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 04:31 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 04:31 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 04:31 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 04:49 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 05:10 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 05:28 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 06:35 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 06:42 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 06:48 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 06:55 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 07:02 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 07:04 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 07:33 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 07:33 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 11:54 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 11:54 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 11:54 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 12:08 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 12:09 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 12:14 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 13:07 +09:00: INFO:     Started server process [8780]
-218|csauto | 2026-07-04 13:07 +09:00: INFO:     Waiting for application startup.
-218|csauto | 2026-07-04 13:07 +09:00: INFO:     Application startup complete.
-218|csauto | 2026-07-04 13:07 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-218|csauto | 2026-07-04 13:25 +09:00: INFO:     Started server process [9616]
-218|csauto | 2026-07-04 13:25 +09:00: INFO:     Waiting for application startup.
-218|csauto | 2026-07-04 13:25 +09:00: INFO:     Application startup complete.
-218|csauto | 2026-07-04 13:25 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-218|csauto | 2026-07-04 14:10 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 14:10 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 14:12 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 14:20 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 14:20 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 17:21 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 17:21 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 17:36 +09:00: INFO:     Started server process [1048]
-218|csauto | 2026-07-04 17:36 +09:00: INFO:     Waiting for application startup.
-218|csauto | 2026-07-04 17:36 +09:00: INFO:     Application startup complete.
-218|csauto | 2026-07-04 17:36 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-218|csauto | 2026-07-04 18:26 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 19:16 +09:00: INFO:     Started server process [7452]
-218|csauto | 2026-07-04 19:16 +09:00: INFO:     Waiting for application startup.
-218|csauto | 2026-07-04 19:16 +09:00: INFO:     Application startup complete.
-218|csauto | 2026-07-04 19:16 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-218|csauto | 2026-07-04 19:31 +09:00: INFO:     Started server process [5584]
-218|csauto | 2026-07-04 19:31 +09:00: INFO:     Waiting for application startup.
-218|csauto | 2026-07-04 19:31 +09:00: INFO:     Application startup complete.
-218|csauto | 2026-07-04 19:31 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-218|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
-218|csauto | 2026-07-04 21:10 +09:00: INFO:     Started server process [6308]
-218|csauto | 2026-07-04 21:10 +09:00: INFO:     Waiting for application startup.
-218|csauto | 2026-07-04 21:10 +09:00: INFO:     Application startup complete.
-218|csauto | 2026-07-04 21:10 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-218|csauto | 2026-07-04 21:45 +09:00: INFO:     Started server process [9164]
-218|csauto | 2026-07-04 21:45 +09:00: INFO:     Waiting for application startup.
-218|csauto | 2026-07-04 21:45 +09:00: INFO:     Application startup complete.
-218|csauto | 2026-07-04 21:45 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-218|csauto | 2026-07-04 22:47 +09:00: INFO:     Started server process [8932]
-218|csauto | 2026-07-04 22:47 +09:00: INFO:     Waiting for application startup.
-218|csauto | 2026-07-04 22:47 +09:00: INFO:     Application startup complete.
-218|csauto | 2026-07-04 22:47 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-218|csauto | 2026-07-04 23:01 +09:00: INFO:     Started server process [3864]
-218|csauto | 2026-07-04 23:01 +09:00: INFO:     Waiting for application startup.
-218|csauto | 2026-07-04 23:01 +09:00: INFO:     Application startup complete.
-218|csauto | 2026-07-04 23:01 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-218|csauto | 2026-07-05 09:12 +09:00: INFO:     Started server process [5248]
-218|csauto | 2026-07-05 09:12 +09:00: INFO:     Waiting for application startup.
-218|csauto | 2026-07-05 09:12 +09:00: INFO:     Application startup complete.
-218|csauto | 2026-07-05 09:12 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-218|csauto | 2026-07-05 09:19 +09:00: INFO:     Started server process [8384]
-218|csauto | 2026-07-05 09:19 +09:00: INFO:     Waiting for application startup.
-218|csauto | 2026-07-05 09:19 +09:00: INFO:     Application startup complete.
-218|csauto | 2026-07-05 09:19 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+223|csauto | 2026-07-04 04:06 +09:00: Exception in callback _ProactorBasePipeTransport._call_connection_lost()
+223|csauto | 2026-07-04 04:06 +09:00: handle: <Handle _ProactorBasePipeTransport._call_connection_lost()>
+223|csauto | 2026-07-04 04:06 +09:00: Traceback (most recent call last):
+223|csauto | 2026-07-04 04:06 +09:00:   File "C:\PYTHON314\Lib\asyncio\events.py", line 94, in _run
+223|csauto | 2026-07-04 04:06 +09:00:     self._context.run(self._callback, *self._args)
+223|csauto | 2026-07-04 04:06 +09:00:     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+223|csauto | 2026-07-04 04:06 +09:00:   File "C:\PYTHON314\Lib\asyncio\proactor_events.py", line 165, in _call_connection_lost
+223|csauto | 2026-07-04 04:06 +09:00:     self._sock.shutdown(socket.SHUT_RDWR)
+223|csauto | 2026-07-04 04:06 +09:00:     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+223|csauto | 2026-07-04 04:06 +09:00: ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+223|csauto | 2026-07-04 04:06 +09:00: Exception in callback _ProactorBasePipeTransport._call_connection_lost()
+223|csauto | 2026-07-04 04:06 +09:00: handle: <Handle _ProactorBasePipeTransport._call_connection_lost()>
+223|csauto | 2026-07-04 04:06 +09:00: Traceback (most recent call last):
+223|csauto | 2026-07-04 04:06 +09:00:   File "C:\PYTHON314\Lib\asyncio\events.py", line 94, in _run
+223|csauto | 2026-07-04 04:06 +09:00:     self._context.run(self._callback, *self._args)
+223|csauto | 2026-07-04 04:06 +09:00:     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+223|csauto | 2026-07-04 04:06 +09:00:   File "C:\PYTHON314\Lib\asyncio\proactor_events.py", line 165, in _call_connection_lost
+223|csauto | 2026-07-04 04:06 +09:00:     self._sock.shutdown(socket.SHUT_RDWR)
+223|csauto | 2026-07-04 04:06 +09:00:     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+223|csauto | 2026-07-04 04:06 +09:00: ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+223|csauto | 2026-07-04 04:08 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 04:31 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 04:31 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 04:31 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 04:49 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 05:10 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 05:28 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 06:35 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 06:42 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 06:48 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 06:55 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 07:02 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 07:04 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 07:33 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 07:33 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 11:54 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 11:54 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 11:54 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 12:08 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 12:09 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 12:14 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 13:07 +09:00: INFO:     Started server process [8780]
+223|csauto | 2026-07-04 13:07 +09:00: INFO:     Waiting for application startup.
+223|csauto | 2026-07-04 13:07 +09:00: INFO:     Application startup complete.
+223|csauto | 2026-07-04 13:07 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+223|csauto | 2026-07-04 13:25 +09:00: INFO:     Started server process [9616]
+223|csauto | 2026-07-04 13:25 +09:00: INFO:     Waiting for application startup.
+223|csauto | 2026-07-04 13:25 +09:00: INFO:     Application startup complete.
+223|csauto | 2026-07-04 13:25 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+223|csauto | 2026-07-04 14:10 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 14:10 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 14:12 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 14:20 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 14:20 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 17:21 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 17:21 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 17:36 +09:00: INFO:     Started server process [1048]
+223|csauto | 2026-07-04 17:36 +09:00: INFO:     Waiting for application startup.
+223|csauto | 2026-07-04 17:36 +09:00: INFO:     Application startup complete.
+223|csauto | 2026-07-04 17:36 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+223|csauto | 2026-07-04 18:26 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 19:16 +09:00: INFO:     Started server process [7452]
+223|csauto | 2026-07-04 19:16 +09:00: INFO:     Waiting for application startup.
+223|csauto | 2026-07-04 19:16 +09:00: INFO:     Application startup complete.
+223|csauto | 2026-07-04 19:16 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+223|csauto | 2026-07-04 19:31 +09:00: INFO:     Started server process [5584]
+223|csauto | 2026-07-04 19:31 +09:00: INFO:     Waiting for application startup.
+223|csauto | 2026-07-04 19:31 +09:00: INFO:     Application startup complete.
+223|csauto | 2026-07-04 19:31 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+223|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 20:39 +09:00: WARNING:  Invalid HTTP request received.
+223|csauto | 2026-07-04 21:10 +09:00: INFO:     Started server process [6308]
+223|csauto | 2026-07-04 21:10 +09:00: INFO:     Waiting for application startup.
+223|csauto | 2026-07-04 21:10 +09:00: INFO:     Application startup complete.
+223|csauto | 2026-07-04 21:10 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+223|csauto | 2026-07-04 21:45 +09:00: INFO:     Started server process [9164]
+223|csauto | 2026-07-04 21:45 +09:00: INFO:     Waiting for application startup.
+223|csauto | 2026-07-04 21:45 +09:00: INFO:     Application startup complete.
+223|csauto | 2026-07-04 21:45 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+223|csauto | 2026-07-04 22:47 +09:00: INFO:     Started server process [8932]
+223|csauto | 2026-07-04 22:47 +09:00: INFO:     Waiting for application startup.
+223|csauto | 2026-07-04 22:47 +09:00: INFO:     Application startup complete.
+223|csauto | 2026-07-04 22:47 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+223|csauto | 2026-07-04 23:01 +09:00: INFO:     Started server process [3864]
+223|csauto | 2026-07-04 23:01 +09:00: INFO:     Waiting for application startup.
+223|csauto | 2026-07-04 23:01 +09:00: INFO:     Application startup complete.
+223|csauto | 2026-07-04 23:01 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+223|csauto | 2026-07-05 09:12 +09:00: INFO:     Started server process [5248]
+223|csauto | 2026-07-05 09:12 +09:00: INFO:     Waiting for application startup.
+223|csauto | 2026-07-05 09:12 +09:00: INFO:     Application startup complete.
+223|csauto | 2026-07-05 09:12 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+223|csauto | 2026-07-05 09:19 +09:00: INFO:     Started server process [8384]
+223|csauto | 2026-07-05 09:19 +09:00: INFO:     Waiting for application startup.
+223|csauto | 2026-07-05 09:19 +09:00: INFO:     Application startup complete.
+223|csauto | 2026-07-05 09:19 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+223|csauto | 2026-07-05 09:35 +09:00: INFO:     Started server process [2752]
+223|csauto | 2026-07-05 09:35 +09:00: INFO:     Waiting for application startup.
+223|csauto | 2026-07-05 09:35 +09:00: INFO:     Application startup complete.
+223|csauto | 2026-07-05 09:35 +09:00: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 
