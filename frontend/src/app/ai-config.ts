@@ -80,10 +80,22 @@ export function isAIProvider(value: AISelectionMode): value is AIProvider {
   return value !== "hybrid";
 }
 
+function normalizeGroqFirst(providers: AIProvider[]): AIProvider[] {
+  const valid = providers.filter((p) => AI_PROVIDER_ORDER.includes(p));
+  const rest = valid.filter((p) => p !== "groq");
+  const merged = ["groq" as AIProvider, ...rest];
+  for (const p of AI_PROVIDER_ORDER) {
+    if (!merged.includes(p)) merged.push(p);
+  }
+  return merged;
+}
+
 function mapServerPayload(data: Record<string, unknown>): StoredAIConfig {
   return {
     provider: (data.provider as AISelectionMode) || "hybrid",
-    hybridProviders: (data.hybrid_providers as AIProvider[]) || [...AI_PROVIDER_ORDER],
+    hybridProviders: (data.hybrid_providers as AIProvider[])?.length
+      ? normalizeGroqFirst(data.hybrid_providers as AIProvider[])
+      : [...AI_PROVIDER_ORDER],
     models: { ...DEFAULT_AI_CONFIG.models, ...((data.models as Record<string, string>) || {}) },
     ollamaBaseUrl: (data.ollama_base_url as string) || "http://localhost:11434",
     dailyTokenLimit: (data.daily_token_limit as number | null | undefined) ?? null,
@@ -116,7 +128,9 @@ export async function saveAIConfig(
     body: JSON.stringify({
       tenant_id: tenantId,
       provider: config.provider,
-      hybrid_providers: config.hybridProviders?.length ? config.hybridProviders : AI_PROVIDER_ORDER,
+      hybrid_providers: normalizeGroqFirst(
+        config.hybridProviders?.length ? config.hybridProviders : AI_PROVIDER_ORDER,
+      ),
       models: config.models,
       ollama_base_url: config.ollamaBaseUrl || "http://localhost:11434",
       daily_token_limit: config.dailyTokenLimit ?? null,

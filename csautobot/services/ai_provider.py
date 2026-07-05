@@ -37,10 +37,10 @@ GROQ_70B_MODEL = "llama-3.3-70b-versatile"
 TASK_ROUTING: dict[TaskType, tuple[list[AIProviderName], dict[str, str]]] = {
     "intent_detect": (["groq", "gemini"], {"groq": "llama-3.1-8b-instant"}),
     "inspection_basic": (["groq", "gemini"], {"groq": "llama-3.1-8b-instant"}),
-    "inspection_detail": (["gemini", "groq"], {"groq": GROQ_70B_MODEL}),
+    "inspection_detail": (["groq", "gemini"], {"groq": GROQ_70B_MODEL}),
     "quotation_simple": (["groq", "gemini"], {"groq": "llama-3.1-8b-instant"}),
-    "quotation_complex": (["gemini", "groq"], {"groq": GROQ_70B_MODEL}),
-    "batch_classify": (["gemini", "groq"], {"groq": GROQ_70B_MODEL}),
+    "quotation_complex": (["groq", "gemini"], {"groq": GROQ_70B_MODEL}),
+    "batch_classify": (["groq", "gemini"], {"groq": GROQ_70B_MODEL}),
     "general": (["groq", "gemini"], {"groq": "llama-3.1-8b-instant"}),
 }
 
@@ -88,11 +88,28 @@ def _resolve_model(provider: AIProviderName, models: dict[str, str]) -> str:
 def _provider_chain(config: AiProviderConfigPayload | None) -> list[AIProviderName]:
     cfg = config or AiProviderConfigPayload()
     if cfg.provider == "hybrid":
-        order = cfg.hybrid_providers or list(DEFAULT_HYBRID_ORDER)
-        return [p for p in order if p in DEFAULT_MODELS]
+        order = ensure_groq_first_hybrid_order(cfg.hybrid_providers)
+        return order
     if cfg.provider in DEFAULT_MODELS:
         return [cfg.provider]  # type: ignore[list-item]
     return list(DEFAULT_HYBRID_ORDER)
+
+
+def ensure_groq_first_hybrid_order(
+    providers: list[AIProviderName] | list[str] | None,
+) -> list[AIProviderName]:
+    """Normalize hybrid fallback order so Groq is always tried first."""
+    order: list[AIProviderName] = [
+        p for p in (providers or DEFAULT_HYBRID_ORDER) if p in DEFAULT_MODELS  # type: ignore[comparison-overlap]
+    ]
+    if "groq" not in order:
+        order.insert(0, "groq")
+    else:
+        order = ["groq", *[p for p in order if p != "groq"]]
+    for provider in DEFAULT_HYBRID_ORDER:
+        if provider not in order:
+            order.append(provider)
+    return order
 
 
 def route_by_task(

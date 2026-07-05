@@ -228,7 +228,8 @@ export default function AiProviderSettingsModal({ open, onClose, onSaved }: Prop
               )}
             </div>
             <p className="text-xs text-[#64748b] mb-4">
-              GPU 없는 서버에서는 Ollama를 맨 아래에 두는 것을 권장합니다.
+              기본 폴백: Groq → Gemini → OpenAI → Claude → Ollama. GPU 없는 서버에서는 Ollama를
+              맨 아래에 두세요.
             </p>
             {renderKeyFields()}
           </div>
