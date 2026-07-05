@@ -372,33 +372,60 @@ class ActionRepository(BaseRepository):
 # Streamlit Functional API (for backward compatibility)
 # ---------------------------------------------------------------------------
 
+def _ensure_tenant_row(db: Session, tenant_id: str) -> None:
+    tenant = db.query(Tenant).filter(Tenant.tenant_id == tenant_id).first()
+    if tenant is None:
+        db.add(
+            Tenant(
+                tenant_id=tenant_id,
+                tenant_name=tenant_id.replace("_", " ").title(),
+                plan_code="FREE",
+            )
+        )
+        db.flush()
+
+
 def create_inspection_log(
     *,
-    site_name: str | None,
-    charger_id: str | None,
-    manufacturer: str | None,
-    model_name: str | None,
+    tenant_id: str = "default_tenant",
+    site_id: str | None = None,
+    site_name: str | None = None,
+    charger_id: str | None = None,
+    manufacturer: str | None = None,
+    model_name: str | None = None,
     inspection_type: str,
-    inspection_cycle: str | None,
-    engineer_name: str | None,
+    inspection_cycle: str | None = None,
+    engineer_name: str | None = None,
     checklist: list[dict[str, Any]],
     memo_text: str | None,
     photo_paths: list[str] | None,
-    ai_summary: dict[str, Any] | None = None,
+    ai_summary: dict[str, Any] | str | None = None,
     ai_model: str | None = None,
     status: str = "draft",
     inspection_id: str | None = None,
 ) -> str:
     iid = inspection_id or new_id("ins")
-    tenant_id = "default_tenant"
+    tenant_id = (tenant_id or "default_tenant").strip()
+
+    if isinstance(ai_summary, str):
+        try:
+            ai_summary = json.loads(ai_summary)
+        except json.JSONDecodeError:
+            ai_summary = {"text": ai_summary}
     
     with get_db_context() as db:
+        _ensure_tenant_row(db, tenant_id)
+
         # Find or create Site
-        site_name_val = site_name or "Unknown Site"
-        site = db.query(Site).filter(Site.tenant_id == tenant_id, Site.site_name == site_name_val).first()
+        site_name_val = site_name or site_id or "Unknown Site"
+        site = None
+        if site_id:
+            site = db.query(Site).filter(Site.tenant_id == tenant_id, Site.site_id == site_id).first()
+        if site is None:
+            site = db.query(Site).filter(Site.tenant_id == tenant_id, Site.site_name == site_name_val).first()
         if not site:
-            site_id = new_id("site")
-            site = Site(site_id=site_id, tenant_id=tenant_id, site_name=site_name_val)
+            resolved_site_id = site_id or new_id("site")
+            site = Site(site_id=resolved_site_id, tenant_id=tenant_id, site_name=site_name_val)
             db.add(site)
             db.flush()
             

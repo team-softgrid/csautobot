@@ -46,13 +46,14 @@ class LogCreateRequest(BaseModel):
     inspection_id: str
     tenant_id: str = "default_tenant"
     site_id: str
+    site_name: Optional[str] = None
     charger_id: Optional[str] = None
     inspection_cycle: str
     inspection_type: str
     checklist: List[ChecklistItem]
     memo_text: str = ""
     photo_urls: List[str] = []
-    ai_summary: Optional[str] = None
+    ai_summary: Optional[Any] = None
 
 @router.get("/inspection/preset", response_model=PresetResponse)
 def get_preset_checklist(target: str = "충전기", cycle: str = "월간"):
@@ -110,10 +111,13 @@ def create_ai_draft(req: DraftRequest, db: Session = Depends(get_db)):
 @router.post("/inspection/log")
 def save_inspection_log(req: LogCreateRequest):
     checklist_dict = [x.model_dump() for x in req.checklist]
+    tenant_id = (req.tenant_id or "default_tenant").strip()
     try:
         inspection_id = repo.create_inspection_log(
             inspection_id=req.inspection_id,
-            site_name=req.site_id,
+            tenant_id=tenant_id,
+            site_id=req.site_id,
+            site_name=req.site_name or req.site_id,
             charger_id=req.charger_id,
             inspection_type=req.inspection_type,
             inspection_cycle=req.inspection_cycle,
@@ -121,7 +125,7 @@ def save_inspection_log(req: LogCreateRequest):
             memo_text=req.memo_text,
             photo_paths=req.photo_urls,
             ai_summary=req.ai_summary,
-            status="confirmed"
+            status="confirmed",
         )
         return {"status": "success", "inspection_id": inspection_id}
     except Exception as e:
