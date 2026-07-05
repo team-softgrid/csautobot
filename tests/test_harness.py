@@ -234,6 +234,21 @@ class TestInspection:
         resp = client.get("/api/v1/inspection/preset")
         assert resp.status_code == 200
 
+    def test_offline_inspection_draft_from_checklist(self):
+        from services.inspection_service import _generate_offline_inspection_draft
+
+        draft = _generate_offline_inspection_draft(
+            checklist=[
+                {"item": "케이블", "status": "이상", "note": "피복 손상"},
+                {"item": "외관", "status": "정상", "note": ""},
+            ],
+            memo_text="현장 확인 필요",
+            inspection_target="충전기",
+            inspection_cycle="월간",
+        )
+        assert draft.overall_risk == "high"
+        assert draft.recommended_actions
+
 
 class TestInputValidation:
     def test_leads_missing_required_fields(self, client):

@@ -91,7 +91,16 @@ def create_ai_draft(req: DraftRequest):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"AI draft generation failed: {e}")
+        err = str(e)
+        if "429" in err or "insufficient_quota" in err:
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "OpenAI API 사용 한도가 초과되었습니다. "
+                    "결제/플랜을 확인하거나 잠시 후 다시 시도해 주세요."
+                ),
+            ) from e
+        raise HTTPException(status_code=500, detail=f"AI draft generation failed: {e}") from e
 
 @router.post("/inspection/log")
 def save_inspection_log(req: LogCreateRequest):

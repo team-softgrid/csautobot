@@ -19,6 +19,9 @@ export async function readApiError(response: Response): Promise<string> {
   if (response.status === 429) {
     return "월 사용량 한도를 초과했습니다. 플랜 업그레이드 또는 다음 달까지 대기해 주세요.";
   }
+  if (response.status === 503) {
+    return "AI 서비스 사용 한도가 초과되었습니다. 잠시 후 다시 시도하거나 관리자에게 문의해 주세요.";
+  }
   try {
     const payload = (await response.json()) as { detail?: unknown };
     const { detail } = payload;
