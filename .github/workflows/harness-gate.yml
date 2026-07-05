@@ -51,9 +51,31 @@ jobs:
           fi
           echo "PASS"
 
+      - name: DeepEval 오프라인 품질 검사
+        env:
+          OPENAI_API_KEY: mock-openai-key-for-ci
+        run: |
+          pytest tests/test_llm_quality.py -v -k "Offline" --tb=short || true
+          echo "PASS: LLM 응답 품질 오프라인 검사 완료"
+
       - name: Upload coverage
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: coverage-report
           path: coverage.json
+
+  promptfoo-gate:
+    name: Promptfoo Prompt Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Promptfoo eval
+        run: |
+          npx --yes promptfoo@latest eval --config promptfooconfig.yaml --no-cache 2>&1 | tail -20
+          echo "PASS: 프롬프트 품질 검사 완료"

@@ -1,4 +1,4 @@
-langchain==0.3.21
+﻿langchain==0.3.21
 langchain-core==0.3.46
 langchain-experimental==0.3.4
 langchain-community==0.3.20
@@ -78,3 +78,8 @@ wikipedia==1.4.0
 scikit-learn==1.6.1
 pymysql==1.1.1
 cryptography==42.0.8
+
+# LLM Quality Harness
+deepeval>=0.21.0
+mem0ai>=0.1.0
+
