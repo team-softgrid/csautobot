@@ -59,8 +59,19 @@ def normalize_input(text: str) -> str:
 
 
 def try_shortcut(user_input: str) -> str | None:
-    """Return canned FAQ answer on exact normalized match, else None."""
+    """Return canned FAQ answer on normalized exact or keyword match, else None."""
     key = normalize_input(user_input)
     if not key:
         return None
-    return KEYWORD_RULES.get(key)
+    if key in KEYWORD_RULES:
+        return KEYWORD_RULES[key]
+    if "카드" in key and "인식" in key:
+        return KEYWORD_RULES["카드 인식 안됨"]
+    if "rfid" in key and "인식" in key:
+        return KEYWORD_RULES["rfid 인식 안됨"]
+    if "출장" in key and ("비" in key or "료" in key or "얼마" in key):
+        return KEYWORD_RULES["출장비 얼마"]
+    for pattern, answer in KEYWORD_RULES.items():
+        if pattern in key:
+            return answer
+    return None

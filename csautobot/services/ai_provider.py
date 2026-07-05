@@ -134,6 +134,60 @@ def _is_rate_limit_error(exc: Exception) -> bool:
     return any(m in err for m in markers)
 
 
+def _is_json_schema_unsupported(exc: Exception) -> bool:
+    err = str(exc).lower()
+    return "json_schema" in err or "response format" in err or "response_format" in err
+
+
+GROQ_NATIVE_JSON_SCHEMA_PREFIXES = (
+    "openai/gpt-oss",
+    "meta-llama/llama-4-scout",
+    "llama-4-scout",
+)
+
+
+def _groq_prefers_json_mode(model: str) -> bool:
+    """Groq llama-3.x models need json_object mode, not json_schema."""
+    lowered = model.lower()
+    return not any(prefix in lowered for prefix in GROQ_NATIVE_JSON_SCHEMA_PREFIXES)
+
+
+def _structured_output_chain(
+    prompt: ChatPromptTemplate,
+    llm: Any,
+    output_model: Type[T],
+    *,
+    use_json_mode: bool,
+):
+    if use_json_mode:
+        return prompt | llm.with_structured_output(output_model, method="json_mode")
+    return prompt | llm.with_structured_output(output_model)
+
+
+def _invoke_structured_on_provider(
+    prompt: ChatPromptTemplate,
+    *,
+    provider: AIProviderName,
+    model: str,
+    api_key: str | None,
+    base_url: str | None,
+    output_model: Type[T],
+    inputs: dict[str, Any],
+) -> T:
+    llm = _build_llm(provider, model, api_key, base_url)
+    use_json_mode = provider == "groq" and _groq_prefers_json_mode(model)
+    chain = _structured_output_chain(prompt, llm, output_model, use_json_mode=use_json_mode)
+    try:
+        return chain.invoke(inputs)
+    except Exception as exc:
+        if provider == "groq" and not use_json_mode and _is_json_schema_unsupported(exc):
+            fallback_chain = _structured_output_chain(
+                prompt, llm, output_model, use_json_mode=True
+            )
+            return fallback_chain.invoke(inputs)
+        raise
+
+
 def _build_llm(provider: AIProviderName, model: str, api_key: str | None, base_url: str | None):
     if provider == "openai":
         from langchain_openai import ChatOpenAI
@@ -172,7 +226,10 @@ def _build_llm(provider: AIProviderName, model: str, api_key: str | None, base_u
             kwargs["api_key"] = api_key
         return ChatAnthropic(**kwargs)
 
-    from langchain_community.chat_models import ChatOllama
+    try:
+        from langchain_ollama import ChatOllama
+    except ImportError:
+        from langchain_community.chat_models import ChatOllama
 
     return ChatOllama(
         model=model,
@@ -232,14 +289,15 @@ def invoke_with_fallback(
         if provider != "ollama" and not api_key:
             continue
         try:
-            llm = _build_llm(
-                provider,
-                model,
-                api_key,
-                cfg.ollama_base_url if provider == "ollama" else None,
+            result = _invoke_structured_on_provider(
+                prompt,
+                provider=provider,
+                model=model,
+                api_key=api_key,
+                base_url=cfg.ollama_base_url if provider == "ollama" else None,
+                output_model=output_model,
+                inputs=inputs,
             )
-            chain = prompt | llm.with_structured_output(output_model)
-            result: T = chain.invoke(inputs)
             label = f"{provider}:{model}"
             if fallback_provider:
                 label = f"{fallback_provider}->{provider}:{model}"
@@ -258,14 +316,15 @@ def invoke_with_fallback(
                     if fb != "ollama" and not fb_key:
                         continue
                     try:
-                        fb_llm = _build_llm(
-                            fb,
-                            fb_model,
-                            fb_key,
-                            cfg.ollama_base_url if fb == "ollama" else None,
+                        result = _invoke_structured_on_provider(
+                            prompt,
+                            provider=fb,
+                            model=fb_model,
+                            api_key=fb_key,
+                            base_url=cfg.ollama_base_url if fb == "ollama" else None,
+                            output_model=output_model,
+                            inputs=inputs,
                         )
-                        fb_chain = prompt | fb_llm.with_structured_output(output_model)
-                        result = fb_chain.invoke(inputs)
                         fallback_provider = provider
                         return result, f"{provider}->{fb}:{fb_model}", fallback_provider
                     except Exception as fb_exc:

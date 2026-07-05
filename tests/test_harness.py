@@ -225,6 +225,18 @@ class TestQuotationMetering:
         )
         assert resp.status_code == 200, resp.text
         assert resp.json()["symptom_summary"]
+
+    def test_quotation_draft_faq_rfid_skips_llm(self, client, mocker):
+        mocker.patch("services.billing_metering.check_quota")
+        llm = mocker.patch("services.ai_provider.invoke_structured_output")
+        resp = client.post(
+            "/api/v1/quotation/draft",
+            json={"query": "rfid 카드 인식 안됨", "charger_type": "급속"},
+        )
+        assert resp.status_code == 200, resp.text
+        assert resp.json()["symptom_summary"].startswith("FAQ:")
+        llm.assert_not_called()
+
     def test_search_empty_query_rejected(self, client):
         resp = client.post("/api/v1/search/as-cases", json={"query": ""})
         assert resp.status_code == 422
