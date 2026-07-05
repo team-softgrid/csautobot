@@ -203,20 +203,28 @@ def generate_quotation_draft(
         for p in pricing_list
     )
 
-    try:
-        index_dir = resolve_chroma_dir(BOT_DIR)
-        if index_dir is None:
-            raise FileNotFoundError("Chroma DB 인덱스 없음")
-        bm25 = load_bm25(index_dir)
-        emb = OpenAIEmbeddings(model="text-embedding-3-small")
-        vs = _get_vs(index_dir)
-        rr = retrieve_reranked(
-            query, vs, bm25, emb,
-            k_dense=30, k_sparse=30, k_hybrid=20, k_final=5,
-        )
-        ctx = "\n\n---\n\n".join(d.page_content for d in rr.documents)
-    except Exception as exc:
-        print(f"Quotation RAG search failed, continuing without context: {exc}")
+    openai_key = os.environ.get("OPENAI_API_KEY")
+    if ai_config and ai_config.api_keys.get("openai"):
+        openai_key = ai_config.api_keys["openai"]
+    skip_rag = not is_valid_openai_key(openai_key)
+
+    if not skip_rag:
+        try:
+            index_dir = resolve_chroma_dir(BOT_DIR)
+            if index_dir is None:
+                raise FileNotFoundError("Chroma DB 인덱스 없음")
+            bm25 = load_bm25(index_dir)
+            emb = OpenAIEmbeddings(model="text-embedding-3-small")
+            vs = _get_vs(index_dir)
+            rr = retrieve_reranked(
+                query, vs, bm25, emb,
+                k_dense=30, k_sparse=30, k_hybrid=20, k_final=5,
+            )
+            ctx = "\n\n---\n\n".join(d.page_content for d in rr.documents)
+        except Exception as exc:
+            print(f"Quotation RAG search failed, continuing without context: {exc}")
+    else:
+        print("Quotation RAG skipped (OpenAI embedding key unavailable)")
 
     task_type = "quotation_complex" if len(query) > 80 else "quotation_simple"
 

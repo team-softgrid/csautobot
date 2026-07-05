@@ -49,6 +49,13 @@ class TestTaskRouting:
         cfg = route_by_task("inspection_basic")
         assert cfg.hybrid_providers[0] == "groq"
 
+    def test_quotation_task_chain_stays_short(self):
+        from services.ai_provider import _provider_chain
+
+        cfg = route_by_task("quotation_simple")
+        chain = _provider_chain(cfg)
+        assert chain == ["groq", "gemini"]
+
     def test_ensure_groq_first_from_legacy_order(self):
         from services.ai_provider import ensure_groq_first_hybrid_order
 
