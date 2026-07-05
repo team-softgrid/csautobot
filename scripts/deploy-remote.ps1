@@ -116,7 +116,7 @@ function Invoke-Pm2 {
     $env:PM2_HOME = "C:\Users\Administrator\.pm2"
     $PrevErrorAction = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
-    & $script:Pm2Executable @Arguments
+    & $script:Pm2Executable @Arguments 2>&1 | Out-Host
     $ExitCode = $LASTEXITCODE
     $ErrorActionPreference = $PrevErrorAction
     if ($null -ne $PrevPm2Home) {
@@ -125,7 +125,7 @@ function Invoke-Pm2 {
     else {
         Remove-Item Env:PM2_HOME -ErrorAction SilentlyContinue
     }
-    return $ExitCode
+    return ,$ExitCode
 }
 
 function Set-DotEnvValue {
@@ -408,7 +408,7 @@ try {
         Write-Host "Warning: Next.js Frontend local health check failed. Details: $_"
     }
 
-    Invoke-Pm2 @("status") | Out-Host
+    Invoke-Pm2 @("status") | Out-Null
     Write-Host "Deployment complete."
 }
 finally {
