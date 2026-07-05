@@ -65,11 +65,11 @@ async def create_quotation_draft(req: QuotationRequest, db: Session = Depends(ge
         ai_config = None
 
     try:
+        from functools import partial
         # 비동기적으로 실행 (실제 함수가 async가 아니더라도 이벤트 루프 블로킹 방지)
         loop = asyncio.get_running_loop()
-        draft = await loop.run_in_executor(
-            None, generate_quotation_draft, req.query, req.charger_type, ai_config
-        )
+        func = partial(generate_quotation_draft, req.query, req.charger_type, ai_config=ai_config)
+        draft = await loop.run_in_executor(None, func)
         is_faq = draft.symptom_summary.startswith("FAQ:")
 
         try:
