@@ -35,13 +35,20 @@ class TestTaskRouting:
     def test_default_hybrid_order_starts_with_groq(self):
         assert DEFAULT_HYBRID_ORDER[0] == "groq"
 
-    def test_inspection_detail_prefers_gemini(self):
+    def test_inspection_detail_prefers_groq(self):
         cfg = route_by_task("inspection_detail")
-        assert cfg.hybrid_providers[0] == "gemini"
+        assert cfg.hybrid_providers[0] == "groq"
 
     def test_inspection_basic_prefers_groq(self):
         cfg = route_by_task("inspection_basic")
         assert cfg.hybrid_providers[0] == "groq"
+
+    def test_ensure_groq_first_from_legacy_order(self):
+        from services.ai_provider import ensure_groq_first_hybrid_order
+
+        order = ensure_groq_first_hybrid_order(["gemini", "openai", "claude", "ollama"])
+        assert order[0] == "groq"
+        assert "gemini" in order
 
     def test_groq_env_key_csautobot(self, monkeypatch):
         monkeypatch.setenv("GROQ_API_KEY_CSAUTOBOT", "gsk-test-key-1234567890")

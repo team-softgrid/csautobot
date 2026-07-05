@@ -11,7 +11,7 @@ if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
 from auth_service import get_current_user
-from services.ai_provider import AIProviderName, test_provider_connection
+from services.ai_provider import AIProviderName, _is_rate_limit_error, test_provider_connection
 from services.tenant_ai_settings import (
     AiSettingsPublic,
     AiSettingsUpdate,
@@ -37,6 +37,7 @@ class AiSettingsSaveRequest(BaseModel):
 class AiSettingsTestRequest(BaseModel):
     tenant_id: str = "default_tenant"
     provider: AIProviderName = "groq"
+    api_keys: dict[str, str] = {}
 
 
 @router.get("/ai-settings", response_model=AiSettingsPublic)
@@ -78,6 +79,18 @@ def test_ai_settings_connection(
     try:
         runtime = load_runtime_config(db, req.tenant_id)
         runtime.provider = req.provider  # type: ignore[assignment]
+        for provider, value in (req.api_keys or {}).items():
+            cleaned = (value or "").strip()
+            if cleaned:
+                runtime.api_keys[provider] = cleaned
         return test_provider_connection(req.provider, ai_config=runtime)
     except Exception as exc:
+        if _is_rate_limit_error(exc):
+            raise HTTPException(
+                status_code=429,
+                detail=(
+                    "API 키는 인식되었으나 Gemini/OpenAI 등 사용 한도(quota)가 초과되었습니다. "
+                    "Hybrid 1순위 Groq 키를 저장·테스트하거나, 유료 플랜/새 API 키를 사용하세요."
+                ),
+            ) from exc
         raise HTTPException(status_code=400, detail=f"연결 테스트 실패: {exc}") from exc

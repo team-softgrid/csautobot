@@ -87,7 +87,9 @@ export default function AiProviderSettingsModal({ open, onClose, onSaved }: Prop
     setTestResult(null);
     setError(null);
     try {
-      const result = await testAIProviderConnection(provider, getTenantId());
+      const pendingKey = (keyInputs[provider] || "").trim();
+      const apiKeys = pendingKey ? { [provider]: pendingKey } : {};
+      const result = await testAIProviderConnection(provider, getTenantId(), apiKeys);
       setTestResult(`${AI_PROVIDER_INFO[provider].label} 연결 성공 (${result.model || provider})`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "연결 테스트 실패");
@@ -226,7 +228,8 @@ export default function AiProviderSettingsModal({ open, onClose, onSaved }: Prop
               )}
             </div>
             <p className="text-xs text-[#64748b] mb-4">
-              GPU 없는 서버에서는 Ollama를 맨 아래에 두는 것을 권장합니다.
+              기본 폴백: Groq → Gemini → OpenAI → Claude → Ollama. GPU 없는 서버에서는 Ollama를
+              맨 아래에 두세요.
             </p>
             {renderKeyFields()}
           </div>
@@ -272,6 +275,10 @@ export default function AiProviderSettingsModal({ open, onClose, onSaved }: Prop
               className="w-full px-3 py-2 rounded-lg text-xs outline-none bg-[#1a2236] border border-[#1e293b] text-[#f1f5f9] font-mono focus:border-[#06b6d4] transition-colors"
             />
           </div>
+          <p className="mt-2 text-xs text-[#64748b]">
+            Gemini 무료 tier quota가 0이면 연결 테스트가 실패할 수 있습니다. Groq를 1순위로
+            사용하세요.
+          </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {(["groq", "gemini"] as AIProvider[]).map((provider) => (
               <button
