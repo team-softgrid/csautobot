@@ -78,6 +78,56 @@ function Get-PythonVersion {
     return [string]($Version | Select-Object -Last 1)
 }
 
+function Resolve-Pm2Executable {
+    $Pm2Command = Get-Command pm2 -ErrorAction SilentlyContinue
+    if ($null -eq $Pm2Command) {
+        Write-Host "Installing PM2 globally..."
+        cmd.exe /c "npm install -g pm2"
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to install PM2 globally."
+        }
+        $Pm2Command = Get-Command pm2 -ErrorAction SilentlyContinue
+    }
+    if ($null -eq $Pm2Command) {
+        throw "PM2 executable not found after install attempt."
+    }
+
+    $Source = $Pm2Command.Source
+    if ($Source -like "*.ps1") {
+        $CmdCandidate = Join-Path (Split-Path -Parent $Source) "pm2.cmd"
+        if (Test-Path -LiteralPath $CmdCandidate) {
+            return (Resolve-Path -LiteralPath $CmdCandidate).Path
+        }
+    }
+    if (Test-Path -LiteralPath $Source) {
+        return (Resolve-Path -LiteralPath $Source).Path
+    }
+
+    throw "PM2 executable not found at $Source"
+}
+
+function Invoke-Pm2 {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string[]]$Arguments
+    )
+
+    $PrevPm2Home = $env:PM2_HOME
+    $env:PM2_HOME = "C:\Users\Administrator\.pm2"
+    $PrevErrorAction = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    & $script:Pm2Executable @Arguments
+    $ExitCode = $LASTEXITCODE
+    $ErrorActionPreference = $PrevErrorAction
+    if ($null -ne $PrevPm2Home) {
+        $env:PM2_HOME = $PrevPm2Home
+    }
+    else {
+        Remove-Item Env:PM2_HOME -ErrorAction SilentlyContinue
+    }
+    return $ExitCode
+}
+
 function Set-DotEnvValue {
     param(
         [Parameter(Mandatory = $true)]
@@ -221,23 +271,8 @@ if (-not (Test-DotEnvKey -Path $EnvPath -Key "OPENAI_API_KEY")) {
 Write-Host "OPENAI_API_KEY configuration: present"
 Write-Host "JWT_SECRET_KEY configuration: present"
 
-Push-Location $DeployRoot
-try {
-    $Pm2Command = Get-Command pm2 -ErrorAction SilentlyContinue
-    if ($null -eq $Pm2Command) {
-        Write-Host "Installing PM2 globally..."
-        cmd.exe /c "npm install -g pm2"
-        if ($LASTEXITCODE -ne 0) {
-            throw "Failed to install PM2 globally."
-        }
-    }
-    else {
-        Write-Host "PM2 found: $($Pm2Command.Source)"
-    }
-}
-finally {
-    Pop-Location
-}
+$script:Pm2Executable = Resolve-Pm2Executable
+Write-Host "PM2 executable: $script:Pm2Executable"
 
 Push-Location $DeployRoot
 try {
@@ -338,16 +373,20 @@ try {
     # PM2 App Start
     # ------------------------------------------------------------------
     Write-Output "Stopping existing csautobot PM2 apps..."
-    cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 delete csautobot-backend -s"
-    if ($LASTEXITCODE -ne 0) { $global:LASTEXITCODE = 0 }
-    cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 delete csautobot-frontend -s"
-    if ($LASTEXITCODE -ne 0) { $global:LASTEXITCODE = 0 }
-    
+    if ((Invoke-Pm2 @("delete", "csautobot-backend", "-s")) -ne 0) { $global:LASTEXITCODE = 0 }
+    if ((Invoke-Pm2 @("delete", "csautobot-frontend", "-s")) -ne 0) { $global:LASTEXITCODE = 0 }
+
     Start-Sleep -Seconds 3
 
     Write-Output "Starting PM2 apps..."
-    cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 start C:\deploy\csautobot\ecosystem.config.js --update-env"
-    cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 save"
+    $StartExitCode = Invoke-Pm2 @("start", "C:\deploy\csautobot\ecosystem.config.js", "--update-env")
+    if ($StartExitCode -ne 0) {
+        throw "pm2 start failed with exit code $StartExitCode."
+    }
+    $SaveExitCode = Invoke-Pm2 @("save")
+    if ($SaveExitCode -ne 0) {
+        throw "pm2 save failed with exit code $SaveExitCode."
+    }
     
     Start-Sleep -Seconds 5
     
@@ -369,7 +408,7 @@ try {
         Write-Host "Warning: Next.js Frontend local health check failed. Details: $_"
     }
 
-    cmd.exe /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 status"
+    Invoke-Pm2 @("status") | Out-Host
     Write-Host "Deployment complete."
 }
 finally {
