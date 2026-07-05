@@ -124,11 +124,26 @@ def route_by_task(
     base_config: AiProviderConfigPayload | None = None,
 ) -> AiProviderConfigPayload:
     """Return hybrid config tuned for the given task (Korean quality vs speed)."""
-    providers, model_overrides = TASK_ROUTING.get(task_type, TASK_ROUTING["general"])
+    task_providers, model_overrides = TASK_ROUTING.get(task_type, TASK_ROUTING["general"])
     cfg = base_config or AiProviderConfigPayload()
+    
+    if cfg.provider != "hybrid":
+        return AiProviderConfigPayload(
+            provider=cfg.provider,
+            hybrid_providers=cfg.hybrid_providers,
+            api_keys=dict(cfg.api_keys),
+            models={**cfg.models, **model_overrides},
+            ollama_base_url=cfg.ollama_base_url,
+        )
+
+    merged_providers = list(task_providers)
+    for p in cfg.hybrid_providers:
+        if p not in merged_providers:
+            merged_providers.append(p)
+
     return AiProviderConfigPayload(
         provider="hybrid",
-        hybrid_providers=providers,
+        hybrid_providers=merged_providers,
         api_keys=dict(cfg.api_keys),
         models={**cfg.models, **model_overrides},
         ollama_base_url=cfg.ollama_base_url,
