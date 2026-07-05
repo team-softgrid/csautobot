@@ -299,7 +299,7 @@ if (Test-Path -LiteralPath $FrontendDir) {
     Push-Location $FrontendDir
     try {
         Write-Host "Installing frontend dependencies..."
-        cmd.exe /c "npm install --legacy-peer-deps"
+        cmd.exe /c "npm install --legacy-peer-deps --no-audit --no-fund --loglevel=error"
         if ($LASTEXITCODE -ne 0) {
             throw "npm install failed with exit code $LASTEXITCODE."
         }
@@ -372,21 +372,31 @@ try {
     # ------------------------------------------------------------------
     # PM2 App Start
     # ------------------------------------------------------------------
-    Write-Output "Stopping existing csautobot PM2 apps..."
-    if ((Invoke-Pm2 @("delete", "csautobot-backend", "-s")) -ne 0) { $global:LASTEXITCODE = 0 }
-    if ((Invoke-Pm2 @("delete", "csautobot-frontend", "-s")) -ne 0) { $global:LASTEXITCODE = 0 }
+    Write-Output "Configuring PM2 as Windows Service..."
+    $NodeExe = "C:\Program Files\nodejs\node.exe"
+    $NpmGlobalRoot = (cmd.exe /c "npm root -g").Trim()
+    $Pm2Js = "$NpmGlobalRoot\pm2\bin\pm2"
+    $BatContent = @"
+@echo off
+set PM2_HOME=C:\Users\Administrator\.pm2
+"$NodeExe" "$Pm2Js" resurrect
+"@
+    Set-Content -Path "C:\deploy\csautobot\pm2_service_wrapper.bat" -Value $BatContent -Encoding ASCII
 
+    sc.exe stop PM2_csautobot 2>$null | Out-Null
+    sc.exe delete PM2_csautobot 2>$null | Out-Null
     Start-Sleep -Seconds 3
 
-    Write-Output "Starting PM2 apps..."
-    $StartExitCode = Invoke-Pm2 @("start", "C:\deploy\csautobot\ecosystem.config.js", "--update-env")
-    if ($StartExitCode -ne 0) {
-        throw "pm2 start failed with exit code $StartExitCode."
-    }
-    $SaveExitCode = Invoke-Pm2 @("save")
-    if ($SaveExitCode -ne 0) {
-        throw "pm2 save failed with exit code $SaveExitCode."
-    }
+    $BinPath = "cmd.exe /c `"C:\deploy\csautobot\pm2_service_wrapper.bat`""
+    sc.exe create PM2_csautobot binPath= $BinPath start= auto obj= LocalSystem DisplayName= "PM2 csautobot Service"
+    sc.exe failure PM2_csautobot reset= 60 actions= restart/5000/restart/10000/restart/30000
+
+    $env:PM2_HOME = "C:\Users\Administrator\.pm2"
+    Write-Output "Starting PM2 apps via startOrReload..."
+    cmd.exe /c "pm2 startOrReload C:\deploy\csautobot\ecosystem.config.js --update-env"
+    cmd.exe /c "pm2 save"
+
+    sc.exe start PM2_csautobot 2>$null | Out-Null
     
     Start-Sleep -Seconds 5
     
