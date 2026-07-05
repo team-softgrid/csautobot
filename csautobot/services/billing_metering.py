@@ -90,41 +90,65 @@ def record_usage(
     fallback_provider: str | None = None,
     shortcut: bool = False,
 ) -> None:
-    with get_db_context() as db:
-        db.add(
-            UsageMeter(
-                tenant_id=tenant_id,
-                user_id=user_id,
-                feature_code=feature_code,
-                model_name=model_name,
-                input_tokens=input_tokens,
-                output_tokens=output_tokens,
-                request_count=0 if shortcut else request_count,
-                fallback_provider=fallback_provider,
-                is_shortcut=1 if shortcut else 0,
-            )
-        )
+    payload = dict(
+        tenant_id=tenant_id,
+        user_id=user_id,
+        feature_code=feature_code,
+        model_name=model_name,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        request_count=0 if shortcut else request_count,
+        fallback_provider=fallback_provider,
+        is_shortcut=1 if shortcut else 0,
+    )
+    try:
+        with get_db_context() as db:
+            db.add(UsageMeter(**payload))
+    except Exception:
+        legacy = {k: v for k, v in payload.items() if k in {
+            "tenant_id", "user_id", "feature_code", "model_name",
+            "input_tokens", "output_tokens", "request_count",
+        }}
+        with get_db_context() as db:
+            db.add(UsageMeter(**legacy))
 
 
 def get_daily_token_total(tenant_id: str) -> int:
     """Sum input+output tokens recorded today for the tenant."""
     start = datetime.datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-    with get_db_context() as db:
-        total = (
-            db.query(
-                func.coalesce(
-                    func.sum(UsageMeter.input_tokens + UsageMeter.output_tokens),
-                    0,
+    try:
+        with get_db_context() as db:
+            total = (
+                db.query(
+                    func.coalesce(
+                        func.sum(UsageMeter.input_tokens + UsageMeter.output_tokens),
+                        0,
+                    )
                 )
+                .filter(
+                    UsageMeter.tenant_id == tenant_id,
+                    UsageMeter.measured_at >= start,
+                    UsageMeter.is_shortcut == 0,
+                )
+                .scalar()
             )
-            .filter(
-                UsageMeter.tenant_id == tenant_id,
-                UsageMeter.measured_at >= start,
-                UsageMeter.is_shortcut == 0,
+            return int(total or 0)
+    except Exception:
+        with get_db_context() as db:
+            total = (
+                db.query(
+                    func.coalesce(
+                        func.sum(UsageMeter.input_tokens + UsageMeter.output_tokens),
+                        0,
+                    )
+                )
+                .filter(
+                    UsageMeter.tenant_id == tenant_id,
+                    UsageMeter.measured_at >= start,
+                )
+                .scalar()
             )
-            .scalar()
-        )
-        return int(total or 0)
+            return int(total or 0)
 
 
 def _compute_usage_alerts(usage: dict[str, Any]) -> list[dict[str, Any]]:

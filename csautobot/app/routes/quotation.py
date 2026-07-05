@@ -60,15 +60,20 @@ def create_quotation_draft(req: QuotationRequest, db: Session = Depends(get_db))
             ai_config=ai_config,
         )
         is_faq = draft.symptom_summary.startswith("FAQ:")
-        record_usage(
-            tenant_id,
-            FEATURE_AI_GENERATION,
-            model_name="faq-shortcut" if is_faq else "hybrid",
-            shortcut=is_faq,
-        )
+        try:
+            record_usage(
+                tenant_id,
+                FEATURE_AI_GENERATION,
+                model_name="faq-shortcut" if is_faq else "hybrid",
+                shortcut=is_faq,
+            )
+        except Exception as usage_exc:
+            print(f"Usage metering failed (draft still returned): {usage_exc}")
         return draft
     except HTTPException:
         raise
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=503, detail=str(e)) from e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI 견적서 생성 실패: {str(e)}")
 
