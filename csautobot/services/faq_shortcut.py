@@ -69,6 +69,8 @@ def try_shortcut(user_input: str) -> str | None:
         return KEYWORD_RULES["카드 인식 안됨"]
     if "rfid" in key and "인식" in key:
         return KEYWORD_RULES["rfid 인식 안됨"]
+    if "rfid" in key and any(w in key for w in ("리더", "오류", "에러", "불량", "고장")):
+        return KEYWORD_RULES["rfid 인식 안됨"]
     if "출장" in key and ("비" in key or "료" in key or "얼마" in key):
         return KEYWORD_RULES["출장비 얼마"]
     for pattern, answer in KEYWORD_RULES.items():

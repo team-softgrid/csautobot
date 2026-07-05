@@ -259,6 +259,22 @@ class TestQuotationMetering:
         resp = client.post("/api/v1/search/as-cases", json={"query": "a" * 2001})
         assert resp.status_code == 422
 
+    def test_search_faq_rfid_skips_rag_and_llm(self, client, mocker):
+        mocker.patch("services.billing_metering.check_quota")
+        mocker.patch("services.billing_metering.record_usage")
+        llm = mocker.patch("app.routes.search.invoke_structured_output")
+        chroma = mocker.patch("app.routes.search.resolve_chroma_dir")
+        resp = client.post(
+            "/api/v1/search/as-cases",
+            json={"query": "RFID 리더 오류"},
+        )
+        assert resp.status_code == 200, resp.text
+        body = resp.json()
+        assert body["structured"]["symptom_summary"].startswith("FAQ:")
+        assert body["llm_model"] == "faq-shortcut"
+        llm.assert_not_called()
+        chroma.assert_not_called()
+
 
 class TestInspection:
     def test_inspection_logs_endpoint_exists(self, client):
