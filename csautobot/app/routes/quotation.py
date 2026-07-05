@@ -1,8 +1,9 @@
 import os
 import sys
 from pathlib import Path
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 # Setup python path
 HERE = Path(__file__).resolve().parent.parent.parent
@@ -11,6 +12,8 @@ if str(HERE) not in sys.path:
 
 from services.quotation_service import generate_quotation_draft, QuotationDraft
 from services.ai_provider import AiProviderConfigPayload
+from services.tenant_ai_settings import resolve_ai_config_for_request
+from storage.db import get_db
 from fastapi.responses import StreamingResponse
 import io
 import openpyxl
@@ -39,7 +42,7 @@ class QuotationExportRequest(BaseModel):
     labor_fee: int
 
 @router.post("/quotation/draft", response_model=QuotationDraft)
-def create_quotation_draft(req: QuotationRequest):
+def create_quotation_draft(req: QuotationRequest, db: Session = Depends(get_db)):
     from services.billing_metering import (
         FEATURE_AI_GENERATION,
         check_quota,
@@ -48,12 +51,13 @@ def create_quotation_draft(req: QuotationRequest):
 
     tenant_id = (req.tenant_id or "default_tenant").strip()
     check_quota(tenant_id, FEATURE_AI_GENERATION)
+    ai_config = resolve_ai_config_for_request(db, tenant_id, req.ai_config)
 
     try:
         draft = generate_quotation_draft(
             query=req.query,
             charger_type=req.charger_type,
-            ai_config=req.ai_config,
+            ai_config=ai_config,
         )
         record_usage(tenant_id, FEATURE_AI_GENERATION, model_name="hybrid")
         return draft

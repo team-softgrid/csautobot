@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { getApiUrl, getTenantId, readApiError } from "../utils";
-import { buildAiConfigPayload } from "../ai-config";
 
 interface ChecklistItem {
   item: string;
@@ -78,7 +77,6 @@ export default function InspectionPage() {
           tenant_id: getTenantId(),
           site_name: siteName || null,
           inspection_type: type,
-          ai_config: buildAiConfigPayload(),
         }),
       });
       if (!res.ok) {

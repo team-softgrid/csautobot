@@ -2,12 +2,15 @@ import os
 import sys
 from pathlib import Path
 from typing import Any, List, Optional, Union
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
+from sqlalchemy.orm import Session
 from retrieval import load_bm25, resolve_chroma_dir, retrieve_reranked
 from services.ai_provider import AiProviderConfigPayload, invoke_structured_output
+from services.tenant_ai_settings import resolve_ai_config_for_request
+from storage.db import get_db
 
 # Setup python path
 HERE = Path(__file__).resolve().parent.parent.parent
@@ -79,7 +82,7 @@ def _run_tavily_search(query: str) -> List[Any]:
         return []
 
 @router.post("/search/as-cases", response_model=SearchResponse)
-def search_as_cases(req: SearchRequest):
+def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
     from services.billing_metering import (
         FEATURE_RAG_SEARCH,
         check_quota,
@@ -88,6 +91,7 @@ def search_as_cases(req: SearchRequest):
 
     tenant_id = (req.tenant_id or "default_tenant").strip()
     check_quota(tenant_id, FEATURE_RAG_SEARCH)
+    ai_config = resolve_ai_config_for_request(db, tenant_id, req.ai_config)
 
     index_dir = resolve_chroma_dir(HERE)
     if not index_dir:
@@ -146,7 +150,7 @@ def search_as_cases(req: SearchRequest):
             system_prompt=SYS,
             human_template=guard + "[로컬 참고 사례]\n{context}\n\n{web_context}---\n사용자 질문:\n{question}",
             inputs=invoke_inputs,
-            ai_config=req.ai_config,
+            ai_config=ai_config,
         )
     except Exception as e2:
         import logging

@@ -46,6 +46,27 @@ class Tenant(Base):
     inspection_logs = relationship("InspectionLog", back_populates="tenant", cascade="all, delete-orphan")
     usage_meters = relationship("UsageMeter", back_populates="tenant", cascade="all, delete-orphan")
     audit_logs = relationship("AuditLog", back_populates="tenant", cascade="all, delete-orphan")
+    ai_settings = relationship(
+        "TenantAiSettings",
+        back_populates="tenant",
+        cascade="all, delete-orphan",
+        uselist=False,
+    )
+
+
+class TenantAiSettings(Base):
+    __tablename__ = "tenant_ai_settings"
+
+    tenant_id = Column(String(50), ForeignKey("tenant.tenant_id", ondelete="CASCADE"), primary_key=True)
+    provider = Column(String(20), nullable=False, default="hybrid")
+    hybrid_providers = Column(JSON, nullable=True)
+    models = Column(JSON, nullable=True)
+    ollama_base_url = Column(String(255), nullable=False, default="http://localhost:11434")
+    credentials_encrypted = Column(Text, nullable=True)
+    credential_hints = Column(JSON, nullable=True)
+    updated_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+    tenant = relationship("Tenant", back_populates="ai_settings")
 
 
 class AppUser(Base):

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import AiProviderSettingsModal from "./components/AiProviderSettingsModal";
 import { AI_SELECTION_INFO, loadAIConfig } from "./ai-config";
+import { getTenantId } from "./utils";
 import "./globals.css";
 
 const PAGE_ORDER = [
@@ -29,7 +30,9 @@ export default function RootLayout({
   const [aiProviderIcon, setAiProviderIcon] = useState("🧩");
 
   useEffect(() => {
-    setAiProviderIcon(AI_SELECTION_INFO[loadAIConfig().provider].icon);
+    loadAIConfig(getTenantId()).then((cfg) => {
+      setAiProviderIcon(AI_SELECTION_INFO[cfg.provider].icon);
+    });
   }, []);
 
   const isLandingPage =

@@ -145,6 +145,12 @@ class TestLeadsAdmin:
         assert resp.status_code in (401, 403)
 
 
+class TestAiSettings:
+    def test_ai_settings_requires_auth(self, client):
+        resp = client.get("/api/v1/ai-settings")
+        assert resp.status_code in (401, 403)
+
+
 class TestInspectionMetering:
     def test_inspection_draft_records_usage(self, client, mocker):
         mocker.patch("services.billing_metering.check_quota")

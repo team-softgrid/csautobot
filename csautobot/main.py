@@ -37,6 +37,7 @@ from app.routes.quotation import router as quotation_router
 from app.routes.auth import router as auth_router
 from app.routes.leads import router as leads_router
 from app.routes.billing import router as billing_router
+from app.routes.ai_settings import router as ai_settings_router
 from auth_db import init_auth_db
 from leads_db import init_leads_db
 from storage.db import init_db
@@ -49,6 +50,7 @@ app.include_router(quotation_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(leads_router, prefix="/api/v1")
 app.include_router(billing_router, prefix="/api/v1")
+app.include_router(ai_settings_router, prefix="/api/v1")
 
 @app.on_event("startup")
 def on_startup():

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { getTenantId } from "../utils";
 import {
   AI_PROVIDER_INFO,
   AI_PROVIDER_ORDER,
@@ -20,26 +21,36 @@ interface Props {
   onSaved?: (config: StoredAIConfig) => void;
 }
 
+const CLOUD_PROVIDERS: AIProvider[] = ["claude", "openai", "gemini"];
+
 export default function AiProviderSettingsModal({ open, onClose, onSaved }: Props) {
   const [aiConfig, setAiConfig] = useState<StoredAIConfig>(DEFAULT_AI_CONFIG);
-  const [tempApiKey, setTempApiKey] = useState("");
+  const [keyInputs, setKeyInputs] = useState<Partial<Record<AIProvider, string>>>({});
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
-    const hydrated = loadAIConfig();
-    setAiConfig({
-      ...hydrated,
-      hybridProviders:
-        hydrated.hybridProviders?.length ? hydrated.hybridProviders : [...AI_PROVIDER_ORDER],
-    });
-    setTempApiKey(isAIProvider(hydrated.provider) ? hydrated.apiKeys[hydrated.provider] || "" : "");
+    setLoading(true);
+    setError(null);
+    setKeyInputs({});
+    loadAIConfig(getTenantId())
+      .then((hydrated) => {
+        setAiConfig({
+          ...hydrated,
+          hybridProviders:
+            hydrated.hybridProviders?.length ? hydrated.hybridProviders : [...AI_PROVIDER_ORDER],
+        });
+      })
+      .catch((err) => setError(err instanceof Error ? err.message : "설정을 불러오지 못했습니다."))
+      .finally(() => setLoading(false));
   }, [open]);
 
   if (!open) return null;
 
   const handleProviderChange = (provider: AISelectionMode) => {
     setAiConfig((prev) => ({ ...prev, provider }));
-    setTempApiKey(isAIProvider(provider) ? aiConfig.apiKeys[provider] || "" : "");
   };
 
   const moveHybridProvider = (provider: AIProvider, direction: "up" | "down") => {
@@ -63,20 +74,64 @@ export default function AiProviderSettingsModal({ open, onClose, onSaved }: Prop
     }));
   };
 
-  const handleSave = () => {
-    const updated: StoredAIConfig = {
-      ...aiConfig,
-      hybridProviders:
-        aiConfig.hybridProviders?.length ? aiConfig.hybridProviders : [...AI_PROVIDER_ORDER],
-    };
-    if (isAIProvider(updated.provider) && updated.provider !== "ollama") {
-      updated.apiKeys = { ...updated.apiKeys, [updated.provider]: tempApiKey.trim() };
+  const isConfigured = (provider: AIProvider) =>
+    Boolean(keyInputs[provider]?.trim()) ||
+    aiConfig.configuredProviders?.includes(provider) ||
+    Boolean(aiConfig.credentialHints?.[provider]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setError(null);
+    try {
+      const apiKeys: Partial<Record<AIProvider, string>> = {};
+      for (const provider of CLOUD_PROVIDERS) {
+        const value = (keyInputs[provider] || "").trim();
+        if (value) apiKeys[provider] = value;
+      }
+      const saved = await saveAIConfig(aiConfig, getTenantId(), apiKeys);
+      setAiConfig(saved);
+      setKeyInputs({});
+      onSaved?.(saved);
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "저장에 실패했습니다.");
+    } finally {
+      setSaving(false);
     }
-    saveAIConfig(updated);
-    setAiConfig(updated);
-    onSaved?.(updated);
-    onClose();
   };
+
+  const renderKeyFields = () => (
+    <div className="mb-6 space-y-3">
+      <div className="text-sm font-medium text-[#94a3b8]">API Key (테넌트 암호화 저장)</div>
+      {CLOUD_PROVIDERS.map((provider) => (
+        <div key={provider}>
+          <label className="block text-xs mb-1 text-[#64748b]">
+            {AI_PROVIDER_INFO[provider].label}
+            {aiConfig.credentialHints?.[provider] && (
+              <span className="ml-2 text-[#4ade80]">저장됨 {aiConfig.credentialHints[provider]}</span>
+            )}
+          </label>
+          <input
+            type="password"
+            placeholder={
+              aiConfig.credentialHints?.[provider]
+                ? "변경 시에만 새 키 입력"
+                : "sk-... / AIza... 등 API 키 입력"
+            }
+            value={keyInputs[provider] || ""}
+            onChange={(e) =>
+              setKeyInputs((prev) => ({ ...prev, [provider]: e.target.value }))
+            }
+            className="w-full px-3 py-2 rounded-lg text-xs outline-none bg-[#1a2236] border border-[#1e293b] text-[#f1f5f9] font-mono focus:border-[#06b6d4] transition-colors"
+          />
+        </div>
+      ))}
+      <p className="text-xs text-[#64748b]">
+        API 키는 서버에 암호화 저장되며, AI 호출 시 요청 body에 포함되지 않습니다. 브라우저마다
+        다시 입력할 필요가 없습니다.
+      </p>
+    </div>
+  );
 
   return (
     <div
@@ -88,6 +143,11 @@ export default function AiProviderSettingsModal({ open, onClose, onSaved }: Prop
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-lg font-bold mb-4">AI 프로바이더 설정</h3>
+
+        {loading ? (
+          <p className="text-sm text-[#94a3b8] mb-4">설정 불러오는 중…</p>
+        ) : null}
+        {error ? <p className="text-sm text-red-400 mb-4">{error}</p> : null}
 
         <div className="space-y-2 mb-6">
           {(Object.keys(AI_SELECTION_INFO) as AISelectionMode[]).map((provider) => (
@@ -106,15 +166,9 @@ export default function AiProviderSettingsModal({ open, onClose, onSaved }: Prop
                 <div className="text-sm font-medium">{AI_SELECTION_INFO[provider].label}</div>
                 <div className="text-xs text-[#64748b]">{AI_SELECTION_INFO[provider].description}</div>
               </div>
-              {isAIProvider(provider) && aiConfig.apiKeys[provider] && (
+              {isAIProvider(provider) && isConfigured(provider) && (
                 <span className="text-[#4ade80] text-sm">✓</span>
               )}
-              {isAIProvider(provider) &&
-                aiConfig.provider === provider &&
-                !aiConfig.apiKeys[provider] &&
-                provider !== "ollama" && (
-                  <span className="text-yellow-500 text-sm">🔑</span>
-                )}
             </button>
           ))}
         </div>
@@ -149,35 +203,20 @@ export default function AiProviderSettingsModal({ open, onClose, onSaved }: Prop
                       ↓
                     </button>
                   </div>
-                )
+                ),
               )}
             </div>
-            <p className="text-xs text-[#64748b]">
-              AI 기능 호출 시 위 순서대로 시도하며, 성공한 첫 번째 결과를 사용합니다.
+            <p className="text-xs text-[#64748b] mb-4">
+              GPU 없는 서버에서는 Ollama를 맨 아래에 두는 것을 권장합니다.
             </p>
+            {renderKeyFields()}
           </div>
-        ) : aiConfig.provider !== "ollama" ? (
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-2 text-[#94a3b8]">
-              {AI_PROVIDER_INFO[aiConfig.provider].label} API Key
-            </label>
-            <input
-              type="password"
-              placeholder="sk-... / AIza... 등 API 키 입력"
-              value={tempApiKey}
-              onChange={(e) => setTempApiKey(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl text-sm outline-none bg-[#1a2236] border border-[#1e293b] text-[#f1f5f9] font-mono focus:border-[#06b6d4] transition-colors"
-            />
-            <p className="mt-2 text-xs text-[#64748b]">
-              API 키는 브라우저 localStorage에만 저장되며, 서버에 전송될 때만 사용됩니다.
-            </p>
+        ) : aiConfig.provider === "ollama" ? (
+          <div className="mb-6 p-3 rounded-lg bg-[#22c55e]/5 border border-[#22c55e]/20 text-sm text-[#4ade80]">
+            Ollama는 API 키가 필요 없습니다. 로컬 GPU 환경에서만 사용하세요.
           </div>
         ) : (
-          <div className="mb-6 p-3 rounded-lg bg-[#22c55e]/5 border border-[#22c55e]/20 text-sm text-[#4ade80]">
-            Ollama는 API 키가 필요 없습니다.{" "}
-            <code className="px-1 py-0.5 rounded bg-black/30 text-xs">ollama serve</code>가 실행
-            중이어야 합니다.
-          </div>
+          renderKeyFields()
         )}
 
         <div className="mb-6">
@@ -220,9 +259,10 @@ export default function AiProviderSettingsModal({ open, onClose, onSaved }: Prop
           <button
             type="button"
             onClick={handleSave}
-            className="flex-1 text-sm py-2.5 rounded-lg bg-[#06b6d4] text-white font-medium hover:bg-[#0891b2]"
+            disabled={saving || loading}
+            className="flex-1 text-sm py-2.5 rounded-lg bg-[#06b6d4] text-white font-medium hover:bg-[#0891b2] disabled:opacity-50"
           >
-            ✓ 저장
+            {saving ? "저장 중…" : "✓ 저장"}
           </button>
         </div>
       </div>

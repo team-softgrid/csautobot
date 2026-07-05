@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 AIProviderName = Literal["claude", "openai", "gemini", "ollama"]
 AISelectionMode = Literal["claude", "openai", "gemini", "ollama", "hybrid"]
 
-DEFAULT_HYBRID_ORDER: list[AIProviderName] = ["ollama", "claude", "openai", "gemini"]
+DEFAULT_HYBRID_ORDER: list[AIProviderName] = ["gemini", "openai", "claude", "ollama"]
 
 DEFAULT_MODELS: dict[AIProviderName, str] = {
     "claude": "claude-sonnet-4-6",

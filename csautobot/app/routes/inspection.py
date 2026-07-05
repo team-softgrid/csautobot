@@ -15,6 +15,7 @@ from storage.db import get_db
 from storage import repositories as repo
 from services import inspection_service as svc
 from services.ai_provider import AiProviderConfigPayload
+from services.tenant_ai_settings import resolve_ai_config_for_request
 
 router = APIRouter(tags=["Inspection"])
 
@@ -60,7 +61,7 @@ def get_preset_checklist(target: str = "충전기", cycle: str = "월간"):
     return PresetResponse(checklist=checklist)
 
 @router.post("/inspection/draft", response_model=DraftResponse)
-def create_ai_draft(req: DraftRequest):
+def create_ai_draft(req: DraftRequest, db: Session = Depends(get_db)):
     from services.billing_metering import (
         FEATURE_AI_GENERATION,
         check_quota,
@@ -69,6 +70,7 @@ def create_ai_draft(req: DraftRequest):
 
     tenant_id = (req.tenant_id or "default_tenant").strip()
     check_quota(tenant_id, FEATURE_AI_GENERATION)
+    ai_config = resolve_ai_config_for_request(db, tenant_id, req.ai_config)
 
     # Convert ChecklistItem list to list of dict
     checklist_dict = [x.model_dump() for x in req.checklist]
@@ -83,7 +85,7 @@ def create_ai_draft(req: DraftRequest):
             inspection_cycle=req.cycle,
             checklist=checklist_dict,
             memo_text=req.memo,
-            ai_config=req.ai_config,
+            ai_config=ai_config,
         )
         record_usage(tenant_id, FEATURE_AI_GENERATION, model_name=used_model or "gpt-4o-mini")
         summary_json = draft_obj.model_dump()

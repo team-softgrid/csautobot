@@ -1,13 +1,11 @@
 /**
- * AI provider settings (localStorage, ocppautomation-compatible).
+ * AI provider settings — preferences on server, API keys encrypted per tenant.
  */
 
 export type AIProvider = "claude" | "openai" | "gemini" | "ollama";
 export type AISelectionMode = AIProvider | "hybrid";
 
-export const AI_CONFIG_KEY = "csautobot_ai_config";
-
-export const AI_PROVIDER_ORDER: AIProvider[] = ["ollama", "claude", "openai", "gemini"];
+export const AI_PROVIDER_ORDER: AIProvider[] = ["gemini", "openai", "claude", "ollama"];
 
 export const AI_PROVIDER_INFO: Record<
   AIProvider,
@@ -50,23 +48,15 @@ export const AI_SELECTION_INFO: Record<
 export interface StoredAIConfig {
   provider: AISelectionMode;
   hybridProviders?: AIProvider[];
-  apiKeys: Partial<Record<AIProvider, string>>;
   models: Partial<Record<AIProvider, string>>;
   ollamaBaseUrl?: string;
+  configuredProviders?: AIProvider[];
+  credentialHints?: Partial<Record<AIProvider, string>>;
 }
-
-const OUTDATED_CLAUDE_MODELS = new Set([
-  "claude-sonnet-4-20250514",
-  "claude-sonnet-4-5",
-  "claude-3-5-sonnet-20241022",
-  "claude-3-opus-20240229",
-  "claude-3-sonnet-20240229",
-]);
 
 export const DEFAULT_AI_CONFIG: StoredAIConfig = {
   provider: "hybrid",
   hybridProviders: [...AI_PROVIDER_ORDER],
-  apiKeys: {},
   models: {
     claude: "claude-sonnet-4-6",
     openai: "gpt-4o",
@@ -74,47 +64,59 @@ export const DEFAULT_AI_CONFIG: StoredAIConfig = {
     ollama: "qwen3:8b",
   },
   ollamaBaseUrl: "http://localhost:11434",
+  configuredProviders: [],
+  credentialHints: {},
 };
 
 export function isAIProvider(value: AISelectionMode): value is AIProvider {
   return value !== "hybrid";
 }
 
-export function loadAIConfig(): StoredAIConfig {
-  if (typeof window === "undefined") return DEFAULT_AI_CONFIG;
+function mapServerPayload(data: Record<string, unknown>): StoredAIConfig {
+  return {
+    provider: (data.provider as AISelectionMode) || "hybrid",
+    hybridProviders: (data.hybrid_providers as AIProvider[]) || [...AI_PROVIDER_ORDER],
+    models: { ...DEFAULT_AI_CONFIG.models, ...((data.models as Record<string, string>) || {}) },
+    ollamaBaseUrl: (data.ollama_base_url as string) || "http://localhost:11434",
+    configuredProviders: (data.configured_providers as AIProvider[]) || [],
+    credentialHints: (data.credential_hints as Partial<Record<AIProvider, string>>) || {},
+  };
+}
+
+export async function loadAIConfig(tenantId: string = "default_tenant"): Promise<StoredAIConfig> {
   try {
-    const raw = localStorage.getItem(AI_CONFIG_KEY);
-    if (!raw) return DEFAULT_AI_CONFIG;
-    const config: StoredAIConfig = { ...DEFAULT_AI_CONFIG, ...JSON.parse(raw) };
-
-    if (config.models?.claude && OUTDATED_CLAUDE_MODELS.has(config.models.claude)) {
-      config.models = { ...config.models, claude: DEFAULT_AI_CONFIG.models.claude! };
-      saveAIConfig(config);
-    }
-
-    return config;
+    const res = await fetch(`/api/ai-settings?tenant_id=${encodeURIComponent(tenantId)}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return DEFAULT_AI_CONFIG;
+    const data = await res.json();
+    return mapServerPayload(data);
   } catch {
     return DEFAULT_AI_CONFIG;
   }
 }
 
-export function saveAIConfig(config: StoredAIConfig): void {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.setItem(AI_CONFIG_KEY, JSON.stringify(config));
-  } catch (e) {
-    console.error("[AI Config] Failed to save:", e);
+export async function saveAIConfig(
+  config: StoredAIConfig,
+  tenantId: string = "default_tenant",
+  apiKeys: Partial<Record<AIProvider, string>> = {},
+): Promise<StoredAIConfig> {
+  const res = await fetch("/api/ai-settings", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      tenant_id: tenantId,
+      provider: config.provider,
+      hybrid_providers: config.hybridProviders?.length ? config.hybridProviders : AI_PROVIDER_ORDER,
+      models: config.models,
+      ollama_base_url: config.ollamaBaseUrl || "http://localhost:11434",
+      api_keys: apiKeys,
+    }),
+  });
+  if (!res.ok) {
+    const detail = await res.text();
+    throw new Error(detail || "AI 설정 저장에 실패했습니다.");
   }
-}
-
-/** FastAPI request body (snake_case). */
-export function buildAiConfigPayload(config?: StoredAIConfig) {
-  const cfg = config ?? loadAIConfig();
-  return {
-    provider: cfg.provider,
-    hybrid_providers: cfg.hybridProviders?.length ? cfg.hybridProviders : AI_PROVIDER_ORDER,
-    api_keys: cfg.apiKeys ?? {},
-    models: cfg.models ?? {},
-    ollama_base_url: cfg.ollamaBaseUrl ?? "http://localhost:11434",
-  };
+  const data = await res.json();
+  return mapServerPayload(data);
 }

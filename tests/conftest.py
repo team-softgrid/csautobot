@@ -51,6 +51,17 @@ def client(app):
         yield c
 
 
+@pytest.fixture
+def db_session():
+    from storage.db import SessionLocal
+
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 @pytest.fixture(autouse=True)
 def mock_llm(mocker):
     """LLM 호출을 Mock하여 실제 API를 사용하지 않습니다."""
