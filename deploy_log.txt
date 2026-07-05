@@ -156,7 +156,7 @@ Requirement already satisfied: uritemplate<5,>=3.0.1 in .\.venv\Lib\site-package
 Requirement already satisfied: pyparsing<4,>=3.1 in .\.venv\Lib\site-packages (from httplib2<1.0.0,>=0.19.0->google-api-python-client->google-generativeai>=0.8.0->-r C:\deploy\csautobot\requirements-prod.txt (line 24)) (3.3.2)
 Requirement already satisfied: oauthlib>=3.0.0 in .\.venv\Lib\site-packages (from requests-oauthlib->kubernetes>=28.1.0->chromadb>=0.6.3->-r C:\deploy\csautobot\requirements-prod.txt (line 15)) (3.3.1)
 
-up to date, audited 363 packages in 5s
+up to date, audited 363 packages in 10s
 
 145 packages are looking for funding
   run `npm fund` for details
