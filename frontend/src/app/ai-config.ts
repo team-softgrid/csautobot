@@ -68,7 +68,7 @@ export const DEFAULT_AI_CONFIG: StoredAIConfig = {
     claude: "claude-sonnet-4-6",
     openai: "gpt-4o",
     gemini: "gemini-2.0-flash",
-    ollama: "qwen3:8b",
+    ollama: "qwen2.5:14b",
   },
   ollamaBaseUrl: "http://localhost:11434",
   dailyTokenLimit: null,

@@ -27,7 +27,7 @@ DEFAULT_MODELS: dict[AIProviderName, str] = {
     "claude": "claude-sonnet-4-6",
     "openai": "gpt-4o-mini",
     "gemini": "gemini-2.0-flash",
-    "ollama": "qwen3:8b",
+    "ollama": "qwen2.5:14b",
     "groq": "llama-3.1-8b-instant",
 }
 
