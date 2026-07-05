@@ -179,6 +179,9 @@ class TestInspectionMetering:
             },
         )
         assert resp.status_code == 200
+        body = resp.json()
+        assert body["ai_meta"]["model_label"] == "gpt-4o-mini"
+        assert body["ai_meta"]["generation_path"] == "llm"
         usage_resp = client.get("/api/v1/billing/usage/monthly")
         assert usage_resp.json()["usage"]["AI_GENERATION"]["used"] >= 1
 

@@ -38,9 +38,66 @@ class DraftRequest(BaseModel):
     inspection_type: str = "정기점검"
     ai_config: Optional[AiProviderConfigPayload] = None
 
+class AiExecutionMeta(BaseModel):
+    endpoint: str = "POST /api/v1/inspection/draft"
+    generation_path: str = Field(description="faq-shortcut | llm | offline-rules")
+    model_label: str = Field(description="실제 사용 경로/모델 라벨")
+    provider: str | None = None
+    model_name: str | None = None
+    task_type: str | None = None
+    provider_chain: List[str] = Field(default_factory=list)
+    description: str = ""
+
+
 class DraftResponse(BaseModel):
     draft_text: str
     summary_json: Any
+    ai_meta: AiExecutionMeta
+
+
+def _resolve_inspection_task_type(checklist: List[ChecklistItem], cycle: str) -> str:
+    has_issue = any(x.status in ("이상", "주의") for x in checklist)
+    if has_issue or cycle in {"분기", "반기", "연간"}:
+        return "inspection_detail"
+    return "inspection_basic"
+
+
+def _build_ai_execution_meta(
+    used_model: str,
+    ai_config: AiProviderConfigPayload | None,
+    *,
+    task_type: str,
+) -> AiExecutionMeta:
+    from services.ai_provider import _provider_chain, route_by_task
+
+    if used_model == "faq-shortcut":
+        path = "faq-shortcut"
+        desc = "FAQ exact-match 단축 경로 — LLM API 호출 없음"
+        chain: list[str] = []
+    elif used_model == "offline-rules":
+        path = "offline-rules"
+        desc = "LLM 전체 실패 후 규칙 기반 오프라인 초안"
+        chain = _provider_chain(route_by_task(task_type, ai_config))  # type: ignore[arg-type]
+    else:
+        path = "llm"
+        desc = f"Hybrid LLM structured output (task: {task_type})"
+        chain = _provider_chain(route_by_task(task_type, ai_config))  # type: ignore[arg-type]
+
+    provider: str | None = None
+    model_name: str | None = None
+    label = used_model.split("->", 1)[-1] if "->" in used_model else used_model
+    if ":" in label:
+        provider, model_name = label.split(":", 1)
+
+    return AiExecutionMeta(
+        generation_path=path,
+        model_label=used_model,
+        provider=provider,
+        model_name=model_name,
+        task_type=task_type,
+        provider_chain=chain,
+        description=desc,
+    )
 
 class LogCreateRequest(BaseModel):
     inspection_id: str
@@ -99,9 +156,12 @@ def create_ai_draft(req: DraftRequest, db: Session = Depends(get_db)):
             shortcut=(used_model == "faq-shortcut"),
         )
         summary_json = draft_obj.model_dump()
+        task_type = _resolve_inspection_task_type(req.checklist, req.cycle)
+        ai_meta = _build_ai_execution_meta(used_model, ai_config, task_type=task_type)
         return DraftResponse(
             draft_text=svc.format_inspection_draft_text(draft_obj),
             summary_json=summary_json,
+            ai_meta=ai_meta,
         )
     except HTTPException:
         raise
