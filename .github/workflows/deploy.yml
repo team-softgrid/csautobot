@@ -60,6 +60,7 @@ jobs:
 
       - name: Stop csautobot services on Remote Server
         uses: appleboy/ssh-action@master
+        continue-on-error: true
         with:
           host: ${{ secrets.SERVER_HOST }}
           port: 20022
