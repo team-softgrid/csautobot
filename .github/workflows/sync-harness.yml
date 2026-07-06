@@ -51,10 +51,11 @@ jobs:
       - name: AGENTS.md 업데이트 (PROJECT OVERRIDE 섹션 보존)
         run: |
           # 기존 AGENTS.md의 PROJECT OVERRIDE 섹션 추출
-          if [ -f AGENTS.md ]; then
-            OVERRIDE=$(awk '/^## 8\. PROJECT OVERRIDE/,0' AGENTS.md)
+          # 번호/기호 표기(## 8. vs ## §8)가 바뀌어도 안 깨지도록 "PROJECT OVERRIDE" 문자열로만 매칭
+          if [ -f AGENTS.md ] && grep -q "PROJECT OVERRIDE" AGENTS.md; then
+            OVERRIDE=$(awk '/PROJECT OVERRIDE/,0' AGENTS.md)
           else
-            OVERRIDE="## 8. PROJECT OVERRIDE (프로젝트 전용 커스텀)\n<!-- 이 섹션만 각 레포에서 직접 수정 허용 -->"
+            OVERRIDE=$(printf '## §8 PROJECT OVERRIDE — %s\n<!-- 이 섹션만 각 레포에서 직접 수정 허용 -->' "${{ github.event.repository.name }}")
           fi
 
           # 템플릿 복사 및 변수 치환
@@ -62,8 +63,14 @@ jobs:
           sed -i "s/{{PROJECT_NAME}}/${{ github.event.repository.name }}/g" AGENTS.md.new
           sed -i "s/{{HARNESS_VERSION}}/$(cat .harness-sync/VERSION 2>/dev/null || echo 'v1.0')/g" AGENTS.md.new
 
-          # PROJECT OVERRIDE 섹션 복원 (§8 이후 교체)
-          head -n $(grep -n "^## 8\." AGENTS.md.new | cut -d: -f1 | head -1) AGENTS.md.new > AGENTS.md
+          # PROJECT OVERRIDE 섹션 복원 (해당 헤더 줄 앞까지만 템플릿 사용, 이후는 보존된 OVERRIDE로 교체)
+          CUT_LINE=$(grep -n "PROJECT OVERRIDE" AGENTS.md.new | cut -d: -f1 | head -1)
+          if [ -z "$CUT_LINE" ]; then
+            echo "::warning::AGENTS.md.template에서 PROJECT OVERRIDE 헤더를 찾지 못함 — 템플릿 끝에 이어붙임"
+            cp AGENTS.md.new AGENTS.md
+          else
+            head -n "$((CUT_LINE - 1))" AGENTS.md.new > AGENTS.md
+          fi
           echo "$OVERRIDE" >> AGENTS.md
 
           rm AGENTS.md.new
