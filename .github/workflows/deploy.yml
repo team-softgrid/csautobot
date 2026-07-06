@@ -66,7 +66,11 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            powershell -Command "try { Stop-Process -Name excel -ErrorAction SilentlyContinue } catch {}; try { sc.exe stop PM2_csautobot } catch {}; cmd.exe /c `"set PM2_HOME=C:\Users\Administrator\.pm2 && pm2 stop csautobot-backend csautobot-frontend -s`"; cmd.exe /c `"set PM2_HOME=C:\Users\Administrator\.pm2 && pm2 delete csautobot-backend csautobot-frontend -s`"; Start-Sleep -Seconds 3"
+            powershell -Command "Stop-Process -Name excel -EA SilentlyContinue"
+            sc.exe stop PM2_csautobot 2>nul
+            cmd /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 stop csautobot-backend csautobot-frontend 2>nul & exit 0"
+            cmd /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 delete csautobot-backend csautobot-frontend 2>nul & exit 0"
+            powershell -Command "Start-Sleep -Seconds 3"
 
       - name: Copy files via SCP
         uses: appleboy/scp-action@master
