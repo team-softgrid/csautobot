@@ -69,6 +69,13 @@ jobs:
           rm AGENTS.md.new
           echo "✅ AGENTS.md 업데이트 (PROJECT OVERRIDE 보존)"
 
+      - name: INFRA_FACTS.md 동기화 (항상 덮어씀 — 단일 소스)
+        run: |
+          cp .harness-sync/templates/INFRA_FACTS.md.template INFRA_FACTS.md
+          sed -i "s/{{PROJECT_NAME}}/${{ github.event.repository.name }}/g" INFRA_FACTS.md
+          sed -i "s/{{HARNESS_VERSION}}/$(cat .harness-sync/VERSION 2>/dev/null || echo 'v1.0')/g" INFRA_FACTS.md
+          echo "✅ INFRA_FACTS.md 동기화 완료"
+
       - name: CLAUDE.md 동기화 (없으면 생성)
         run: |
           if [ ! -f CLAUDE.md ]; then
@@ -97,7 +104,7 @@ jobs:
 
           BRANCH="harness/sync-$(date +%Y%m%d)"
           git checkout -b "$BRANCH"
-          git add AGENTS.md CLAUDE.md .cursorrules .github/ .agents/
+          git add AGENTS.md CLAUDE.md INFRA_FACTS.md .cursorrules .github/ .agents/
 
           if git diff --cached --quiet; then
             echo "변경사항 없음 — 동기화 불필요"
@@ -113,6 +120,7 @@ jobs:
 
             - skills/ 업데이트
             - AGENTS.md 업데이트 (PROJECT OVERRIDE 보존)
+            - INFRA_FACTS.md 업데이트 (공유 서버 사실 — 항상 덮어씀)
             - .cursorrules 업데이트
 
             **리뷰 포인트**: PROJECT OVERRIDE 섹션이 올바르게 보존되었는지 확인" \
