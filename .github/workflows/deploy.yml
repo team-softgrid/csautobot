@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '**/*.md'
+      - '.cursorrules'
+      - '.agents/**'
+      - '.github/workflows/sync-harness.yml'
+      - '.github/workflows/harness-gate.yml'
 
 permissions:
   contents: write
