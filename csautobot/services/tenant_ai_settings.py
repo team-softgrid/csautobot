@@ -19,7 +19,8 @@ from services.ai_provider import (
     AiProviderConfigPayload,
     DEFAULT_HYBRID_ORDER,
     DEFAULT_MODELS,
-    ensure_groq_first_hybrid_order,
+    normalize_provider_order,
+    normalize_provider_order,
 )
 from services.billing_metering import DEFAULT_TENANT_ID, get_daily_token_total
 from storage.repositories import Tenant, TenantAiSettings
@@ -67,7 +68,7 @@ def get_public_settings(db: Session, tenant_id: str) -> AiSettingsPublic:
     return AiSettingsPublic(
         tenant_id=tid,
         provider=row.provider,  # type: ignore[arg-type]
-        hybrid_providers=ensure_groq_first_hybrid_order(row.hybrid_providers),
+        hybrid_providers=normalize_provider_order(row.hybrid_providers),
         models={**_default_models(), **(row.models or {})},
         ollama_base_url=row.ollama_base_url or "http://localhost:11434",
         daily_token_limit=row.daily_token_limit,
@@ -94,7 +95,7 @@ def save_settings(db: Session, payload: AiSettingsUpdate) -> AiSettingsPublic:
     encrypted = encrypt_credentials(merged) if merged else None
     hints = build_credential_hints(merged)
 
-    hybrid = ensure_groq_first_hybrid_order(payload.hybrid_providers)
+    hybrid = normalize_provider_order(payload.hybrid_providers)
     models = {**_default_models(), **(payload.models or {})}
 
     if row is None:
@@ -129,7 +130,7 @@ def load_runtime_config(db: Session, tenant_id: str) -> AiProviderConfigPayload:
     row = db.query(TenantAiSettings).filter(TenantAiSettings.tenant_id == public.tenant_id).first()
     credentials = decrypt_credentials(row.credentials_encrypted if row else None)
 
-    hybrid_providers = ensure_groq_first_hybrid_order(public.hybrid_providers)
+    hybrid_providers = normalize_provider_order(public.hybrid_providers)
     models = dict(public.models)
 
     limit = public.daily_token_limit

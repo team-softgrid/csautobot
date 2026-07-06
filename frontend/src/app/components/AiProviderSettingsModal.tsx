@@ -171,7 +171,7 @@ export default function AiProviderSettingsModal({ open, onClose, onSaved }: Prop
         {error ? <p className="text-sm text-red-400 mb-4">{error}</p> : null}
 
         <div className="space-y-2 mb-6">
-          {(Object.keys(AI_SELECTION_INFO) as AISelectionMode[]).map((provider) => (
+          {(["groq", "gemini", "openai", "claude", "ollama", "hybrid"] as AISelectionMode[]).map((provider) => (
             <button
               key={provider}
               type="button"
@@ -228,8 +228,7 @@ export default function AiProviderSettingsModal({ open, onClose, onSaved }: Prop
               )}
             </div>
             <p className="text-xs text-[#64748b] mb-4">
-              기본 폴백: Groq → Gemini → OpenAI → Claude → Ollama. GPU 없는 서버에서는 Ollama를
-              맨 아래에 두세요.
+              ↑↓ 버튼으로 우선순위를 자유롭게 조정하세요. 기본: Groq → Gemini → OpenAI → Claude → Ollama.
             </p>
             {renderKeyFields()}
           </div>

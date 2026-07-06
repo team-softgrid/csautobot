@@ -102,21 +102,26 @@ def _provider_chain(config: AiProviderConfigPayload | None) -> list[AIProviderNa
     return list(DEFAULT_HYBRID_ORDER)
 
 
-def ensure_groq_first_hybrid_order(
+def normalize_provider_order(
     providers: list[AIProviderName] | list[str] | None,
 ) -> list[AIProviderName]:
-    """Normalize hybrid fallback order so Groq is always tried first."""
+    """Normalize hybrid fallback order, filling in any missing providers at the end."""
     order: list[AIProviderName] = [
         p for p in (providers or DEFAULT_HYBRID_ORDER) if p in DEFAULT_MODELS  # type: ignore[comparison-overlap]
     ]
-    if "groq" not in order:
-        order.insert(0, "groq")
-    else:
-        order = ["groq", *[p for p in order if p != "groq"]]
+    if not order:
+        order = list(DEFAULT_HYBRID_ORDER)
     for provider in DEFAULT_HYBRID_ORDER:
         if provider not in order:
             order.append(provider)
     return order
+
+
+def ensure_groq_first_hybrid_order(
+    providers: list[AIProviderName] | list[str] | None,
+) -> list[AIProviderName]:
+    """Deprecated: use normalize_provider_order. Kept for compatibility."""
+    return normalize_provider_order(providers)
 
 
 def route_by_task(
