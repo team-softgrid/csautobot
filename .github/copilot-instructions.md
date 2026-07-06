@@ -1,28 +1,24 @@
-# csautobot — GitHub Copilot Instructions
+# GitHub Copilot Instructions — csautobot
+# .github/copilot-instructions.md
+# 원본: team-softgrid/ai-harness
 
-## 배포 격리 규칙 (CRITICAL)
+## 프로젝트 컨텍스트
+- 레포: team-softgrid/csautobot
+- 스택: {{STACK}}
+- 전체 행동 규칙: AGENTS.md 참조
 
-이 서버(211.237.13.172)에는 csautobot, aiCallCenter, aiCsms 3개 프로젝트가 동일 서버에서 PM2/Windows Service로 동시 운영됩니다.
+## 코드 생성 규칙
+- 기존 파일의 코드 스타일과 네이밍을 따른다
+- TypeScript 사용 시 any 타입 금지
+- 비동기 함수는 항상 try-catch 또는 에러 핸들링 포함
+- 환경변수는 process.env.XXX 형식으로만 참조
 
-### 절대 금지
+## 테스트 규칙
+- 새 함수 작성 시 대응하는 테스트 파일도 함께 제안
+- 테스트 파일 위치: `__tests__/` 또는 `*.test.ts`
+- 커버리지 목표: 80% 이상
 
-1. `pm2 kill`, `pm2 delete all`, `pm2 stop all` — 다른 프로젝트 서비스가 전부 죽음
-2. `Stop-Process -Name python` / `Stop-Process -Name node` — 다른 프로젝트 프로세스까지 종료
-3. 반드시 PM2 앱 이름 명시: `pm2 stop csautobot-backend csautobot-frontend`
-4. 포트 변경 금지: 백엔드 8000, 프론트엔드 5000
-5. ecosystem.config.js 앱 이름 변경 금지
-
-```powershell
-# ❌ 금지
-pm2 kill
-pm2 delete all
-Stop-Process -Name python
-
-# ✅ 올바름
-pm2 delete csautobot-backend -s
-pm2 delete csautobot-frontend -s
-```
-
-## 기타 규칙
-
-상세 규칙은 `CLAUDE.md` 참조.
+## 보안 규칙
+- API 키, 비밀번호 하드코딩 제안 금지
+- SQL 쿼리는 파라미터 바인딩 방식으로만 제안
+- 사용자 입력은 반드시 검증 로직 포함
