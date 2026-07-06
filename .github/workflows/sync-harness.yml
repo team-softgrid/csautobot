@@ -131,7 +131,7 @@ jobs:
             - .cursorrules 업데이트
 
             **리뷰 포인트**: PROJECT OVERRIDE 섹션이 올바르게 보존되었는지 확인" \
-            --base main
+            --base "${{ github.event.repository.default_branch }}"
         env:
           GH_TOKEN: ${{ secrets.HARNESS_TOKEN }}
 
