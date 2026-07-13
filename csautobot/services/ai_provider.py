@@ -242,8 +242,11 @@ def normalize_provider_order(
 def ensure_groq_first_hybrid_order(
     providers: list[AIProviderName] | list[str] | None,
 ) -> list[AIProviderName]:
-    """Deprecated: use normalize_provider_order. Kept for compatibility."""
-    return normalize_provider_order(providers)
+    """레거시 hybrid 순서에 groq가 없거나 뒤에 있어도 groq를 맨 앞으로 옮긴다."""
+    order = normalize_provider_order(providers)
+    if "groq" in order:
+        return ["groq", *[p for p in order if p != "groq"]]
+    return ["groq", *order]
 
 
 def route_by_task(
@@ -263,8 +266,12 @@ def route_by_task(
             ollama_base_url=cfg.ollama_base_url,
         )
 
+    # base_config가 명시적으로 넘어온 경우에만 그 hybrid_providers를 추가 폴백으로 덧붙인다.
+    # base_config가 없으면 cfg는 방금 만든 기본값(hybrid_providers=전체 5개)이라,
+    # 그걸 그대로 병합하면 quotation_simple 같은 짧은 체인이 항상 5개로 늘어나 버린다.
+    extra_providers = base_config.hybrid_providers if base_config is not None else []
     merged_providers = list(task_providers)
-    for p in cfg.hybrid_providers:
+    for p in extra_providers:
         if p not in merged_providers:
             merged_providers.append(p)
 
