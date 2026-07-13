@@ -359,8 +359,9 @@ def generate_inspection_draft(
     except ImportError:
         pass
 
+    fallback_reason: str | None = None
     try:
-        from services.ai_provider import invoke_structured_output
+        from services.ai_provider import AllProvidersFailedError, describe_provider_attempts, invoke_structured_output
 
         draft, usage = invoke_structured_output(
             InspectionDraft,
@@ -371,13 +372,17 @@ def generate_inspection_draft(
             task_type=_inspection_task_type(),  # type: ignore[arg-type]
         )
         return draft, usage.model_label, web_res, usage
+    except AllProvidersFailedError as exc:
+        fallback_reason = describe_provider_attempts(exc.attempts)
+        print(f"AI draft generation failed, using offline rules: {fallback_reason}")
     except Exception as exc:
+        fallback_reason = str(exc)
         print(f"AI draft generation failed, using offline rules: {exc}")
 
     offline = _generate_offline_inspection_draft(
         checklist, memo_text, inspection_target, inspection_cycle
     )
-    return offline, "offline-rules", web_res, usage_for_non_llm("offline-rules")
+    return offline, "offline-rules", web_res, usage_for_non_llm("offline-rules", fallback_reason=fallback_reason)
 
 
 # ---------- 점검 주기별 체크리스트 프리셋 ----------

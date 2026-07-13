@@ -48,6 +48,10 @@ class AiUsageInfo(BaseModel):
     latency_ms: int = 0
     fallback_provider: str | None = None
     generation_path: str = "llm"  # llm | faq-shortcut | offline-rules
+    fallback_reason: str | None = Field(
+        default=None,
+        description="generation_path=offline-rules일 때, 시도한 provider들이 왜 실패/스킵됐는지 요약",
+    )
 
     def with_label(self, label: str, *, fallback_provider: str | None = None) -> "AiUsageInfo":
         provider: str | None = None
@@ -68,13 +72,34 @@ class AiUsageInfo(BaseModel):
         )
 
 
-def usage_for_non_llm(path: str, *, latency_ms: int = 0) -> AiUsageInfo:
+def usage_for_non_llm(path: str, *, latency_ms: int = 0, fallback_reason: str | None = None) -> AiUsageInfo:
     """Build usage meta for FAQ shortcut / offline-rules paths (no LLM tokens)."""
     return AiUsageInfo(
         model_label=path,
         generation_path=path,
         latency_ms=latency_ms,
+        fallback_reason=fallback_reason,
     )
+
+
+def describe_provider_attempts(attempts: list["ProviderAttempt"]) -> str:
+    """Human-readable summary of a fallback chain's attempts, in try order.
+
+    Used to surface *which* provider/model actually hit its quota (or was never
+    tried due to a missing key) instead of the previous behavior of discarding
+    every attempt but the last one.
+    """
+    if not attempts:
+        return "시도된 provider 없음"
+    lines = []
+    for a in attempts:
+        if a.skipped:
+            lines.append(f"{a.provider}:{a.model} — 스킵({a.error})")
+        elif a.rate_limited:
+            lines.append(f"{a.provider}:{a.model} — 한도 초과/rate-limit: {a.error}")
+        else:
+            lines.append(f"{a.provider}:{a.model} — 오류: {a.error}")
+    return " → ".join(lines)
 
 
 class _TokenCaptureCallback(BaseCallbackHandler):
@@ -277,10 +302,16 @@ def route_by_task(
     )
 
 
+_RATE_LIMIT_MARKERS = ("429", "rate limit", "rate_limit", "resource_exhausted", "quota", "too many requests")
+
+
+def _is_rate_limit_error_str(err: str) -> bool:
+    err = err.lower()
+    return any(m in err for m in _RATE_LIMIT_MARKERS)
+
+
 def _is_rate_limit_error(exc: Exception) -> bool:
-    err = str(exc).lower()
-    markers = ("429", "rate limit", "rate_limit", "resource_exhausted", "quota", "too many requests")
-    return any(m in err for m in markers)
+    return _is_rate_limit_error_str(str(exc))
 
 
 def _is_json_schema_unsupported(exc: Exception) -> bool:
@@ -452,6 +483,31 @@ def test_provider_connection(
     return {"provider": provider, "model": model, "status": "ok", "preview": preview}
 
 
+class ProviderAttempt(BaseModel):
+    """Fallback chain 상의 provider 1개 시도 결과 (성공 시엔 기록되지 않음)."""
+
+    provider: str
+    model: str
+    skipped: bool = Field(default=False, description="API 키 미설정으로 호출 자체를 시도하지 않음")
+    rate_limited: bool = Field(default=False, description="429/quota/rate-limit 계열 오류 여부")
+    error: str = ""
+
+
+class AllProvidersFailedError(Exception):
+    """Fallback chain의 모든 provider가 실패(또는 키 미설정으로 스킵)했을 때 발생.
+
+    개별 provider 오류를 서버 print() 로그에만 남기고 마지막 예외만 밖으로 던지면
+    "어떤 모델이 왜 실패했는지"가 API 응답/화면 어디에도 남지 않는다 — attempts에
+    시도 순서 전체를 담아 라우터가 사용자에게 구체적인 사유를 보여줄 수 있게 한다.
+    """
+
+    def __init__(self, attempts: list[ProviderAttempt]):
+        self.attempts = attempts
+        tried = [a for a in attempts if not a.skipped]
+        summary = "; ".join(f"{a.provider}:{a.model} - {a.error}" for a in tried) or "no provider attempted"
+        super().__init__(f"All AI providers failed: {summary}")
+
+
 def invoke_with_fallback(
     output_model: Type[T],
     *,
@@ -464,13 +520,15 @@ def invoke_with_fallback(
     """
     Try provider chain; on failure from primary, retry with next provider.
     Returns (parsed model, usage info including model label / tokens / latency).
+    Raises AllProvidersFailedError (with per-provider attempt detail) if every
+    provider in the chain fails or is skipped for missing API keys.
     """
     cfg = ai_config or AiProviderConfigPayload()
     prompt = ChatPromptTemplate.from_messages(
         [("system", system_prompt), ("human", human_template)]
     )
     chain_providers = _provider_chain(cfg)
-    last_error: Exception | None = None
+    attempts: list[ProviderAttempt] = []
     fallback_provider: str | None = None
     total_latency_ms = 0
 
@@ -478,6 +536,7 @@ def invoke_with_fallback(
         model = _resolve_model(provider, cfg.models)
         api_key = _resolve_api_key(provider, cfg.api_keys.get(provider))
         if provider != "ollama" and not api_key:
+            attempts.append(ProviderAttempt(provider=provider, model=model, skipped=True, error="API 키 미설정"))
             continue
         try:
             result, usage = _invoke_structured_on_provider(
@@ -497,15 +556,18 @@ def invoke_with_fallback(
             usage.latency_ms = total_latency_ms
             return result, usage
         except Exception as exc:
-            last_error = exc
+            attempts.append(ProviderAttempt(
+                provider=provider,
+                model=model,
+                rate_limited=_is_rate_limit_error(exc),
+                error=str(exc),
+            ))
             # Approximate failed-attempt latency is not tracked separately;
             # mark next provider as fallback of the one that failed.
             fallback_provider = provider
             print(f"[ai_provider] {provider} failed: {exc}")
 
-    if last_error:
-        raise last_error
-    raise RuntimeError("No AI provider available. Configure API keys or select Hybrid mode.")
+    raise AllProvidersFailedError(attempts)
 
 
 def invoke_structured_output(

@@ -82,6 +82,8 @@ def _build_ai_execution_meta(
     elif used_model == "offline-rules":
         path = "offline-rules"
         desc = "LLM 전체 실패 후 규칙 기반 오프라인 초안"
+        if usage and usage.fallback_reason:
+            desc += f" — 시도 내역: {usage.fallback_reason}"
         chain = _provider_chain(route_by_task(task_type, ai_config))  # type: ignore[arg-type]
     else:
         path = "llm"
@@ -186,8 +188,8 @@ def create_ai_draft(req: DraftRequest, db: Session = Depends(get_db)):
             raise HTTPException(
                 status_code=503,
                 detail=(
-                    "OpenAI API 사용 한도가 초과되었습니다. "
-                    "결제/플랜을 확인하거나 잠시 후 다시 시도해 주세요."
+                    "AI 서비스 사용 한도가 초과되었습니다. "
+                    f"(사유: {err}) 결제/플랜을 확인하거나 잠시 후 다시 시도해 주세요."
                 ),
             ) from e
         raise HTTPException(status_code=500, detail=f"AI draft generation failed: {e}") from e
