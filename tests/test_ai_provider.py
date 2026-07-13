@@ -73,6 +73,24 @@ class TestAiUsageInfo:
         assert _tokens_from_mapping({"input_tokens": 1, "output_tokens": 2}) == (1, 2)
 
 
+class TestJsonModeSchemaHint:
+    def test_lists_all_field_names_verbatim(self):
+        from services.ai_provider import _json_mode_schema_hint
+        from services.inspection_service import InspectionDraft
+
+        hint = _json_mode_schema_hint(InspectionDraft)
+        for field_name in InspectionDraft.model_fields:
+            assert f'"{field_name}"' in hint
+
+    def test_marks_required_vs_optional(self):
+        from services.ai_provider import _json_mode_schema_hint
+        from services.inspection_service import InspectionDraft
+
+        hint = _json_mode_schema_hint(InspectionDraft)
+        assert '"overall_risk" (필수)' in hint
+        assert '"key_findings" (선택)' in hint
+
+
 class TestInvokeStructuredOutput:
     def test_raises_when_no_provider_available(self, monkeypatch):
         from services.ai_provider import invoke_structured_output
