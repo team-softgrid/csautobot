@@ -1,19 +1,16 @@
-import os
 from pathlib import Path
 from typing import List, Dict, Any, Tuple
 from pydantic import BaseModel, Field
 
-from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
 
 from retrieval import (
-    get_documents_by_indices,
-    hybrid_candidate_indices,
     load_bm25,
     resolve_chroma_dir,
     retrieve_reranked,
 )
 from services.ai_provider import AiUsageInfo
+from services.embeddings import get_embedding_function
 from services.pricing_service import lookup_part_pricing, get_pricing_list
 
 BOT_DIR = Path(__file__).resolve().parents[1]
@@ -77,11 +74,7 @@ HUMAN_PROMPT_TEMPLATE = """[고객 고장 증상]
 위 내용을 바탕으로 예상되는 고장 원인과 필요한 부품(수량 포함)을 JSON 형태로 출력해 주십시오."""
 
 def _get_vs(chroma_dir: Path) -> Chroma:
-    emb = OpenAIEmbeddings(
-        model="text-embedding-3-small",
-        max_retries=0,
-        request_timeout=15,
-    )
+    emb = get_embedding_function()
     return Chroma(
         persist_directory=str(chroma_dir),
         embedding_function=emb,
@@ -89,29 +82,18 @@ def _get_vs(chroma_dir: Path) -> Chroma:
     )
 
 
-def _retrieve_quotation_context(query: str, *, skip_dense: bool) -> str:
+def _retrieve_quotation_context(query: str) -> str:
     index_dir = resolve_chroma_dir(BOT_DIR)
     if index_dir is None:
         return ""
     bm25 = load_bm25(index_dir)
     vs = _get_vs(index_dir)
-    if skip_dense:
-        print("Quotation RAG: dense embedding skipped, using BM25-only retrieval")
-        top_idx, _, _ = hybrid_candidate_indices(
-            query, vs, bm25, k_dense=0, k_sparse=30, k_merge=20,
-        )
-        docs = get_documents_by_indices(vs, top_idx[:5])
-    else:
-        emb = OpenAIEmbeddings(
-            model="text-embedding-3-small",
-            max_retries=0,
-            request_timeout=15,
-        )
-        rr = retrieve_reranked(
-            query, vs, bm25, emb,
-            k_dense=30, k_sparse=30, k_hybrid=20, k_final=5,
-        )
-        docs = rr.documents
+    emb = get_embedding_function()
+    rr = retrieve_reranked(
+        query, vs, bm25, emb,
+        k_dense=30, k_sparse=30, k_hybrid=20, k_final=5,
+    )
+    docs = rr.documents
     return "\n\n---\n\n".join(d.page_content for d in docs)
 
 def _generate_offline_quotation_draft(query: str, charger_type: str) -> QuotationDraft:
@@ -214,12 +196,6 @@ def _quotation_from_faq_shortcut(query: str, faq_text: str, charger_type: str) -
         ),
     )
 
-def is_valid_openai_key(key: str | None) -> bool:
-    if not key:
-        return False
-    key = key.strip()
-    return key.startswith("sk-") and len(key) > 20
-
 def is_valid_google_key(key: str | None) -> bool:
     if not key:
         return False
@@ -252,13 +228,8 @@ def generate_quotation_draft(
         for p in pricing_list
     )
 
-    openai_key = os.environ.get("OPENAI_API_KEY")
-    if ai_config and ai_config.api_keys.get("openai"):
-        openai_key = ai_config.api_keys["openai"]
-    skip_rag = not is_valid_openai_key(openai_key)
-
     try:
-        ctx = _retrieve_quotation_context(query, skip_dense=skip_rag)
+        ctx = _retrieve_quotation_context(query)
     except Exception as exc:
         print(f"Quotation RAG search failed, continuing without context: {exc}")
         ctx = ""
