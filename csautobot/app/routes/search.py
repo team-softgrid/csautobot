@@ -182,7 +182,7 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
         req.query.strip(), vs, bm25, emb,
         k_dense=req.k_dense, k_sparse=req.k_sparse, k_hybrid=req.k_hybrid, k_final=5,
     )
-    openai_error_occured = rr.details.get("openai_error", False)
+    embedding_error_occurred = rr.details.get("openai_error", False)
     docs = rr.documents
     rr_details = rr.details
     rr_level = rr.level
@@ -258,7 +258,7 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
             "metadata": d.metadata
         })
 
-    embedding_degraded = bool(openai_error_occured)
+    embedding_degraded = bool(embedding_error_occurred)
 
     try:
         record_usage(

@@ -139,6 +139,14 @@ def main() -> None:
     print(f"[1/5] 인덱스 경로: {run_dir}")
     print(f"[2/5] 임베딩 모델 준비 (문서 {total}건)")
     emb = get_embedding_function()
+    try:
+        emb.embed_query("connection_test")
+    except Exception as e:
+        raise SystemExit(
+            f"Ollama 임베딩 모델 검증 실패: {e}\n"
+            "Ollama 서비스가 실행 중인지, 그리고 'bge-m3' 모델이 다운로드되었는지 확인하세요.\n"
+            "명령어: ollama pull bge-m3"
+        )
     run_dir.mkdir(parents=True, exist_ok=True)
     vs = Chroma(
         persist_directory=str(run_dir),
