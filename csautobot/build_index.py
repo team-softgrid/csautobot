@@ -1,4 +1,4 @@
-"""JSONL 레코드를 OpenAI 임베딩 + Chroma 로컬 DB에 적재합니다.
+"""JSONL 레코드를 Ollama 임베딩 + Chroma 로컬 DB에 적재합니다.
 
 진행 상황을 보기 위해 배치 단위로 upsert 하며 로그를 출력합니다.
 BM25용 sparse 인덱스(`sparse_index.pkl`)를 동일 폴더에 함께 저장합니다.
@@ -14,11 +14,11 @@ from pathlib import Path
 
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
-from langchain_openai import OpenAIEmbeddings
 from rank_bm25 import BM25Okapi
 
 from normalizer import error_code_norm_field, normalize_symptom_text, tokenize_for_bm25
 from paths import repo_root
+from services.embeddings import get_embedding_function
 
 HERE = Path(__file__).resolve().parent
 try:
@@ -125,8 +125,6 @@ def save_sparse_index(run_dir: Path, docs: list[Document]) -> None:
 
 
 def main() -> None:
-    if not os.environ.get("OPENAI_API_KEY"):
-        raise SystemExit("OPENAI_API_KEY 환경변수를 설정하세요.")
     docs = enrich_metadata(load_docs())
     total = len(docs)
     if total == 0:
@@ -140,7 +138,15 @@ def main() -> None:
     run_dir = CHROMA_DIR.with_name(f"chroma_db_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
     print(f"[1/5] 인덱스 경로: {run_dir}")
     print(f"[2/5] 임베딩 모델 준비 (문서 {total}건)")
-    emb = OpenAIEmbeddings(model="text-embedding-3-small")
+    emb = get_embedding_function()
+    try:
+        emb.embed_query("connection_test")
+    except Exception as e:
+        raise SystemExit(
+            f"Ollama 임베딩 모델 검증 실패: {e}\n"
+            "Ollama 서비스가 실행 중인지, 그리고 'bge-m3' 모델이 다운로드되었는지 확인하세요.\n"
+            "명령어: ollama pull bge-m3"
+        )
     run_dir.mkdir(parents=True, exist_ok=True)
     vs = Chroma(
         persist_directory=str(run_dir),
