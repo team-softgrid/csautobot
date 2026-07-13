@@ -17,8 +17,8 @@ export function getTenantId(): string {
 
 export async function readApiError(response: Response): Promise<string> {
   try {
-    const payload = (await response.json()) as { detail?: unknown };
-    const { detail } = payload;
+    const payload = (await response.json()) as { detail?: unknown } | null;
+    const detail = payload?.detail;
     if (typeof detail === "string" && detail.trim()) return detail;
     if (typeof detail === "object" && detail !== null) {
       const d = detail as { message?: unknown; plan_code?: unknown; used?: unknown; limit?: unknown };

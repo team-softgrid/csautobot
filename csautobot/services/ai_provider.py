@@ -556,11 +556,14 @@ def invoke_with_fallback(
             usage.latency_ms = total_latency_ms
             return result, usage
         except Exception as exc:
+            err_str = str(exc)
+            if len(err_str) > 200:
+                err_str = err_str[:200] + "..."
             attempts.append(ProviderAttempt(
                 provider=provider,
                 model=model,
                 rate_limited=_is_rate_limit_error(exc),
-                error=str(exc),
+                error=err_str,
             ))
             # Approximate failed-attempt latency is not tracked separately;
             # mark next provider as fallback of the one that failed.
