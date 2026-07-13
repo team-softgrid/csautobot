@@ -327,9 +327,11 @@ def _structured_output_chain(
     use_json_mode: bool,
 ):
     if use_json_mode:
-        prompt = ChatPromptTemplate.from_messages(
-            list(prompt.messages) + [("system", _json_mode_schema_hint(output_model))]
-        )
+        # human 메시지 뒤에 system 메시지가 오면 일부 프로바이더가 거부하거나 지시를 무시할 수 있어
+        # (gemini-code-assist 리뷰) 마지막(human) 메시지 앞에 삽입해 system들이 항상 먼저 오게 한다.
+        messages = list(prompt.messages)
+        messages.insert(len(messages) - 1, ("system", _json_mode_schema_hint(output_model)))
+        prompt = ChatPromptTemplate.from_messages(messages)
         return prompt | llm.with_structured_output(output_model, method="json_mode")
     return prompt | llm.with_structured_output(output_model)
 
