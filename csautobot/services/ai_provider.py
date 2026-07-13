@@ -301,6 +301,24 @@ def _groq_prefers_json_mode(model: str) -> bool:
     return not any(prefix in lowered for prefix in GROQ_NATIVE_JSON_SCHEMA_PREFIXES)
 
 
+def _json_mode_schema_hint(output_model: Type[T]) -> str:
+    """json_mode는 (json_schema/tool-calling과 달리) 모델에 실제 필드명을 강제하지
+    않고 프롬프트 지시만 따른다. 각 프롬프트 yaml이 "지정된 스키마의 영문 키"라고만
+    말하고 정작 그 키 목록을 보여주지 않아, 모델이 임의의(예: 한글) 키로 응답해
+    Pydantic 검증이 실패하는 사례가 있었다(OUTPUT_PARSING_FAILURE). Pydantic 모델
+    자체에서 키 목록을 뽑아 프롬프트에 명시적으로 박아 넣는다(단일 소스, 수기 동기화 불필요).
+    """
+    schema = output_model.model_json_schema()
+    properties = schema.get("properties", {})
+    required = set(schema.get("required", []))
+    lines = ["다음 JSON 키를 정확히 그대로(한글로 바꾸지 말고) 사용해서 응답하세요:"]
+    for name, spec in properties.items():
+        desc = spec.get("description", "")
+        marker = "(필수)" if name in required else "(선택)"
+        lines.append(f'- "{name}" {marker}: {desc}' if desc else f'- "{name}" {marker}')
+    return "\n".join(lines)
+
+
 def _structured_output_chain(
     prompt: ChatPromptTemplate,
     llm: Any,
@@ -309,6 +327,9 @@ def _structured_output_chain(
     use_json_mode: bool,
 ):
     if use_json_mode:
+        prompt = ChatPromptTemplate.from_messages(
+            list(prompt.messages) + [("system", _json_mode_schema_hint(output_model))]
+        )
         return prompt | llm.with_structured_output(output_model, method="json_mode")
     return prompt | llm.with_structured_output(output_model)
 
