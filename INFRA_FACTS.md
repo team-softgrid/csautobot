@@ -1,7 +1,7 @@
 # INFRA_FACTS.md — 공유 서버 인프라 사실 (Single Source of Truth)
 # 이 파일은 ai-harness 레포에서 자동 동기화됩니다. 직접 수정하지 마세요.
 # 정정이 필요하면 team-softgrid/ai-harness의 templates/INFRA_FACTS.md.template을 고치세요.
-# (csautobot 레포 기준 동기화됨 — 하네스 v1.1.0)
+# (csautobot 레포 기준 동기화됨 — 하네스 v1.2.0)
 
 ---
 

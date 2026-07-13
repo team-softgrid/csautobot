@@ -1,5 +1,5 @@
 # AGENTS.md — csautobot
-# team-softgrid AI Harness v1.1.0
+# team-softgrid AI Harness v1.2.0
 # 이 파일은 ai-harness 레포에서 자동 동기화됩니다.
 ## 7. PROJECT OVERRIDE (프로젝트 전용 커스텀)
 
