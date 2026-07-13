@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { getApiUrl, getTenantId, readApiError } from "../utils";
+import AiUsageBadge from "../components/AiUsageBadge";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -167,10 +168,8 @@ export default function SearchPage() {
               (Gemini 무료 tier quota 0이면 Groq 1순위 사용 권장)
             </div>
           )}
-          {!result.llm_error && result.llm_model && (
-            <div style={{ background: "rgba(16, 185, 129, 0.08)", border: "1px solid #10b981", borderRadius: "8px", padding: "12px 16px", color: "#6ee7b7", fontSize: "13px" }}>
-              ✓ 답변 생성: {result.llm_model}
-            </div>
+          {!result.llm_error && (result.ai_usage || result.llm_model) && (
+            <AiUsageBadge usage={result.ai_usage} fallbackModel={result.llm_model} />
           )}
 
           {/* Metrics */}

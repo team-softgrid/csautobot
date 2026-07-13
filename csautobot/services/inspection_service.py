@@ -283,12 +283,13 @@ def generate_inspection_draft(
     use_web_search: bool = False,
     model_name_llm: str = DEFAULT_MODEL,
     ai_config: Any | None = None,
-) -> tuple[InspectionDraft, str, str]:
+) -> tuple[InspectionDraft, str, str, Any]:
     """
     LLM 호출 없이도 임포트 가능하도록 OpenAIEmbeddings 등은 지연 로딩.
 
-    반환: (초안 객체, 사용한 LLM 모델명, 웹 리서치 결과)
+    반환: (초안 객체, 사용한 LLM 모델명, 웹 리서치 결과, AiUsageInfo)
     """
+    from services.ai_provider import usage_for_non_llm
     system_prompt = _load_system_prompt()
 
     charger_block = (
@@ -343,7 +344,7 @@ def generate_inspection_draft(
     faq_answer = try_shortcut(shortcut_input) if shortcut_input else None
     if faq_answer:
         offline = _draft_from_faq_shortcut(faq_answer)
-        return offline, "faq-shortcut", web_res
+        return offline, "faq-shortcut", web_res, usage_for_non_llm("faq-shortcut")
 
     def _inspection_task_type() -> str:
         has_issue = any((i.get("status") or "") in ("이상", "주의") for i in checklist)
@@ -361,7 +362,7 @@ def generate_inspection_draft(
     try:
         from services.ai_provider import invoke_structured_output
 
-        draft, used_model = invoke_structured_output(
+        draft, usage = invoke_structured_output(
             InspectionDraft,
             system_prompt=system_prompt,
             human_template=human_template,
@@ -369,14 +370,14 @@ def generate_inspection_draft(
             ai_config=ai_config,
             task_type=_inspection_task_type(),  # type: ignore[arg-type]
         )
-        return draft, used_model, web_res
+        return draft, usage.model_label, web_res, usage
     except Exception as exc:
         print(f"AI draft generation failed, using offline rules: {exc}")
 
     offline = _generate_offline_inspection_draft(
         checklist, memo_text, inspection_target, inspection_cycle
     )
-    return offline, "offline-rules", web_res
+    return offline, "offline-rules", web_res, usage_for_non_llm("offline-rules")
 
 
 # ---------- 점검 주기별 체크리스트 프리셋 ----------

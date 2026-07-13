@@ -13,6 +13,7 @@ from retrieval import (
     resolve_chroma_dir,
     retrieve_reranked,
 )
+from services.ai_provider import AiUsageInfo
 from services.pricing_service import lookup_part_pricing, get_pricing_list
 
 BOT_DIR = Path(__file__).resolve().parents[1]
@@ -46,6 +47,7 @@ class QuotationDraft(BaseModel):
     supply_value: int
     vat: int
     total_amount: int
+    ai_usage: AiUsageInfo | None = None
 
 SYS_PROMPT = """당신은 전기차 충전기 AS(애프터서비스) 견적서 작성 도우미입니다.
 고객이 접수한 [고장 증상]과 로컬 데이터베이스에서 검색된 [과거 유사 사례], 그리고 공식 [계약 단가표 품목 목록]을 참고하여 예상되는 교체 부품과 비용을 산출하십시오.
@@ -184,7 +186,11 @@ def _generate_offline_quotation_draft(query: str, charger_type: str) -> Quotatio
         labor_fee=labor_fee,
         supply_value=supply_value,
         vat=vat,
-        total_amount=total_amount
+        total_amount=total_amount,
+        ai_usage=AiUsageInfo(
+            model_label="offline-rules",
+            generation_path="offline-rules",
+        ),
     )
 
 
@@ -202,6 +208,10 @@ def _quotation_from_faq_shortcut(query: str, faq_text: str, charger_type: str) -
         supply_value=supply_value,
         vat=vat,
         total_amount=supply_value + vat,
+        ai_usage=AiUsageInfo(
+            model_label="faq-shortcut",
+            generation_path="faq-shortcut",
+        ),
     )
 
 def is_valid_openai_key(key: str | None) -> bool:
@@ -258,7 +268,7 @@ def generate_quotation_draft(
     try:
         from services.ai_provider import invoke_structured_output
 
-        prediction, _model_label = invoke_structured_output(
+        prediction, ai_usage = invoke_structured_output(
             LLMPrediction,
             system_prompt=SYS_PROMPT,
             human_template=HUMAN_PROMPT_TEMPLATE,
@@ -332,5 +342,6 @@ def generate_quotation_draft(
         labor_fee=labor_fee,
         supply_value=supply_value,
         vat=vat,
-        total_amount=total_amount
+        total_amount=total_amount,
+        ai_usage=ai_usage,
     )

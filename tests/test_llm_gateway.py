@@ -91,7 +91,7 @@ class TestInspectionFaqIntegration:
             raise AssertionError("LLM should not be called")
 
         monkeypatch.setattr("services.ai_provider.invoke_structured_output", fail_llm)
-        draft, model, _ = generate_inspection_draft(
+        draft, model, _, _ = generate_inspection_draft(
             site_name="테스트",
             charger_id=None,
             manufacturer=None,

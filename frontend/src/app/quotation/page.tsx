@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { getApiUrl, getTenantId, readApiError } from "../utils";
+import AiUsageBadge, { AiUsageLike } from "../components/AiUsageBadge";
 
 interface PartItem {
   part_name: string;
@@ -17,6 +18,7 @@ interface QuotationDraft {
   parts: PartItem[];
   dispatch_fee: number;
   labor_fee: number;
+  ai_usage?: AiUsageLike | null;
 }
 
 export default function QuotationPage() {
@@ -61,7 +63,8 @@ export default function QuotationPage() {
         likely_cause: data.likely_cause,
         parts: data.parts,
         dispatch_fee: data.dispatch_fee,
-        labor_fee: data.labor_fee
+        labor_fee: data.labor_fee,
+        ai_usage: data.ai_usage || null,
       });
       
       // If the backend had to fallback, it might set a flag or we can check errors
@@ -385,6 +388,7 @@ export default function QuotationPage() {
 
           {!loading && draft && (
             <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+              {draft.ai_usage && <AiUsageBadge usage={draft.ai_usage} />}
               
               {/* AI Diagnosis details */}
               <section className="glass-panel" style={{ padding: "24px" }}>

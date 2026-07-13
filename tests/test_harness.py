@@ -167,7 +167,7 @@ class TestInspectionMetering:
         )
         mocker.patch(
             "app.routes.inspection.svc.generate_inspection_draft",
-            return_value=(mock_draft, "gpt-4o-mini", ""),
+            return_value=(mock_draft, "gpt-4o-mini", "", None),
         )
         resp = client.post(
             "/api/v1/inspection/draft",

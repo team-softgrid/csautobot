@@ -72,10 +72,14 @@ async def create_quotation_draft(req: QuotationRequest, db: Session = Depends(ge
         is_faq = draft.symptom_summary.startswith("FAQ:")
 
         try:
+            usage = draft.ai_usage
             record_usage(
                 tenant_id,
                 FEATURE_AI_GENERATION,
-                model_name="faq-shortcut" if is_faq else "hybrid",
+                model_name=(usage.model_label if usage else ("faq-shortcut" if is_faq else "hybrid")),
+                input_tokens=(usage.input_tokens if usage else 0),
+                output_tokens=(usage.output_tokens if usage else 0),
+                fallback_provider=(usage.fallback_provider if usage else None),
                 shortcut=is_faq,
             )
         except Exception as usage_exc:

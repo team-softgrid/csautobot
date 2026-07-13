@@ -48,6 +48,31 @@ class TestAiProviderHelpers:
         assert _resolve_model("groq", {}) == "llama-3.1-8b-instant"
 
 
+class TestAiUsageInfo:
+    def test_usage_for_non_llm(self):
+        from services.ai_provider import usage_for_non_llm
+
+        u = usage_for_non_llm("faq-shortcut")
+        assert u.model_label == "faq-shortcut"
+        assert u.generation_path == "faq-shortcut"
+        assert u.total_tokens == 0
+
+    def test_with_label_parses_provider_model(self):
+        from services.ai_provider import AiUsageInfo
+
+        u = AiUsageInfo(input_tokens=10, output_tokens=5, latency_ms=120)
+        labeled = u.with_label("groq:llama-3.1-8b-instant")
+        assert labeled.provider == "groq"
+        assert labeled.model_name == "llama-3.1-8b-instant"
+        assert labeled.total_tokens == 15
+
+    def test_tokens_from_mapping(self):
+        from services.ai_provider import _tokens_from_mapping
+
+        assert _tokens_from_mapping({"prompt_tokens": 3, "completion_tokens": 7}) == (3, 7)
+        assert _tokens_from_mapping({"input_tokens": 1, "output_tokens": 2}) == (1, 2)
+
+
 class TestInvokeStructuredOutput:
     def test_raises_when_no_provider_available(self, monkeypatch):
         from services.ai_provider import invoke_structured_output

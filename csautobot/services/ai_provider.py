@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import os
+import time
 from typing import Any, Literal, Type, TypeVar
 
+from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 
@@ -32,6 +34,126 @@ DEFAULT_MODELS: dict[AIProviderName, str] = {
 }
 
 GROQ_70B_MODEL = "llama-3.3-70b-versatile"
+
+
+class AiUsageInfo(BaseModel):
+    """Per-invocation model/token/latency metrics for UI and metering."""
+
+    model_label: str = ""
+    provider: str | None = None
+    model_name: str | None = None
+    input_tokens: int = 0
+    output_tokens: int = 0
+    total_tokens: int = 0
+    latency_ms: int = 0
+    fallback_provider: str | None = None
+    generation_path: str = "llm"  # llm | faq-shortcut | offline-rules
+
+    def with_label(self, label: str, *, fallback_provider: str | None = None) -> "AiUsageInfo":
+        provider: str | None = None
+        model_name: str | None = None
+        bare = label.split("->", 1)[-1] if "->" in label else label
+        if ":" in bare:
+            provider, model_name = bare.split(":", 1)
+        total = self.input_tokens + self.output_tokens
+        return self.model_copy(
+            update={
+                "model_label": label,
+                "provider": provider,
+                "model_name": model_name,
+                "total_tokens": total if total else self.total_tokens,
+                "fallback_provider": fallback_provider,
+                "generation_path": "llm",
+            }
+        )
+
+
+def usage_for_non_llm(path: str, *, latency_ms: int = 0) -> AiUsageInfo:
+    """Build usage meta for FAQ shortcut / offline-rules paths (no LLM tokens)."""
+    return AiUsageInfo(
+        model_label=path,
+        generation_path=path,
+        latency_ms=latency_ms,
+    )
+
+
+class _TokenCaptureCallback(BaseCallbackHandler):
+    """Capture prompt/completion tokens from provider callback metadata."""
+
+    def __init__(self) -> None:
+        self.input_tokens = 0
+        self.output_tokens = 0
+
+    def on_llm_end(self, response: Any, **kwargs: Any) -> None:
+        in_tok, out_tok = _tokens_from_llm_result(response)
+        if in_tok or out_tok:
+            self.input_tokens += in_tok
+            self.output_tokens += out_tok
+
+
+def _as_int(value: Any) -> int:
+    try:
+        return int(value or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _tokens_from_mapping(data: dict[str, Any] | None) -> tuple[int, int]:
+    if not data:
+        return 0, 0
+    in_tok = _as_int(
+        data.get("input_tokens")
+        or data.get("prompt_tokens")
+        or data.get("prompt_token_count")
+    )
+    out_tok = _as_int(
+        data.get("output_tokens")
+        or data.get("completion_tokens")
+        or data.get("candidates_token_count")
+    )
+    if not in_tok and not out_tok:
+        total = _as_int(data.get("total_tokens") or data.get("total_token_count"))
+        if total:
+            return total, 0
+    return in_tok, out_tok
+
+
+def _tokens_from_llm_result(response: Any) -> tuple[int, int]:
+    in_tok = out_tok = 0
+    llm_output = getattr(response, "llm_output", None) or {}
+    if isinstance(llm_output, dict):
+        usage = llm_output.get("token_usage") or llm_output.get("usage") or {}
+        a, b = _tokens_from_mapping(usage if isinstance(usage, dict) else {})
+        in_tok += a
+        out_tok += b
+
+    generations = getattr(response, "generations", None) or []
+    for gen_list in generations:
+        for gen in gen_list or []:
+            message = getattr(gen, "message", None)
+            usage_meta = getattr(message, "usage_metadata", None) if message is not None else None
+            if isinstance(usage_meta, dict):
+                a, b = _tokens_from_mapping(usage_meta)
+                in_tok += a
+                out_tok += b
+            elif usage_meta is not None:
+                a, b = _tokens_from_mapping(
+                    {
+                        "input_tokens": getattr(usage_meta, "input_tokens", None),
+                        "output_tokens": getattr(usage_meta, "output_tokens", None),
+                        "total_tokens": getattr(usage_meta, "total_tokens", None),
+                    }
+                )
+                in_tok += a
+                out_tok += b
+            resp_meta = getattr(message, "response_metadata", None) if message is not None else None
+            if isinstance(resp_meta, dict):
+                nested = resp_meta.get("token_usage") or resp_meta.get("usage") or resp_meta
+                if isinstance(nested, dict):
+                    a, b = _tokens_from_mapping(nested)
+                    in_tok += a
+                    out_tok += b
+    return in_tok, out_tok
 
 # task_type → (provider order, per-provider model overrides)
 TASK_ROUTING: dict[TaskType, tuple[list[AIProviderName], dict[str, str]]] = {
@@ -200,19 +322,38 @@ def _invoke_structured_on_provider(
     base_url: str | None,
     output_model: Type[T],
     inputs: dict[str, Any],
-) -> T:
+) -> tuple[T, AiUsageInfo]:
     llm = _build_llm(provider, model, api_key, base_url)
     use_json_mode = provider == "groq" and _groq_prefers_json_mode(model)
     chain = _structured_output_chain(prompt, llm, output_model, use_json_mode=use_json_mode)
+    token_cb = _TokenCaptureCallback()
+    invoke_cfg = {"callbacks": [token_cb]}
+    started = time.perf_counter()
     try:
-        return chain.invoke(inputs)
-    except Exception as exc:
-        if provider == "groq" and not use_json_mode and _is_json_schema_unsupported(exc):
-            fallback_chain = _structured_output_chain(
-                prompt, llm, output_model, use_json_mode=True
-            )
-            return fallback_chain.invoke(inputs)
-        raise
+        try:
+            result = chain.invoke(inputs, config=invoke_cfg)
+        except Exception as exc:
+            if provider == "groq" and not use_json_mode and _is_json_schema_unsupported(exc):
+                fallback_chain = _structured_output_chain(
+                    prompt, llm, output_model, use_json_mode=True
+                )
+                result = fallback_chain.invoke(inputs, config=invoke_cfg)
+            else:
+                raise
+    finally:
+        latency_ms = max(0, int((time.perf_counter() - started) * 1000))
+
+    usage = AiUsageInfo(
+        model_label=f"{provider}:{model}",
+        provider=provider,
+        model_name=model,
+        input_tokens=token_cb.input_tokens,
+        output_tokens=token_cb.output_tokens,
+        total_tokens=token_cb.input_tokens + token_cb.output_tokens,
+        latency_ms=latency_ms,
+        generation_path="llm",
+    )
+    return result, usage
 
 
 def _build_llm(provider: AIProviderName, model: str, api_key: str | None, base_url: str | None):
@@ -296,10 +437,10 @@ def invoke_with_fallback(
     inputs: dict[str, Any],
     ai_config: AiProviderConfigPayload | None = None,
     rate_limit_fallback_order: list[AIProviderName] | None = None,
-) -> tuple[T, str, str | None]:
+) -> tuple[T, AiUsageInfo]:
     """
-    Try provider chain; on 429/rate-limit from primary, retry with fallback order.
-    Returns (parsed model, model label, fallback_provider or None).
+    Try provider chain; on failure from primary, retry with next provider.
+    Returns (parsed model, usage info including model label / tokens / latency).
     """
     cfg = ai_config or AiProviderConfigPayload()
     prompt = ChatPromptTemplate.from_messages(
@@ -308,6 +449,7 @@ def invoke_with_fallback(
     chain_providers = _provider_chain(cfg)
     last_error: Exception | None = None
     fallback_provider: str | None = None
+    total_latency_ms = 0
 
     for provider in chain_providers:
         model = _resolve_model(provider, cfg.models)
@@ -315,7 +457,7 @@ def invoke_with_fallback(
         if provider != "ollama" and not api_key:
             continue
         try:
-            result = _invoke_structured_on_provider(
+            result, usage = _invoke_structured_on_provider(
                 prompt,
                 provider=provider,
                 model=model,
@@ -324,12 +466,18 @@ def invoke_with_fallback(
                 output_model=output_model,
                 inputs=inputs,
             )
+            total_latency_ms += usage.latency_ms
             label = f"{provider}:{model}"
             if fallback_provider:
                 label = f"{fallback_provider}->{provider}:{model}"
-            return result, label, fallback_provider
+            usage = usage.with_label(label, fallback_provider=fallback_provider)
+            usage.latency_ms = total_latency_ms
+            return result, usage
         except Exception as exc:
             last_error = exc
+            # Approximate failed-attempt latency is not tracked separately;
+            # mark next provider as fallback of the one that failed.
+            fallback_provider = provider
             print(f"[ai_provider] {provider} failed: {exc}")
 
     if last_error:
@@ -345,14 +493,13 @@ def invoke_structured_output(
     inputs: dict[str, Any],
     ai_config: AiProviderConfigPayload | None = None,
     task_type: TaskType | None = None,
-) -> tuple[T, str]:
-    """Try configured provider chain; return (parsed model, model label)."""
+) -> tuple[T, AiUsageInfo]:
+    """Try configured provider chain; return (parsed model, usage metrics)."""
     cfg = route_by_task(task_type, ai_config) if task_type else (ai_config or AiProviderConfigPayload())
-    result, label, _ = invoke_with_fallback(
+    return invoke_with_fallback(
         output_model,
         system_prompt=system_prompt,
         human_template=human_template,
         inputs=inputs,
         ai_config=cfg,
     )
-    return result, label

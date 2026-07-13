@@ -14,7 +14,7 @@ if str(HERE) not in sys.path:
 from storage.db import get_db
 from storage import repositories as repo
 from services import inspection_service as svc
-from services.ai_provider import AiProviderConfigPayload
+from services.ai_provider import AiProviderConfigPayload, AiUsageInfo
 from services.tenant_ai_settings import resolve_ai_config_for_request
 
 router = APIRouter(tags=["Inspection"])
@@ -47,6 +47,10 @@ class AiExecutionMeta(BaseModel):
     task_type: str | None = None
     provider_chain: List[str] = Field(default_factory=list)
     description: str = ""
+    input_tokens: int = 0
+    output_tokens: int = 0
+    total_tokens: int = 0
+    latency_ms: int = 0
 
 
 class DraftResponse(BaseModel):
@@ -67,6 +71,7 @@ def _build_ai_execution_meta(
     ai_config: AiProviderConfigPayload | None,
     *,
     task_type: str,
+    usage: AiUsageInfo | None = None,
 ) -> AiExecutionMeta:
     from services.ai_provider import _provider_chain, route_by_task
 
@@ -89,6 +94,8 @@ def _build_ai_execution_meta(
     if ":" in label:
         provider, model_name = label.split(":", 1)
 
+    input_tokens = usage.input_tokens if usage else 0
+    output_tokens = usage.output_tokens if usage else 0
     return AiExecutionMeta(
         generation_path=path,
         model_label=used_model,
@@ -97,6 +104,10 @@ def _build_ai_execution_meta(
         task_type=task_type,
         provider_chain=chain,
         description=desc,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        total_tokens=input_tokens + output_tokens,
+        latency_ms=usage.latency_ms if usage else 0,
     )
 
 class LogCreateRequest(BaseModel):
@@ -133,7 +144,7 @@ def create_ai_draft(req: DraftRequest, db: Session = Depends(get_db)):
     # Convert ChecklistItem list to list of dict
     checklist_dict = [x.model_dump() for x in req.checklist]
     try:
-        draft_obj, used_model, _web_res = svc.generate_inspection_draft(
+        draft_obj, used_model, _web_res, ai_usage = svc.generate_inspection_draft(
             site_name=req.site_name,
             charger_id=None,
             manufacturer=None,
@@ -145,19 +156,23 @@ def create_ai_draft(req: DraftRequest, db: Session = Depends(get_db)):
             memo_text=req.memo,
             ai_config=ai_config,
         )
-        fallback_provider = None
-        if "->" in used_model:
+        fallback_provider = ai_usage.fallback_provider if ai_usage else None
+        if not fallback_provider and "->" in used_model:
             fallback_provider = used_model.split("->", 1)[0].split(":")[0]
         record_usage(
             tenant_id,
             FEATURE_AI_GENERATION,
             model_name=used_model or "gpt-4o-mini",
+            input_tokens=ai_usage.input_tokens if ai_usage else 0,
+            output_tokens=ai_usage.output_tokens if ai_usage else 0,
             fallback_provider=fallback_provider,
             shortcut=(used_model == "faq-shortcut"),
         )
         summary_json = draft_obj.model_dump()
         task_type = _resolve_inspection_task_type(req.checklist, req.cycle)
-        ai_meta = _build_ai_execution_meta(used_model, ai_config, task_type=task_type)
+        ai_meta = _build_ai_execution_meta(
+            used_model, ai_config, task_type=task_type, usage=ai_usage
+        )
         return DraftResponse(
             draft_text=svc.format_inspection_draft_text(draft_obj),
             summary_json=summary_json,

@@ -8,7 +8,7 @@ from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 from sqlalchemy.orm import Session
 from retrieval import load_bm25, resolve_chroma_dir, retrieve_reranked
-from services.ai_provider import AiProviderConfigPayload, invoke_structured_output
+from services.ai_provider import AiProviderConfigPayload, AiUsageInfo, invoke_structured_output, usage_for_non_llm
 from services.tenant_ai_settings import resolve_ai_config_for_request
 from storage.db import get_db
 
@@ -46,6 +46,7 @@ class SearchResponse(BaseModel):
     embedding_degraded: bool = False
     llm_error: bool = False
     llm_model: str | None = None
+    ai_usage: AiUsageInfo | None = None
     web_results: List[Any] = []
     metadata_docs: List[Any] = []
 
@@ -146,8 +147,14 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
     faq = try_shortcut(req.query.strip())
     if faq:
         structured = _answer_from_faq(req.query.strip(), faq)
+        faq_usage = usage_for_non_llm("faq-shortcut")
         try:
-            record_usage(tenant_id, FEATURE_RAG_SEARCH)
+            record_usage(
+                tenant_id,
+                FEATURE_RAG_SEARCH,
+                model_name=faq_usage.model_label,
+                shortcut=True,
+            )
         except Exception as usage_exc:
             print(f"Usage metering failed (search still returned): {usage_exc}")
         return SearchResponse(
@@ -159,6 +166,7 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
             embedding_degraded=False,
             llm_error=False,
             llm_model="faq-shortcut",
+            ai_usage=faq_usage,
             web_results=[],
             metadata_docs=[],
         )
@@ -236,8 +244,9 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
     structured = None
     llm_success = False
     model_label: str | None = None
+    ai_usage: AiUsageInfo | None = None
     try:
-        structured, model_label = invoke_structured_output(
+        structured, ai_usage = invoke_structured_output(
             AnswerSchema,
             system_prompt=SYS,
             human_template=guard + "[로컬 참고 사례]\n{context}\n\n{web_context}---\n사용자 질문:\n{question}",
@@ -246,12 +255,14 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
             task_type="general",
         )
         llm_success = True
+        model_label = ai_usage.model_label
     except Exception as e2:
         import logging
         logging.warning(f"All LLMs failed for as-cases search: {e2}")
         structured = _answer_from_docs(req.query.strip(), docs, rr_level)
         llm_success = False
         model_label = None
+        ai_usage = usage_for_non_llm("offline-rules")
 
     if structured is None:
         structured = AnswerSchema(
@@ -274,7 +285,14 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
     embedding_degraded = bool(openai_error_occured)
 
     try:
-        record_usage(tenant_id, FEATURE_RAG_SEARCH)
+        record_usage(
+            tenant_id,
+            FEATURE_RAG_SEARCH,
+            model_name=model_label,
+            input_tokens=(ai_usage.input_tokens if ai_usage else 0),
+            output_tokens=(ai_usage.output_tokens if ai_usage else 0),
+            fallback_provider=(ai_usage.fallback_provider if ai_usage else None),
+        )
     except Exception as usage_exc:
         print(f"Usage metering failed (search still returned): {usage_exc}")
 
@@ -287,6 +305,7 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
         embedding_degraded=embedding_degraded,
         llm_error=not llm_success,
         llm_model=model_label,
+        ai_usage=ai_usage,
         web_results=web_results,
         metadata_docs=metadata_docs,
     )

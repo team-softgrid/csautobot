@@ -382,7 +382,7 @@ def render() -> None:
             if saved_paths:
                 st.session_state.insp_photos = saved_paths
 
-            draft, used_model, web_res = generate_inspection_draft(
+            draft, used_model, web_res, _ai_usage = generate_inspection_draft(
                 site_name=site_name or None,
                 charger_id=charger_id or None,
                 manufacturer=manufacturer or None,

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { getApiUrl, getTenantId, readApiError } from "../utils";
+import AiUsageBadge from "../components/AiUsageBadge";
 
 interface ChecklistItem {
   item: string;
@@ -272,6 +273,20 @@ export default function InspectionPage() {
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: "20px", flex: 1 }}>
+                {draft.ai_meta && (
+                  <AiUsageBadge
+                    usage={{
+                      model_label: draft.ai_meta.model_label,
+                      provider: draft.ai_meta.provider,
+                      model_name: draft.ai_meta.model_name,
+                      input_tokens: draft.ai_meta.input_tokens,
+                      output_tokens: draft.ai_meta.output_tokens,
+                      total_tokens: draft.ai_meta.total_tokens,
+                      latency_ms: draft.ai_meta.latency_ms,
+                      generation_path: draft.ai_meta.generation_path,
+                    }}
+                  />
+                )}
                 
                 {/* Risk and Summary Card */}
                 <div style={{ background: "rgba(255,255,255,0.03)", padding: "20px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.06)" }}>
@@ -409,6 +424,18 @@ export default function InspectionPage() {
                   <dd style={{ margin: 0, color: "#e2e8f0", fontFamily: "monospace" }}>{draft.ai_meta.model_name}</dd>
                 </>
               )}
+              <dt style={{ color: "#64748b" }}>입력 토큰</dt>
+              <dd style={{ margin: 0, color: "#e2e8f0" }}>{(draft.ai_meta.input_tokens ?? 0).toLocaleString("ko-KR")}</dd>
+              <dt style={{ color: "#64748b" }}>출력 토큰</dt>
+              <dd style={{ margin: 0, color: "#e2e8f0" }}>{(draft.ai_meta.output_tokens ?? 0).toLocaleString("ko-KR")}</dd>
+              <dt style={{ color: "#64748b" }}>응답시간</dt>
+              <dd style={{ margin: 0, color: "#e2e8f0" }}>
+                {draft.ai_meta.latency_ms > 0
+                  ? draft.ai_meta.latency_ms < 1000
+                    ? `${draft.ai_meta.latency_ms}ms`
+                    : `${(draft.ai_meta.latency_ms / 1000).toFixed(1)}s`
+                  : "-"}
+              </dd>
               {draft.ai_meta.provider_chain?.length > 0 && (
                 <>
                   <dt style={{ color: "#64748b" }}>시도 순서</dt>
