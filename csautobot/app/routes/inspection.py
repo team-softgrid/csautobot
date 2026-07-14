@@ -152,9 +152,9 @@ def create_ai_draft(req: DraftRequest, db: Session = Depends(get_db)):
     try:
         draft_obj, used_model, _web_res, ai_usage = svc.generate_inspection_draft(
             site_name=req.site_name,
-            charger_id=req.charger_id,
-            manufacturer=req.manufacturer,
-            model_name=req.model_name,
+            charger_id=None,
+            manufacturer=None,
+            model_name=None,
             inspection_target=req.target,
             inspection_type=req.inspection_type,
             inspection_cycle=req.cycle,
