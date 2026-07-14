@@ -105,7 +105,10 @@ class TestInvokeStructuredOutput:
             api_keys={"openai": ""},
         )
 
-        with pytest.raises(RuntimeError, match="No AI provider available"):
+        # AllProvidersFailedError(RuntimeError 상속)로 변경 — 예전엔 provider가
+        # 왜 스킵/실패했는지 정보 없이 고정 문구만 던졌는데, 이제는 시도 내역을
+        # 메시지에 담아서 던진다 (PR: AI 한도초과 시 provider별 실패 상세 노출).
+        with pytest.raises(RuntimeError, match="All AI providers failed"):
             invoke_structured_output(
                 InspectionDraft,
                 system_prompt="test",
