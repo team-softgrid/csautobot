@@ -145,12 +145,16 @@ def create_ai_draft(req: DraftRequest, db: Session = Depends(get_db)):
 
     # Convert ChecklistItem list to list of dict
     checklist_dict = [x.model_dump() for x in req.checklist]
+
+    # SQLite Lock 방지: LLM 호출 등 장시간 지연 전 읽기 트랜잭션 종료
+    db.rollback()
+
     try:
         draft_obj, used_model, _web_res, ai_usage = svc.generate_inspection_draft(
             site_name=req.site_name,
-            charger_id=None,
-            manufacturer=None,
-            model_name=None,
+            charger_id=req.charger_id,
+            manufacturer=req.manufacturer,
+            model_name=req.model_name,
             inspection_target=req.target,
             inspection_type=req.inspection_type,
             inspection_cycle=req.cycle,
@@ -161,15 +165,20 @@ def create_ai_draft(req: DraftRequest, db: Session = Depends(get_db)):
         fallback_provider = ai_usage.fallback_provider if ai_usage else None
         if not fallback_provider and "->" in used_model:
             fallback_provider = used_model.split("->", 1)[0].split(":")[0]
-        record_usage(
-            tenant_id,
-            FEATURE_AI_GENERATION,
-            model_name=used_model or "gpt-4o-mini",
-            input_tokens=ai_usage.input_tokens if ai_usage else 0,
-            output_tokens=ai_usage.output_tokens if ai_usage else 0,
-            fallback_provider=fallback_provider,
-            shortcut=(used_model == "faq-shortcut"),
-        )
+            
+        try:
+            record_usage(
+                tenant_id,
+                FEATURE_AI_GENERATION,
+                model_name=used_model or "gpt-4o-mini",
+                input_tokens=ai_usage.input_tokens if ai_usage else 0,
+                output_tokens=ai_usage.output_tokens if ai_usage else 0,
+                fallback_provider=fallback_provider,
+                shortcut=(used_model == "faq-shortcut"),
+            )
+        except Exception as usage_exc:
+            print(f"Usage metering failed (draft still returned): {usage_exc}")
+
         summary_json = draft_obj.model_dump()
         task_type = _resolve_inspection_task_type(req.checklist, req.cycle)
         ai_meta = _build_ai_execution_meta(

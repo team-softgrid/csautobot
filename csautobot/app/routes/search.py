@@ -176,6 +176,9 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
         print(f"AI config load failed, using env defaults: {cfg_exc}")
         ai_config = None
 
+    # SQLite Lock 방지: LLM 호출 전 읽기 트랜잭션 종료
+    db.rollback()
+
     from services.faq_shortcut import try_shortcut
 
     faq = try_shortcut(req.query.strip())
