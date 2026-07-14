@@ -185,8 +185,10 @@ TASK_ROUTING: dict[TaskType, tuple[list[AIProviderName], dict[str, str]]] = {
     "intent_detect": (["groq", "gemini"], {"groq": "llama-3.1-8b-instant"}),
     "inspection_basic": (["groq", "gemini"], {"groq": "llama-3.1-8b-instant"}),
     "inspection_detail": (["groq", "gemini"], {"groq": GROQ_70B_MODEL}),
-    "quotation_simple": (["groq", "gemini"], {"groq": "llama-3.1-8b-instant"}),
-    "quotation_complex": (["groq", "gemini"], {"groq": GROQ_70B_MODEL}),
+    # 견적: ollama를 체인에 포함(클라우드 키 미설정·gemini 429 시 로컬 폴백).
+    # _provider_chain이 groq를 맨 앞으로내도 groq 스킵 후 ollama가 이어서 시도된다.
+    "quotation_simple": (["ollama", "groq", "gemini"], {"groq": "llama-3.1-8b-instant"}),
+    "quotation_complex": (["ollama", "groq", "gemini"], {"groq": GROQ_70B_MODEL}),
     "batch_classify": (["groq", "gemini"], {"groq": GROQ_70B_MODEL}),
     "general": (["groq", "gemini"], {"groq": "llama-3.1-8b-instant"}),
 }

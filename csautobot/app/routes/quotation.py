@@ -103,9 +103,21 @@ async def create_quotation_draft(req: QuotationRequest, db: Session = Depends(ge
 
     try:
         # 비동기적으로 실행 (실제 함수가 async가 아니더라도 이벤트 루프 블로킹 방지)
+        # NOTE: generate_quotation_draft(query, charger_type, use_web_search=False, ai_config=None)
+        # 이라 positional 3번째는 use_web_search다. ai_config를 positional로 넘기면
+        # 테넌트 AI 설정이 무시되고 TASK_ROUTING 기본(groq→gemini)만 타서
+        # aiCsms 견적 초안이 한도초과/키미설정 offline 폴백으로 떨어진다.
+        from functools import partial
+
         loop = asyncio.get_running_loop()
         draft = await loop.run_in_executor(
-            None, generate_quotation_draft, req.query, req.charger_type, ai_config
+            None,
+            partial(
+                generate_quotation_draft,
+                req.query,
+                req.charger_type,
+                ai_config=ai_config,
+            ),
         )
         is_faq = draft.symptom_summary.startswith("FAQ:")
 
