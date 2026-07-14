@@ -252,7 +252,12 @@ def _provider_chain(config: AiProviderConfigPayload | None) -> list[AIProviderNa
 def normalize_provider_order(
     providers: list[AIProviderName] | list[str] | None,
 ) -> list[AIProviderName]:
-    """Normalize hybrid fallback order, filling in any missing providers at the end."""
+    """Normalize hybrid fallback order, filling in any missing providers at the end.
+
+    "groq"는 항상 맨 앞으로 보낸다 — 함수명(그리고 옛 이름 ensure_groq_first_hybrid_order)이
+    약속하는 동작인데, 입력 리스트에 groq가 없을 때 끝에 그냥 append만 되고 실제로는
+    맨 앞으로 옮겨지지 않던 기존 버그(2026-07-14, CI에서 발견).
+    """
     order: list[AIProviderName] = [
         p for p in (providers or DEFAULT_HYBRID_ORDER) if p in DEFAULT_MODELS  # type: ignore[comparison-overlap]
     ]
@@ -261,6 +266,10 @@ def normalize_provider_order(
     for provider in DEFAULT_HYBRID_ORDER:
         if provider not in order:
             order.append(provider)
+    if "groq" in order:
+        order = ["groq", *[p for p in order if p != "groq"]]  # type: ignore[list-item]
+    else:
+        order = ["groq", *order]  # type: ignore[list-item]
     return order
 
 
@@ -275,10 +284,18 @@ def route_by_task(
     task_type: TaskType,
     base_config: AiProviderConfigPayload | None = None,
 ) -> AiProviderConfigPayload:
-    """Return hybrid config tuned for the given task (Korean quality vs speed)."""
+    """Return hybrid config tuned for the given task (Korean quality vs speed).
+
+    base_config를 안 넘기면(bare default) 태스크 전용 짧은 체인(예: quotation_simple의
+    groq+gemini)만 써야 하는데, `AiProviderConfigPayload()`의 hybrid_providers가
+    기본값으로 이미 전체 5-provider 리스트라서, 아래에서 무조건 병합해버리면 항상
+    5개 전부가 붙어 "짧은 체인" 의도가 무력화되던 기존 버그(2026-07-14, CI에서 발견).
+    base_config가 실제로 넘어온 경우(호출자가 명시적으로 provider를 지정한 경우)에만
+    그 목록을 태스크 목록과 병합한다.
+    """
     task_providers, model_overrides = TASK_ROUTING.get(task_type, TASK_ROUTING["general"])
     cfg = base_config or AiProviderConfigPayload()
-    
+
     if cfg.provider != "hybrid":
         return AiProviderConfigPayload(
             provider=cfg.provider,
@@ -288,10 +305,13 @@ def route_by_task(
             ollama_base_url=cfg.ollama_base_url,
         )
 
-    merged_providers = list(task_providers)
-    for p in cfg.hybrid_providers:
-        if p not in merged_providers:
-            merged_providers.append(p)
+    if base_config is None:
+        merged_providers = list(task_providers)
+    else:
+        merged_providers = list(task_providers)
+        for p in cfg.hybrid_providers:
+            if p not in merged_providers:
+                merged_providers.append(p)
 
     return AiProviderConfigPayload(
         provider="hybrid",
