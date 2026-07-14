@@ -258,7 +258,6 @@ def retrieve_reranked(
         err_rerank = False
     else:
         reranked, scores, err_rerank = rerank_by_embedding(emb, query, cand_docs, top_k=k_final)
-        
     conf, level = estimate_confidence(scores, query, reranked[0] if reranked else None)
     return RetrievalResult(
         documents=reranked,
