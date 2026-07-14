@@ -49,12 +49,14 @@ class TestTaskRouting:
         cfg = route_by_task("inspection_basic")
         assert cfg.hybrid_providers[0] == "groq"
 
-    def test_quotation_task_chain_stays_short(self):
+    def test_quotation_task_chain_includes_ollama(self):
         from services.ai_provider import _provider_chain
 
         cfg = route_by_task("quotation_simple")
         chain = _provider_chain(cfg)
-        assert chain == ["groq", "gemini"]
+        # groq-first 정책 유지 + ollama 폴백(키 없음·gemini 429 대비)
+        assert chain == ["groq", "ollama", "gemini"]
+        assert "ollama" in chain
 
     def test_ensure_groq_first_from_legacy_order(self):
         from services.ai_provider import ensure_groq_first_hybrid_order
