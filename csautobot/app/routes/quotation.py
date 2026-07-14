@@ -12,6 +12,7 @@ if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
 from services.quotation_service import generate_quotation_draft, QuotationDraft
+from services.pricing_service import get_pricing_list
 from services.ai_provider import AiProviderConfigPayload
 from services.tenant_ai_settings import resolve_ai_config_for_request
 from storage.db import get_db
@@ -41,6 +42,43 @@ class QuotationExportRequest(BaseModel):
     parts: list[ExportPartItem]
     dispatch_fee: int
     labor_fee: int
+
+
+class PricingItem(BaseModel):
+    num: int = 0
+    category: str = ""
+    name: str
+    spec: str = ""
+    contract_price: int = 0
+    cs_price: int = 0
+
+
+class PricingListResponse(BaseModel):
+    items: list[PricingItem]
+    source: str = Field(description="excel | fallback")
+
+
+@router.get("/quotation/pricing-list", response_model=PricingListResponse)
+def list_contract_pricing():
+    """계약단가표(assets/contract_unit_prices.xlsx) — aiCsms 부품 Select 단가 연동용."""
+    from services.pricing_service import DEFAULT_EXCEL_PATH
+
+    items_raw = get_pricing_list()
+    source = "excel" if DEFAULT_EXCEL_PATH.is_file() else "fallback"
+    items = [
+        PricingItem(
+            num=int(p.get("num") or 0),
+            category=str(p.get("category") or ""),
+            name=str(p.get("name") or ""),
+            spec=str(p.get("spec") or ""),
+            contract_price=int(p.get("contract_price") or 0),
+            cs_price=int(p.get("cs_price") or 0),
+        )
+        for p in items_raw
+        if p.get("name")
+    ]
+    return PricingListResponse(items=items, source=source)
+
 
 @router.post("/quotation/draft", response_model=QuotationDraft)
 async def create_quotation_draft(req: QuotationRequest, db: Session = Depends(get_db)):
