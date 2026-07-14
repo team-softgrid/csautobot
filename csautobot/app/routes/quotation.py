@@ -102,6 +102,9 @@ async def create_quotation_draft(req: QuotationRequest, db: Session = Depends(ge
         print(f"AI config load failed, using env defaults: {cfg_exc}")
         ai_config = None
 
+    # SQLite Lock 방지: LLM 호출 전 읽기 트랜잭션 종료
+    db.rollback()
+
     try:
         # 비동기적으로 실행 (실제 함수가 async가 아니더라도 이벤트 루프 블로킹 방지)
         # NOTE: generate_quotation_draft(query, charger_type, use_web_search=False, ai_config=None)
