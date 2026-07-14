@@ -6,7 +6,7 @@ import os
 from typing import Any, Literal, Type, TypeVar
 
 from langchain_core.prompts import ChatPromptTemplate
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, AliasChoices
 
 AIProviderName = Literal["claude", "openai", "gemini", "ollama", "groq"]
 AISelectionMode = Literal["claude", "openai", "gemini", "ollama", "groq", "hybrid"]
@@ -21,7 +21,7 @@ TaskType = Literal[
     "general",
 ]
 
-DEFAULT_HYBRID_ORDER: list[AIProviderName] = ["groq", "gemini", "openai", "claude", "ollama"]
+DEFAULT_HYBRID_ORDER: list[AIProviderName] = ["groq", "ollama", "gemini", "openai", "claude"]
 
 DEFAULT_MODELS: dict[AIProviderName, str] = {
     "claude": "claude-sonnet-4-6",
@@ -49,10 +49,16 @@ T = TypeVar("T", bound=BaseModel)
 
 class AiProviderConfigPayload(BaseModel):
     provider: AISelectionMode = "hybrid"
-    hybrid_providers: list[AIProviderName] = Field(default_factory=lambda: list(DEFAULT_HYBRID_ORDER))
+    hybrid_providers: list[AIProviderName] = Field(
+        default_factory=lambda: list(DEFAULT_HYBRID_ORDER),
+        validation_alias=AliasChoices("hybrid_providers", "hybridProviders")
+    )
     api_keys: dict[str, str] = Field(default_factory=dict)
     models: dict[str, str] = Field(default_factory=dict)
-    ollama_base_url: str = "http://localhost:11434"
+    ollama_base_url: str = Field(
+        default="http://localhost:11434",
+        validation_alias=AliasChoices("ollama_base_url", "ollamaBaseUrl")
+    )
 
 
 def _is_usable_key(value: str | None) -> bool:
@@ -94,9 +100,7 @@ def _provider_chain(config: AiProviderConfigPayload | None) -> list[AIProviderNa
         ]
         if not order:
             order = list(DEFAULT_HYBRID_ORDER)
-        if "groq" in order:
-            return ["groq", *[p for p in order if p != "groq"]]
-        return ["groq", *order]
+        return order
     if cfg.provider in DEFAULT_MODELS:
         return [cfg.provider]  # type: ignore[list-item]
     return list(DEFAULT_HYBRID_ORDER)
@@ -141,14 +145,11 @@ def route_by_task(
             ollama_base_url=cfg.ollama_base_url,
         )
 
-    merged_providers = list(task_providers)
-    for p in cfg.hybrid_providers:
-        if p not in merged_providers:
-            merged_providers.append(p)
-
+    # Do not forcefully override the user's hybrid fallback order with task_providers.
+    # The user might have deliberately put a specific provider first to bypass rate limits.
     return AiProviderConfigPayload(
         provider="hybrid",
-        hybrid_providers=merged_providers,
+        hybrid_providers=cfg.hybrid_providers,
         api_keys=dict(cfg.api_keys),
         models={**cfg.models, **model_overrides},
         ollama_base_url=cfg.ollama_base_url,

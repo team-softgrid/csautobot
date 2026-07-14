@@ -5,7 +5,7 @@
 export type AIProvider = "claude" | "openai" | "gemini" | "groq" | "ollama";
 export type AISelectionMode = AIProvider | "hybrid";
 
-export const AI_PROVIDER_ORDER: AIProvider[] = ["groq", "gemini", "openai", "claude", "ollama"];
+export const AI_PROVIDER_ORDER: AIProvider[] = ["groq", "ollama", "gemini", "openai", "claude"];
 
 export const AI_PROVIDER_INFO: Record<
   AIProvider,

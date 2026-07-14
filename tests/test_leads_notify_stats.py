@@ -4,8 +4,9 @@ from leads_db import get_notify_channel_stats, init_leads_db, record_notify_even
 
 class TestLeadNotifyStats:
     def test_channel_stats_aggregation(self):
+        import uuid
         init_leads_db()
-        channel = "pytest_stats_channel"
+        channel = f"pytest_stats_channel_{uuid.uuid4().hex}"
         record_notify_event(1, channel, success=True, source="test")
         record_notify_event(2, channel, success=False, source="failure")
         rows = {row["channel"]: row for row in get_notify_channel_stats(days=30)}

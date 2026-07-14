@@ -17,7 +17,7 @@ from services.ai_provider import (
 class TestAiProviderHelpers:
     def test_provider_chain_hybrid_default_order(self):
         cfg = AiProviderConfigPayload(provider="hybrid")
-        assert _provider_chain(cfg) == ["groq", "gemini", "openai", "claude", "ollama"]
+        assert _provider_chain(cfg) == ["groq", "ollama", "gemini", "openai", "claude"]
 
     def test_provider_chain_single_provider(self):
         cfg = AiProviderConfigPayload(provider="gemini")

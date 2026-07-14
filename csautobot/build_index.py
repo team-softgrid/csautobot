@@ -125,8 +125,6 @@ def save_sparse_index(run_dir: Path, docs: list[Document]) -> None:
 
 
 def main() -> None:
-    if not os.environ.get("OPENAI_API_KEY"):
-        raise SystemExit("OPENAI_API_KEY 환경변수를 설정하세요.")
     docs = enrich_metadata(load_docs())
     total = len(docs)
     if total == 0:
@@ -140,7 +138,9 @@ def main() -> None:
     run_dir = CHROMA_DIR.with_name(f"chroma_db_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
     print(f"[1/5] 인덱스 경로: {run_dir}")
     print(f"[2/5] 임베딩 모델 준비 (문서 {total}건)")
-    emb = OpenAIEmbeddings(model="text-embedding-3-small")
+    from langchain_ollama import OllamaEmbeddings
+    # OllamaEmbeddings 기본 주소(http://localhost:11434)와 nomic-embed-text 모델 사용
+    emb = OllamaEmbeddings(model="nomic-embed-text")
     run_dir.mkdir(parents=True, exist_ok=True)
     vs = Chroma(
         persist_directory=str(run_dir),
