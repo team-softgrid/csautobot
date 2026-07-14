@@ -94,12 +94,12 @@ def describe_provider_attempts(attempts: list["ProviderAttempt"]) -> str:
     lines = []
     for a in attempts:
         if a.skipped:
-            lines.append(f"{a.provider}:{a.model} — 스킵({a.error})")
+            lines.append(f"{a.provider}:{a.model} - 스킵({a.error})")
         elif a.rate_limited:
-            lines.append(f"{a.provider}:{a.model} — 한도 초과/rate-limit: {a.error}")
+            lines.append(f"{a.provider}:{a.model} - 한도 초과/rate-limit: {a.error}")
         else:
-            lines.append(f"{a.provider}:{a.model} — 오류: {a.error}")
-    return " → ".join(lines)
+            lines.append(f"{a.provider}:{a.model} - 오류: {a.error}")
+    return " -> ".join(lines)
 
 
 class _TokenCaptureCallback(BaseCallbackHandler):

@@ -184,7 +184,7 @@ def _generate_offline_quotation_draft(
     # aiCsms는 likely_cause만 그대로 화면에 표시하므로(ai_usage는 안 읽음),
     # 어떤 provider가 왜 실패했는지는 여기 문자열에 직접 실어 보낸다.
     if fallback_reason:
-        likely_cause = f"{likely_cause} — AI 모델 호출 실패: {fallback_reason}"
+        likely_cause = f"{likely_cause} - AI 모델 호출 실패: {fallback_reason}"
 
     return QuotationDraft(
         symptom_summary=symptom_summary,
