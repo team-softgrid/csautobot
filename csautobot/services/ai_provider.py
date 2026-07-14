@@ -493,12 +493,15 @@ class ProviderAttempt(BaseModel):
     error: str = ""
 
 
-class AllProvidersFailedError(Exception):
+class AllProvidersFailedError(RuntimeError):
     """Fallback chain의 모든 provider가 실패(또는 키 미설정으로 스킵)했을 때 발생.
 
     개별 provider 오류를 서버 print() 로그에만 남기고 마지막 예외만 밖으로 던지면
     "어떤 모델이 왜 실패했는지"가 API 응답/화면 어디에도 남지 않는다 — attempts에
     시도 순서 전체를 담아 라우터가 사용자에게 구체적인 사유를 보여줄 수 있게 한다.
+
+    RuntimeError를 상속 — 예전엔 이 상황에서 그냥 RuntimeError("No AI provider
+    available...")를 던졌어서, 그걸 잡던 기존 코드/테스트가 계속 동작하도록 유지.
     """
 
     def __init__(self, attempts: list[ProviderAttempt]):
