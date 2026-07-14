@@ -168,8 +168,8 @@ export default function SearchPage() {
               (Gemini 무료 tier quota 0이면 Groq 1순위 사용 권장)
             </div>
           )}
-          {!result.llm_error && (result.ai_usage || result.llm_model) && (
-            <AiUsageBadge usage={result.ai_usage} fallbackModel={result.llm_model} />
+          {(result.ai_usage || result.llm_model) && (
+            <AiUsageBadge usage={result.ai_usage} fallbackModel={result.llm_model || (result.llm_error ? "offline-rules" : null)} />
           )}
 
           {/* Metrics */}

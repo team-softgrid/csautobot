@@ -37,6 +37,40 @@ class AnswerSchema(BaseModel):
     evidence_refs: List[str] = Field(default_factory=list)
     confidence_note: str = Field(description="신뢰도·주의사항")
 
+# Groq llama-3.1-8b-instant on-demand TPM ≈ 6000. Long RAG+web prompts
+# previously hit 413 (Requested 6866). Keep LLM context comfortably under that.
+_MAX_DOC_CHARS = 1200
+_MAX_CONTEXT_CHARS = 4500
+_MAX_WEB_CHARS = 1200
+
+
+def _clip_text(text: str, limit: int) -> str:
+    raw = (text or "").strip()
+    if len(raw) <= limit:
+        return raw
+    return raw[: max(0, limit - 1)].rstrip() + "…"
+
+
+def _build_llm_context(docs: list) -> str:
+    chunks: list[str] = []
+    used = 0
+    for d in docs:
+        piece = _clip_text(getattr(d, "page_content", "") or "", _MAX_DOC_CHARS)
+        if not piece:
+            continue
+        sep = 4 if chunks else 0  # len("\n\n---\n\n") approx handled below
+        block = piece if not chunks else f"\n\n---\n\n{piece}"
+        if used + len(block) > _MAX_CONTEXT_CHARS:
+            remain = _MAX_CONTEXT_CHARS - used - (sep + 1)
+            if remain < 80:
+                break
+            truncated = _clip_text(piece, remain)
+            chunks.append(truncated)
+            break
+        chunks.append(piece)
+        used += len(block)
+    return "\n\n---\n\n".join(chunks)
+
 class SearchResponse(BaseModel):
     structured: AnswerSchema
     confidence: float
@@ -211,7 +245,7 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
         rr_details = rr.details
         rr_level = rr.level
         rr_confidence = rr.confidence
-    ctx = "\n\n---\n\n".join(d.page_content for d in docs)
+    ctx = _build_llm_context(docs)
 
     web_ctx = ""
     if web_results:
@@ -219,10 +253,13 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
         for res in web_results:
             if isinstance(res, dict):
                 title = res.get('title', '')
-                content = res.get('content', '')
+                content = _clip_text(str(res.get('content', '') or ""), 280)
                 lines.append(f"- [{title}] {content}")
         if lines:
-            web_ctx = "[웹 리서치 참고 자료]\n" + "\n".join(lines) + "\n\n"
+            web_ctx = _clip_text(
+                "[웹 리서치 참고 자료]\n" + "\n".join(lines) + "\n\n",
+                _MAX_WEB_CHARS,
+            )
 
     guard = ""
     if rr_level == "low":
@@ -261,7 +298,7 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
         logging.warning(f"All LLMs failed for as-cases search: {e2}")
         structured = _answer_from_docs(req.query.strip(), docs, rr_level)
         llm_success = False
-        model_label = None
+        model_label = "offline-rules"
         ai_usage = usage_for_non_llm("offline-rules")
 
     if structured is None:

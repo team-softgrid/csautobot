@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+from urllib.parse import quote
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 import re
@@ -235,9 +236,14 @@ async def export_quotation_excel(req: QuotationExportRequest):
         out.seek(0)
         
         # Return Excel file
+        # HTTP headers are latin-1 only — Korean must use RFC 5987 filename*
         safe_filename = sanitize_filename(f"견적서_{req.query[:15]}.xlsx")
+        ascii_fallback = "quotation.xlsx"
         headers = {
-            'Content-Disposition': f'attachment; filename*=UTF-8\'\'{safe_filename}'
+            "Content-Disposition": (
+                f'attachment; filename="{ascii_fallback}"; '
+                f"filename*=UTF-8''{quote(safe_filename)}"
+            )
         }
         return StreamingResponse(
             out,
