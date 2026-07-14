@@ -13,7 +13,6 @@ from retrieval import (
     resolve_chroma_dir,
     retrieve_reranked,
 )
-from services.ai_provider import AiUsageInfo
 from services.pricing_service import lookup_part_pricing, get_pricing_list
 
 BOT_DIR = Path(__file__).resolve().parents[1]
@@ -47,7 +46,6 @@ class QuotationDraft(BaseModel):
     supply_value: int
     vat: int
     total_amount: int
-    ai_usage: AiUsageInfo | None = None
 
 SYS_PROMPT = """당신은 전기차 충전기 AS(애프터서비스) 견적서 작성 도우미입니다.
 고객이 접수한 [고장 증상]과 로컬 데이터베이스에서 검색된 [과거 유사 사례], 그리고 공식 [계약 단가표 품목 목록]을 참고하여 예상되는 교체 부품과 비용을 산출하십시오.
@@ -76,11 +74,11 @@ HUMAN_PROMPT_TEMPLATE = """[고객 고장 증상]
 ---
 위 내용을 바탕으로 예상되는 고장 원인과 필요한 부품(수량 포함)을 JSON 형태로 출력해 주십시오."""
 
+from langchain_community.embeddings import OllamaEmbeddings
+
 def _get_vs(chroma_dir: Path) -> Chroma:
-    emb = OpenAIEmbeddings(
-        model="text-embedding-3-small",
-        max_retries=0,
-        request_timeout=15,
+    emb = OllamaEmbeddings(
+        model="nomic-embed-text",
     )
     return Chroma(
         persist_directory=str(chroma_dir),
@@ -102,10 +100,8 @@ def _retrieve_quotation_context(query: str, *, skip_dense: bool) -> str:
         )
         docs = get_documents_by_indices(vs, top_idx[:5])
     else:
-        emb = OpenAIEmbeddings(
-            model="text-embedding-3-small",
-            max_retries=0,
-            request_timeout=15,
+        emb = OllamaEmbeddings(
+            model="nomic-embed-text",
         )
         rr = retrieve_reranked(
             query, vs, bm25, emb,
@@ -114,16 +110,11 @@ def _retrieve_quotation_context(query: str, *, skip_dense: bool) -> str:
         docs = rr.documents
     return "\n\n---\n\n".join(d.page_content for d in docs)
 
-def _generate_offline_quotation_draft(
-    query: str, charger_type: str, fallback_reason: str | None = None
-) -> QuotationDraft:
+def _generate_offline_quotation_draft(query: str, charger_type: str) -> QuotationDraft:
     q_clean = query.lower().replace(" ", "")
     parts_details = []
     matched_parts = []
-    # "(API 키 미설정)"으로 고정 표시하던 것을 제거 — 실제로는 rate-limit/네트워크
-    # 오류 등 다른 이유로도 이 경로를 타는데 항상 같은 문구가 떠서 원인 파악이
-    # 안 됐다(2026-07-14). 진짜 이유는 아래에서 fallback_reason으로 붙인다.
-    likely_cause = "오프라인 패턴 분석에 의한 진단 완료"
+    likely_cause = "오프라인 패턴 분석에 의한 진단 완료 (API 키 미설정)"
     symptom_summary = f"접수 증상: {query}"
     
     if "plc" in q_clean or "모뎀" in q_clean:
@@ -182,12 +173,7 @@ def _generate_offline_quotation_draft(
     supply_value = total_parts_price + dispatch_fee + labor_fee
     vat = int(supply_value * 0.1)
     total_amount = supply_value + vat
-
-    # aiCsms는 likely_cause만 그대로 화면에 표시하므로(ai_usage는 안 읽음),
-    # 어떤 provider가 왜 실패했는지는 여기 문자열에 직접 실어 보낸다.
-    if fallback_reason:
-        likely_cause = f"{likely_cause} — AI 모델 호출 실패: {fallback_reason}"
-
+    
     return QuotationDraft(
         symptom_summary=symptom_summary,
         likely_cause=likely_cause,
@@ -196,12 +182,7 @@ def _generate_offline_quotation_draft(
         labor_fee=labor_fee,
         supply_value=supply_value,
         vat=vat,
-        total_amount=total_amount,
-        ai_usage=AiUsageInfo(
-            model_label="offline-rules",
-            generation_path="offline-rules",
-            fallback_reason=fallback_reason,
-        ),
+        total_amount=total_amount
     )
 
 
@@ -219,10 +200,6 @@ def _quotation_from_faq_shortcut(query: str, faq_text: str, charger_type: str) -
         supply_value=supply_value,
         vat=vat,
         total_amount=supply_value + vat,
-        ai_usage=AiUsageInfo(
-            model_label="faq-shortcut",
-            generation_path="faq-shortcut",
-        ),
     )
 
 def is_valid_openai_key(key: str | None) -> bool:
@@ -266,7 +243,7 @@ def generate_quotation_draft(
     openai_key = os.environ.get("OPENAI_API_KEY")
     if ai_config and ai_config.api_keys.get("openai"):
         openai_key = ai_config.api_keys["openai"]
-    skip_rag = not is_valid_openai_key(openai_key)
+    skip_rag = False  # Always try RAG with Ollama embeddings
 
     try:
         ctx = _retrieve_quotation_context(query, skip_dense=skip_rag)
@@ -277,9 +254,9 @@ def generate_quotation_draft(
     task_type = "quotation_complex" if len(query) > 80 else "quotation_simple"
 
     try:
-        from services.ai_provider import AllProvidersFailedError, describe_provider_attempts, invoke_structured_output
+        from services.ai_provider import invoke_structured_output
 
-        prediction, ai_usage = invoke_structured_output(
+        prediction, _model_label = invoke_structured_output(
             LLMPrediction,
             system_prompt=SYS_PROMPT,
             human_template=HUMAN_PROMPT_TEMPLATE,
@@ -292,13 +269,9 @@ def generate_quotation_draft(
             ai_config=ai_config,
             task_type=task_type,  # type: ignore[arg-type]
         )
-    except AllProvidersFailedError as exc:
-        reason = describe_provider_attempts(exc.attempts)
-        print(f"Quotation LLM failed, falling back to offline draft: {reason}")
-        return _generate_offline_quotation_draft(query, charger_type, fallback_reason=reason)
     except Exception as exc:
         print(f"Quotation LLM failed, falling back to offline draft: {exc}")
-        return _generate_offline_quotation_draft(query, charger_type, fallback_reason=str(exc))
+        return _generate_offline_quotation_draft(query, charger_type)
 
     # 5. Process predicted parts and map to contract unit prices
     parts_details = []
@@ -357,6 +330,5 @@ def generate_quotation_draft(
         labor_fee=labor_fee,
         supply_value=supply_value,
         vat=vat,
-        total_amount=total_amount,
-        ai_usage=ai_usage,
+        total_amount=total_amount
     )

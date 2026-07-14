@@ -250,7 +250,15 @@ def retrieve_reranked(
     )
     cand_docs = get_documents_by_indices(vs, cand_idx)
 
-    reranked, scores, err_rerank = rerank_by_embedding(emb, query, cand_docs, top_k=k_final)
+    if hasattr(emb, "model") and "nomic-embed" in str(emb.model).lower():
+        # Bypass expensive on-the-fly re-embedding with Ollama
+        top_k = k_final
+        reranked = cand_docs[:top_k]
+        scores = [hybrid_scores[i] for i in cand_idx[:top_k]] if cand_idx else []
+        err_rerank = False
+    else:
+        reranked, scores, err_rerank = rerank_by_embedding(emb, query, cand_docs, top_k=k_final)
+        
     conf, level = estimate_confidence(scores, query, reranked[0] if reranked else None)
     return RetrievalResult(
         documents=reranked,
