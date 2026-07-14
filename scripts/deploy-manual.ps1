@@ -132,7 +132,7 @@ powershell -NoProfile -Command "`$z='$RemoteZip'; `$d='$RemoteDir'; Expand-Archi
     Remove-Item -Force $ZipPath -ErrorAction SilentlyContinue
 
     Write-Host "[5/5] deploy-remote.ps1 (pip install/venv/pm2 — up to ~30m)..." -ForegroundColor Yellow
-    $deploy = Invoke-SSHCommand -SessionId $session.SessionId -TimeOut 3600 -Command "powershell -NoProfile -ExecutionPolicy Bypass -File `"$RemoteDir/scripts/deploy-remote.ps1`""
+    $deploy = Invoke-SSHCommand -SessionId $session.SessionId -TimeOut 3600 -Command "powershell -NoProfile -ExecutionPolicy Bypass -Command `"`$env:CSAUTOBOT_DEPLOY_ROOT='$RemoteDir'; & '$RemoteDir/scripts/deploy-remote.ps1'`""
     if ($deploy.Output) { $deploy.Output | ForEach-Object { Write-Host $_ } }
     if ($deploy.ExitStatus -ne 0) {
         if ($deploy.Error) { Write-Host $deploy.Error -ForegroundColor Red }
@@ -146,7 +146,7 @@ powershell -NoProfile -Command "`$z='$RemoteZip'; `$d='$RemoteDir'; Expand-Archi
 
 Write-Host "[health] checking backend/frontend..." -ForegroundColor Yellow
 Start-Sleep -Seconds 10
-foreach ($check in @(@{Url="http://211.237.13.172:8000/health"; Name="backend"}, @{Url="http://211.237.13.172:5000/"; Name="frontend"})) {
+foreach ($check in @(@{Url="http://${HostName}:8000/health"; Name="backend"}, @{Url="http://${HostName}:5000/"; Name="frontend"})) {
     try {
         $r = Invoke-WebRequest -Uri $check.Url -UseBasicParsing -TimeoutSec 30
         Write-Host "Health OK: $($check.Name) -> $($r.StatusCode)" -ForegroundColor Green
