@@ -268,3 +268,6 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/jupyternotebooks,python
+.env.joripspace
+.joripspace/agent-session.json
+.joripspace/local-backups/

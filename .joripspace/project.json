@@ -1,0 +1,9 @@
+{
+  "onboarding_schema_version": 3,
+  "project_id": "mybiz",
+  "project_slug": "mybiz",
+  "default_url": "https://mybiz.joripspace.run",
+  "api_base_url": "https://api.joripspace.com",
+  "mcp_url": "https://api.joripspace.com/mcp",
+  "linked_account_id": "acct_24753fa0bcf555b7edfea6b3"
+}

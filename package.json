@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "joripspace:doctor": "node .joripspace/doctor.mjs",
+    "joripspace:save": "node .joripspace/save.mjs",
+    "joripspace:checkpoints": "node .joripspace/checkpoints.mjs",
+    "joripspace:restore": "node .joripspace/restore.mjs",
+    "joripspace:deploy-checkpoint": "node .joripspace/deploy-checkpoint.mjs",
+    "joripspace:deploy": "node .joripspace/save.mjs --deploy",
+    "joripspace:pull": "node .joripspace/pull.mjs",
+    "joripspace:pull:force": "node .joripspace/pull.mjs --force",
+    "deploy": "node .joripspace/save.mjs --deploy"
+  },
+  "dependencies": {
+    "fflate": "^0.8.2"
+  }
+}
