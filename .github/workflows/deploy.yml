@@ -74,6 +74,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             powershell -Command "Stop-Process -Name excel -EA SilentlyContinue"
+            powershell -Command "Stop-Process -Name python -EA SilentlyContinue"
             sc.exe stop PM2_csautobot 2>nul
             cmd /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 stop csautobot-backend csautobot-frontend 2>nul & exit 0"
             cmd /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 delete csautobot-backend csautobot-frontend 2>nul & exit 0"
@@ -99,7 +100,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           command_timeout: 120m
           script: |
-            powershell -NoProfile -ExecutionPolicy Bypass -Command "C:\deploy\csautobot\scripts\deploy-remote.ps1 > C:\deploy\csautobot\deploy_log.txt 2>&1"
+            powershell -NoProfile -ExecutionPolicy Bypass -Command "C:\deploy\csautobot\scripts\deploy-remote.ps1 > C:\deploy\csautobot\deploy_log_${{ github.run_id }}.txt 2>&1"
 
       - name: Verify deployment
         uses: appleboy/ssh-action@master
