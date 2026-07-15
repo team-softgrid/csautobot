@@ -15,6 +15,6 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            Get-Process python -EA SilentlyContinue
-            Get-ChildItem C:\deploy\csautobot\deploy_log_*.txt | Sort-Object LastWriteTime -Descending | Select-Object -First 1 | Get-Content -Tail 50 -EA SilentlyContinue
+            powershell -Command "Get-Process python -EA SilentlyContinue"
+            powershell -Command "Get-ChildItem C:\deploy\csautobot\deploy_log_*.txt | Sort-Object LastWriteTime -Descending | Select-Object -First 1 | Get-Content -Tail 50 -EA SilentlyContinue"
 
