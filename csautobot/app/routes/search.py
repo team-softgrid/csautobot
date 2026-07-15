@@ -139,10 +139,9 @@ def _answer_from_docs(query: str, docs: list, level: str) -> AnswerSchema:
     )
 
 def _get_vs(chroma_dir: Path) -> Chroma:
-    emb = OpenAIEmbeddings(model="text-embedding-3-small")
     return Chroma(
         persist_directory=str(chroma_dir),
-        embedding_function=emb,
+        embedding_function=get_embedding_function(),
         collection_name="csautobot",
     )
 
@@ -214,7 +213,7 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
 
     bm25 = load_bm25(index_dir)
     vs = _get_vs(index_dir)
-    emb = OpenAIEmbeddings(model="text-embedding-3-small") if _openai_embedding_available() else None
+    emb = get_embedding_function()
 
     web_results = []
     if req.use_web_search:

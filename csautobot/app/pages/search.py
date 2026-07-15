@@ -9,9 +9,9 @@ from pathlib import Path
 import streamlit as st
 from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
-
+from app.embeddings import get_embedding_function
 from app.ui import page_header
 from retrieval import load_bm25, resolve_chroma_dir, retrieve_reranked
 from storage.repositories import create_feedback
@@ -43,7 +43,7 @@ class AnswerSchema(BaseModel):
 
 
 def _get_vs(chroma_dir: Path) -> Chroma:
-    emb = OpenAIEmbeddings(model="text-embedding-3-small")
+    emb = get_embedding_function()
     return Chroma(
         persist_directory=str(chroma_dir),
         embedding_function=emb,
@@ -150,7 +150,7 @@ def render() -> None:
         return
 
     bm25 = load_bm25(index_dir)
-    emb = OpenAIEmbeddings(model="text-embedding-3-small")
+    emb = get_embedding_function()
     vs = _get_vs(index_dir)
 
     q = st.text_area(

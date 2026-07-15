@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import List, Dict, Any, Tuple
 from pydantic import BaseModel, Field
 
-from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
 
 from retrieval import (
@@ -76,12 +75,10 @@ HUMAN_PROMPT_TEMPLATE = """[고객 고장 증상]
 ---
 위 내용을 바탕으로 예상되는 고장 원인과 필요한 부품(수량 포함)을 JSON 형태로 출력해 주십시오."""
 
-from langchain_community.embeddings import OllamaEmbeddings
+from app.embeddings import get_embedding_function
 
 def _get_vs(chroma_dir: Path) -> Chroma:
-    emb = OllamaEmbeddings(
-        model="nomic-embed-text",
-    )
+    emb = get_embedding_function()
     return Chroma(
         persist_directory=str(chroma_dir),
         embedding_function=emb,
@@ -102,9 +99,7 @@ def _retrieve_quotation_context(query: str, *, skip_dense: bool) -> str:
         )
         docs = get_documents_by_indices(vs, top_idx[:5])
     else:
-        emb = OllamaEmbeddings(
-            model="nomic-embed-text",
-        )
+        emb = get_embedding_function()
         rr = retrieve_reranked(
             query, vs, bm25, emb,
             k_dense=30, k_sparse=30, k_hybrid=20, k_final=5,
