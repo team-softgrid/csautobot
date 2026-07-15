@@ -14,7 +14,7 @@ from pathlib import Path
 
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from rank_bm25 import BM25Okapi
 
 from normalizer import error_code_norm_field, normalize_symptom_text, tokenize_for_bm25
@@ -125,6 +125,8 @@ def save_sparse_index(run_dir: Path, docs: list[Document]) -> None:
 
 
 def main() -> None:
+    if not os.environ.get("OPENAI_API_KEY"):
+        raise SystemExit("OPENAI_API_KEY 환경변수를 설정하세요.")
     docs = enrich_metadata(load_docs())
     total = len(docs)
     if total == 0:
@@ -138,7 +140,7 @@ def main() -> None:
     run_dir = CHROMA_DIR.with_name(f"chroma_db_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
     print(f"[1/5] 인덱스 경로: {run_dir}")
     print(f"[2/5] 임베딩 모델 준비 (문서 {total}건)")
-    emb = OllamaEmbeddings(model="nomic-embed-text", base_url="http://localhost:11434")
+    emb = OpenAIEmbeddings(model="text-embedding-3-small")
     run_dir.mkdir(parents=True, exist_ok=True)
     vs = Chroma(
         persist_directory=str(run_dir),

@@ -9,7 +9,7 @@ from pathlib import Path
 import streamlit as st
 from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from pydantic import BaseModel, Field
 
 from app.ui import page_header
@@ -43,7 +43,7 @@ class AnswerSchema(BaseModel):
 
 
 def _get_vs(chroma_dir: Path) -> Chroma:
-    emb = OllamaEmbeddings(model="nomic-embed-text", base_url="http://localhost:11434")
+    emb = OpenAIEmbeddings(model="text-embedding-3-small")
     return Chroma(
         persist_directory=str(chroma_dir),
         embedding_function=emb,
@@ -124,8 +124,12 @@ def render() -> None:
         accent="#29B6F6",
     )
 
+    if not os.environ.get("OPENAI_API_KEY"):
+        st.error("OPENAI_API_KEY 가 설정되어 있지 않습니다. `.env` 또는 환경변수로 추가하세요.")
+        return
+
     index_dir = resolve_chroma_dir(BOT_DIR)
-    if not index_dir:
+    if index_dir is None:
         stale = [
             x.name
             for x in BOT_DIR.glob("chroma_db*")
@@ -146,7 +150,7 @@ def render() -> None:
         return
 
     bm25 = load_bm25(index_dir)
-    emb = OllamaEmbeddings(model="nomic-embed-text", base_url="http://localhost:11434")
+    emb = OpenAIEmbeddings(model="text-embedding-3-small")
     vs = _get_vs(index_dir)
 
     q = st.text_area(

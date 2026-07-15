@@ -5,7 +5,7 @@ from typing import Any, List, Optional, Union
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from langchain_chroma import Chroma
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from sqlalchemy.orm import Session
 from retrieval import load_bm25, resolve_chroma_dir, retrieve_reranked
 from services.ai_provider import AiProviderConfigPayload, AiUsageInfo, invoke_structured_output, usage_for_non_llm
@@ -101,7 +101,9 @@ JSON 출력 시 반드시 아래 영문 키만 사용하세요:
 symptom_summary, top_causes, inspection_steps, parts, evidence_refs, confidence_note"""
 
 
-
+def _openai_embedding_available() -> bool:
+    key = os.environ.get("OPENAI_API_KEY", "").strip()
+    return bool(key) and key.startswith("sk-") and len(key) > 20
 
 
 def _answer_from_faq(query: str, faq_text: str) -> AnswerSchema:
@@ -137,7 +139,7 @@ def _answer_from_docs(query: str, docs: list, level: str) -> AnswerSchema:
     )
 
 def _get_vs(chroma_dir: Path) -> Chroma:
-    emb = OllamaEmbeddings(model="nomic-embed-text", base_url="http://localhost:11434")
+    emb = OpenAIEmbeddings(model="text-embedding-3-small")
     return Chroma(
         persist_directory=str(chroma_dir),
         embedding_function=emb,
@@ -212,7 +214,7 @@ def search_as_cases(req: SearchRequest, db: Session = Depends(get_db)):
 
     bm25 = load_bm25(index_dir)
     vs = _get_vs(index_dir)
-    emb = OllamaEmbeddings(model="nomic-embed-text", base_url="http://localhost:11434")
+    emb = OpenAIEmbeddings(model="text-embedding-3-small") if _openai_embedding_available() else None
 
     web_results = []
     if req.use_web_search:
