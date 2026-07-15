@@ -1,0 +1,17 @@
+﻿name: Trigger Ollama Background
+on:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Script
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: 20022
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            powershell -Command "C:\deploy\csautobot\scripts\trigger-ollama-migration.ps1"
+
