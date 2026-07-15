@@ -1,0 +1,18 @@
+﻿name: Check Migration Status
+on:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Log and Process
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: 20022
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            powershell -Command "Get-Process python -ErrorAction SilentlyContinue | Select-Object Id, ProcessName, CPU, WorkingSet"
+            powershell -Command "Get-Content C:\deploy\csautobot\migration_log.txt -Tail 20"
+
