@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body,
-      signal: AbortSignal.timeout(115_000),
+      signal: AbortSignal.timeout(300_000),
     });
     return await toNextResponse(res);
   } catch (error) {
