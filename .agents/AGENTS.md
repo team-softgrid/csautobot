@@ -207,3 +207,38 @@ GitHub Private 저장소의 기본 Actions 무료 제공 시간(보통 월 2,000
 
 6. **완료 보고:** 
    사용자에게 배포가 완료되었으며, 저장소가 다시 안전하게 Private으로 복구되었음을 보고합니다.
+
+## 10. 무거운 백그라운드 작업(예: Vector DB 인덱싱) 원격 서버 배포 지침
+
+> **⚠️ 문제 상황:** 원격 서버(특히 저사양 Windows Server)에 배포할 때, 수 시간 단위의 무거운 작업(예: Ollama 임베딩 재인덱싱)을 `deploy.yml` 내부나 SSH 세션에서 직접(Synchronous) 실행하면 다음과 같은 치명적 문제가 발생합니다.
+> 1. SSH 세션(GitHub Actions) 타임아웃 발생 (또는 과도한 Actions 과금)
+> 2. 프로세스가 행(Hang)에 빠지거나 배포 파이프라인 전체가 블로킹됨
+> 3. SSH 세션 종료 시 백그라운드 데몬이 함께 죽는 문제 (PM2 이슈와 동일)
+
+### 올바른 배포 및 실행 패턴 (Fire & Forget)
+
+무거운 작업은 **배포 파이프라인에서 완전히 분리**하고, 원격 서버가 독자적인 프로세스로 백그라운드에서 실행하게 만들어야 합니다.
+
+**1. 실행 스크립트 작성 (`scripts/migrate-to-ollama.ps1`)**
+작업 내용, 로그 기록, 그리고 작업 완료 후 PM2 재시작(Reload) 등의 상태 업데이트 로직을 포함합니다.
+```powershell
+Write-Output "Starting background indexing..."
+# ... (인덱싱 작업) ...
+& $VenvPython "csautobot/build_index.py" > "C:\deploy\csautobot\migration_log.txt" 2>&1
+# ... (완료 후 처리) ...
+& $NodeExe $Pm2Js reload all
+```
+
+**2. 백그라운드 트리거 스크립트 작성 (`scripts/trigger-migration.ps1`)**
+`Start-Process`를 활용하여 새 윈도우(Hidden)로 실행 스크립트를 던져놓고 즉시 종료(return)되게 만듭니다.
+```powershell
+Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File C:\deploy\csautobot\scripts\migrate-to-ollama.ps1" -WindowStyle Hidden
+Write-Output "Background migration triggered."
+```
+
+**3. 배포 파이프라인 (deploy.yml)**
+배포 시에는 소스 코드와 스크립트 파일들만 복사(`SCP`)하고 끝냅니다. 절대 파이프라인 내부에서 인덱싱을 기다리지 마십시오.
+
+**4. 수동 트리거**
+배포 완료 후, 임시 Github Action 워크플로나 로컬 SSH 접속을 통해 `trigger-migration.ps1` 한 줄만 실행합니다. 즉시 SSH 연결이 끊어지더라도 원격 서버 내부에서는 백그라운드 작업이 안전하게 끝까지 실행됩니다.
+
