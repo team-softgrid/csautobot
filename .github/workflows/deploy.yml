@@ -1,13 +1,46 @@
-﻿name: Trigger Ollama Background
+name: Deploy csautobot to Remote Server
+
 on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '**/*.md'
+      - '.cursorrules'
+      - '.agents/**'
+      - '.github/workflows/sync-harness.yml'
+      - '.github/workflows/harness-gate.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-csautobot
+  cancel-in-progress: true
+
 jobs:
-  check:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check Status
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install Frontend Deps and Build
+        run: |
+          cd frontend
+          npm install --legacy-peer-deps
+          npm run build
+          rm -rf node_modules
+
+      - name: Create Remote Directory
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -15,5 +48,68 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            powershell -Command "C:\deploy\csautobot\scripts\trigger-ollama-migration.ps1"
+            powershell -Command "New-Item -ItemType Directory -Force -Path 'C:\deploy\csautobot'"
 
+      - name: Create .env file
+        run: |
+          cat << EOF > .env
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+          TAVILY_API_KEY=${{ secrets.TAVILY_API_KEY }}
+          LANGSMITH_API_KEY=${{ secrets.LANGSMITH_API_KEY }}
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          LANGSMITH_TRACING=true
+          LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+          LANGSMITH_PROJECT=ragproject
+          EOF
+
+      - name: Stop csautobot services on Remote Server
+        uses: appleboy/ssh-action@master
+        continue-on-error: true
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: 20022
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            powershell -Command "Stop-Process -Name excel -EA SilentlyContinue"
+            powershell -Command "Stop-Process -Name python -EA SilentlyContinue"
+            sc.exe stop PM2_csautobot 2>nul
+            cmd /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 stop csautobot-backend csautobot-frontend 2>nul & exit 0"
+            cmd /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 delete csautobot-backend csautobot-frontend 2>nul & exit 0"
+            powershell -Command "Start-Sleep -Seconds 3"
+
+      - name: Copy files via SCP
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: 20022
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          source: "csautobot/,requirements-prod.txt,scripts/,ecosystem.config.js,.env,csautobot_initial.db,frontend/"
+          target: "C:/deploy/csautobot"
+          strip_components: 0
+
+      - name: Execute PM2 Deploy Command on Remote Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: 20022
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          command_timeout: 120m
+          script: |
+            powershell -NoProfile -ExecutionPolicy Bypass -Command "C:\deploy\csautobot\scripts\deploy-remote.ps1 > C:\deploy\csautobot\deploy_log_${{ github.run_id }}.txt 2>&1"
+
+      - name: Verify deployment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: 20022
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          command_timeout: 2m
+          script: |
+            cmd /c "set PM2_HOME=C:\Users\Administrator\.pm2&& pm2 list"
+            netstat -ano | findstr ":5000 :8000"
