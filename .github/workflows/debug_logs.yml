@@ -1,0 +1,17 @@
+﻿name: Debug Server Logs
+on:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch PM2 Logs
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: 20022
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            powershell -Command "set PM2_HOME=C:\Users\Administrator\.pm2; pm2 logs csautobot-backend --lines 50 --nostream"
+
