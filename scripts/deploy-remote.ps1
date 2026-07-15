@@ -369,6 +369,9 @@ try {
 
     Remove-Item -Recurse -Force (Join-Path $DeployRoot "csautobot\__pycache__") -ErrorAction SilentlyContinue
 
+    Write-Output "Running build_index.py to reindex with Ollama..."
+    Invoke-Checked $VenvPython @("csautobot/build_index.py")
+
     # ------------------------------------------------------------------
     # PM2 App Start
     # ------------------------------------------------------------------
