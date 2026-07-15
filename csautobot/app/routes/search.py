@@ -11,6 +11,7 @@ from retrieval import load_bm25, resolve_chroma_dir, retrieve_reranked
 from services.ai_provider import AiProviderConfigPayload, AiUsageInfo, invoke_structured_output, usage_for_non_llm
 from services.tenant_ai_settings import resolve_ai_config_for_request
 from storage.db import get_db
+from app.embeddings import get_embedding_function
 
 # Setup python path
 HERE = Path(__file__).resolve().parent.parent.parent
