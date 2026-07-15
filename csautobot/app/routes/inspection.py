@@ -58,6 +58,44 @@ class DraftResponse(BaseModel):
     summary_json: Any
     ai_meta: AiExecutionMeta
 
+def _retrieve_similar_cases(query: str) -> List[dict[str, Any]]:
+    if not query:
+        return []
+    try:
+        from langchain_chroma import Chroma
+        from retrieval import load_bm25, resolve_chroma_dir, retrieve_reranked
+        from app.embeddings import get_embedding_function
+        
+        index_dir = resolve_chroma_dir(HERE)
+        if not index_dir:
+            return []
+            
+        vs = Chroma(
+            persist_directory=str(index_dir),
+            embedding_function=get_embedding_function(),
+            collection_name="csautobot",
+        )
+        bm25 = load_bm25(index_dir)
+        if not bm25:
+            return []
+            
+        emb = get_embedding_function()
+        rr = retrieve_reranked(
+            query, vs, bm25, emb,
+            k_dense=20, k_sparse=20, k_hybrid=10, k_final=3,
+        )
+        
+        res = []
+        for d in rr.documents:
+            res.append({
+                "symptom": d.metadata.get("symptom_norm", ""),
+                "action": d.page_content,
+                "title": f"과거 유사 사례 (출처: {d.metadata.get('source', '알수없음')})"
+            })
+        return res
+    except Exception as e:
+        print(f"Inspection RAG search failed: {e}")
+        return []
 
 def _resolve_inspection_task_type(checklist: List[ChecklistItem], cycle: str) -> str:
     has_issue = any(x.status in ("이상", "주의") for x in checklist)
@@ -149,6 +187,19 @@ def create_ai_draft(req: DraftRequest, db: Session = Depends(get_db)):
     # SQLite Lock 방지: LLM 호출 등 장시간 지연 전 읽기 트랜잭션 종료
     db.rollback()
 
+    # 1. RAG 쿼리 추출 (주의/이상 항목 및 메모)
+    rag_query_parts = []
+    if req.memo:
+        rag_query_parts.append(req.memo.strip())
+    for item in req.checklist:
+        if item.status in ("주의", "이상"):
+            rag_query_parts.append(f"{item.item} {item.note}".strip())
+    
+    similar_cases = None
+    if rag_query_parts:
+        query_str = " ".join(rag_query_parts)
+        similar_cases = _retrieve_similar_cases(query_str)
+
     try:
         draft_obj, used_model, _web_res, ai_usage = svc.generate_inspection_draft(
             site_name=req.site_name,
@@ -160,6 +211,7 @@ def create_ai_draft(req: DraftRequest, db: Session = Depends(get_db)):
             inspection_cycle=req.cycle,
             checklist=checklist_dict,
             memo_text=req.memo,
+            similar_cases=similar_cases,
             ai_config=ai_config,
         )
         fallback_provider = ai_usage.fallback_provider if ai_usage else None

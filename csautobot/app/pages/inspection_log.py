@@ -382,6 +382,24 @@ def render() -> None:
             if saved_paths:
                 st.session_state.insp_photos = saved_paths
 
+            # RAG 쿼리 추출 (주의/이상 항목 및 메모)
+            rag_query_parts = []
+            if memo_text:
+                rag_query_parts.append(memo_text.strip())
+            for item in checklist:
+                if item.get("status") in ("주의", "이상"):
+                    note = item.get("note", "")
+                    rag_query_parts.append(f"{item.get('item', '')} {note}".strip())
+            
+            similar_cases = None
+            if rag_query_parts:
+                try:
+                    from app.routes.inspection import _retrieve_similar_cases
+                    query_str = " ".join(rag_query_parts)
+                    similar_cases = _retrieve_similar_cases(query_str)
+                except ImportError:
+                    pass
+
             draft, used_model, web_res, _ai_usage = generate_inspection_draft(
                 site_name=site_name or None,
                 charger_id=charger_id or None,
@@ -393,6 +411,7 @@ def render() -> None:
                 checklist=checklist,
                 memo_text=memo_text,
                 photo_count=len(st.session_state.insp_photos),
+                similar_cases=similar_cases,
                 use_web_search=use_web_search,
             )
             st.session_state.insp_draft = draft
