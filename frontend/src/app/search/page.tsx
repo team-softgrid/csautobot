@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { getApiUrl, getTenantId, readApiError } from "../utils";
 import AiUsageBadge from "../components/AiUsageBadge";
+import AiProgressSteps from "../components/AiProgressSteps";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -144,12 +145,7 @@ export default function SearchPage() {
         </form>
       </section>
 
-      {/* Loading Indicator */}
-      {loading && (
-        <div style={{ display: "flex", justifyContent: "center", padding: "40px" }}>
-          <div className="spinner" style={{ border: "4px solid rgba(255,255,255,0.1)", borderTop: "4px solid #06b6d4", borderRadius: "50%", width: "40px", height: "40px", animation: "spin 1s linear infinite" }} />
-        </div>
-      )}
+      <AiProgressSteps active={loading} variant="search" />
 
       {/* Result Section */}
       {result && (

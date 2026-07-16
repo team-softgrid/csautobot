@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { getApiUrl, getTenantId, readApiError } from "../utils";
 import AiUsageBadge, { AiUsageLike } from "../components/AiUsageBadge";
+import AiProgressSteps from "../components/AiProgressSteps";
 
 interface PartItem {
   part_name: string;
@@ -374,11 +375,7 @@ export default function QuotationPage() {
 
         {/* Right Column: Output Quotation Display */}
         <div>
-          {loading && (
-            <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}>
-              <div className="spinner" style={{ border: "4px solid rgba(255,255,255,0.1)", borderTop: "4px solid #06b6d4", borderRadius: "50%", width: "45px", height: "45px", animation: "spin 1s linear infinite" }} />
-            </div>
-          )}
+          <AiProgressSteps active={loading} variant="quotation" />
 
           {!loading && !draft && (
             <div className="glass-panel" style={{ padding: "40px", textAlign: "center", color: "#94a3b8" }}>

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { getApiUrl, getTenantId, readApiError } from "../utils";
 import AiUsageBadge from "../components/AiUsageBadge";
+import AiProgressSteps from "../components/AiProgressSteps";
 
 interface ChecklistItem {
   item: string;
@@ -67,6 +68,8 @@ export default function InspectionPage() {
 
   const handleGenerateDraft = async () => {
     setLoadingDraft(true);
+    setDraft(null);
+    setFbSaved(false);
     try {
       const res = await fetch(`${getApiUrl()}/api/v1/inspection/draft`, {
         method: "POST",
@@ -267,11 +270,13 @@ export default function InspectionPage() {
               )}
             </div>
             
-            {!draft ? (
+            <AiProgressSteps active={loadingDraft} variant="inspection" />
+
+            {!loadingDraft && !draft ? (
               <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", color: "#64748b", border: "2px dashed rgba(255,255,255,0.04)", borderRadius: "12px", padding: "40px", textAlign: "center" }}>
                 좌측 폼을 작성하고 'AI 초안 생성' 버튼을 클릭하시면 실시간 AI 요약 및 정비 가이드 초안이 렌더링됩니다.
               </div>
-            ) : (
+            ) : !loadingDraft && draft ? (
               <div style={{ display: "flex", flexDirection: "column", gap: "20px", flex: 1 }}>
                 {draft.ai_meta && (
                   <AiUsageBadge
@@ -332,7 +337,7 @@ export default function InspectionPage() {
                   </button>
                 )}
               </div>
-            )}
+            ) : null}
           </div>
 
           {/* Feedback Form (Visible after Draft generation) */}
