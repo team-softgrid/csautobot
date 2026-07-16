@@ -154,8 +154,9 @@ export default function SearchPage() {
           {/* Status banners — embedding(RAG) vs LLM are separate */}
           {result.embedding_degraded && (
             <div style={{ background: "rgba(245, 158, 11, 0.1)", border: "1px solid #f59e0b", borderRadius: "8px", padding: "16px", color: "#f59e0b", fontSize: "14px" }}>
-              ⚠️ <strong>벡터 검색(RAG)</strong>은 서버 OpenAI Embedding 할당량 초과로 BM25 키워드 검색만 사용 중입니다.
-              Groq는 답변 생성용이며 임베딩 검색을 대체하지 않습니다.
+              ⚠️ <strong>벡터 검색(RAG)</strong>이 비활성입니다 — 검색 시점 임베딩 호출이 실패해 BM25 키워드 검색만 사용 중입니다.
+              (인덱스를 다시 만들어도, 검색 서버가 OpenAI 임베딩을 쓰면 할당량 초과 시 동일 경고가 납니다. Ollama 인덱스면 <code>USE_OLLAMA_EMBEDDING=true</code> 필요)
+              Groq/Gemini 등은 답변 생성용이며 임베딩 검색을 대체하지 않습니다.
             </div>
           )}
           {result.llm_error && (
