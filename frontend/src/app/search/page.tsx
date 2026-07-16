@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { getApiUrl, getTenantId, readApiError } from "../utils";
 import AiUsageBadge from "../components/AiUsageBadge";
 import AiProgressSteps from "../components/AiProgressSteps";
+import AiResultSummaryCard, { SummaryList } from "../components/AiResultSummaryCard";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -187,59 +188,74 @@ export default function SearchPage() {
             </div>
           </div>
 
-          {/* Answer Card */}
-          <section className="glass-panel" style={{ padding: "32px" }}>
-            <h3 style={{ fontSize: "18px", fontWeight: "bold", margin: "0 0 20px 0" }}>구조화 답변</h3>
-            
-            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              <div>
-                <span style={{ fontSize: "12px", color: "#94a3b8", display: "block", marginBottom: "4px" }}>증상 요약</span>
-                <span style={{ fontSize: "15px", color: "#f8fafc", fontWeight: "bold" }}>{result.structured.symptom_summary}</span>
-              </div>
-
-              {result.structured.top_causes?.length > 0 && (
-                <div>
-                  <span style={{ fontSize: "12px", color: "#94a3b8", display: "block", marginBottom: "6px" }}>가능 원인 (최대 3)</span>
-                  <ol style={{ margin: 0, paddingLeft: "20px", fontSize: "14px", color: "#cbd5e1", display: "flex", flexDirection: "column", gap: "4px" }}>
-                    {result.structured.top_causes.map((c: string, idx: number) => (
-                      <li key={idx}>{c}</li>
-                    ))}
-                  </ol>
+          {/* Answer Card — quotation "AI 고장 진단 요약"과 동일 스타일 */}
+          <AiResultSummaryCard
+            title="🔍 AI 유사 사례 분석 요약"
+            rows={[
+              {
+                label: "증상 요약",
+                value: result.structured.symptom_summary || "-",
+              },
+              ...(result.structured.top_causes?.length
+                ? [
+                    {
+                      label: "가능 원인",
+                      value: (
+                        <SummaryList items={result.structured.top_causes} ordered />
+                      ),
+                    },
+                  ]
+                : []),
+              ...(result.structured.inspection_steps?.length
+                ? [
+                    {
+                      label: "점검 순서",
+                      value: (
+                        <SummaryList
+                          items={result.structured.inspection_steps}
+                          ordered
+                        />
+                      ),
+                    },
+                  ]
+                : []),
+              {
+                label: "교체 부품",
+                value: result.structured.parts || "사례에 명시 없음",
+              },
+              ...(result.structured.evidence_refs?.length
+                ? [
+                    {
+                      label: "근거 출처",
+                      value: (
+                        <SummaryList
+                          items={result.structured.evidence_refs.map(
+                            (e: string) => e
+                          )}
+                        />
+                      ),
+                    },
+                  ]
+                : []),
+            ]}
+            footer={
+              result.structured.confidence_note ? (
+                <div
+                  style={{
+                    background: "rgba(6, 182, 212, 0.05)",
+                    border: "1px solid rgba(6, 182, 212, 0.15)",
+                    padding: "14px 16px",
+                    borderRadius: "8px",
+                    fontSize: "13px",
+                    color: "#67e8f9",
+                    lineHeight: "1.6",
+                  }}
+                >
+                  ℹ️ {result.structured.confidence_note}
                 </div>
-              )}
-
-              {result.structured.inspection_steps?.length > 0 && (
-                <div>
-                  <span style={{ fontSize: "12px", color: "#94a3b8", display: "block", marginBottom: "6px" }}>점검 순서</span>
-                  <ol style={{ margin: 0, paddingLeft: "20px", fontSize: "14px", color: "#cbd5e1", display: "flex", flexDirection: "column", gap: "4px" }}>
-                    {result.structured.inspection_steps.map((s: string, idx: number) => (
-                      <li key={idx}>{s}</li>
-                    ))}
-                  </ol>
-                </div>
-              )}
-
-              <div>
-                <span style={{ fontSize: "12px", color: "#94a3b8", display: "block", marginBottom: "4px" }}>교체 부품</span>
-                <span style={{ fontSize: "14px", color: "#cbd5e1" }}>{result.structured.parts}</span>
-              </div>
-
-              {result.structured.evidence_refs?.length > 0 && (
-                <div>
-                  <span style={{ fontSize: "12px", color: "#94a3b8", display: "block", marginBottom: "6px" }}>근거 출처</span>
-                  <ul style={{ margin: 0, paddingLeft: "20px", fontSize: "13px", color: "#94a3b8", display: "flex", flexDirection: "column", gap: "4px" }}>
-                    {result.structured.evidence_refs.map((e: string, idx: number) => (
-                      <li key={idx}><code>{e}</code></li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <div style={{ background: "rgba(6, 182, 212, 0.05)", border: "1px solid rgba(6, 182, 212, 0.15)", padding: "16px", borderRadius: "8px", fontSize: "13px", color: "#06b6d4", lineHeight: "1.6" }}>
-                ℹ️ {result.structured.confidence_note}
-              </div>
-            </div>
-          </section>
+              ) : null
+            }
+          />
 
           {/* Source Docs Accordion */}
           <section className="glass-panel" style={{ padding: "24px" }}>

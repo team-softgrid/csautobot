@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { getApiUrl, getTenantId, readApiError } from "../utils";
 import AiUsageBadge from "../components/AiUsageBadge";
 import AiProgressSteps from "../components/AiProgressSteps";
+import AiResultSummaryCard, { SummaryList } from "../components/AiResultSummaryCard";
 
 interface ChecklistItem {
   item: string;
@@ -293,38 +294,68 @@ export default function InspectionPage() {
                   />
                 )}
                 
-                {/* Risk and Summary Card */}
-                <div style={{ background: "rgba(255,255,255,0.03)", padding: "20px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.06)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                    <span style={{ fontSize: "14px", color: "#94a3b8" }}>AI 위험도 판정</span>
-                    <span style={{
-                      padding: "4px 10px",
-                      borderRadius: "6px",
-                      fontSize: "13px",
-                      fontWeight: "bold",
-                      background: draft.summary_json?.overall_risk === "high" ? "rgba(239, 68, 68, 0.2)" : draft.summary_json?.overall_risk === "mid" ? "rgba(245, 158, 11, 0.2)" : "rgba(16, 185, 129, 0.2)",
-                      color: draft.summary_json?.overall_risk === "high" ? "#ef4444" : draft.summary_json?.overall_risk === "mid" ? "#f59e0b" : "#10b981"
-                    }}>
-                      {draft.summary_json?.overall_risk ? draft.summary_json.overall_risk.toUpperCase() : "LOW"}
+                {/* Risk and Summary — quotation "AI 고장 진단 요약"과 동일 스타일 */}
+                <AiResultSummaryCard
+                  title="🔍 AI 점검 결과 분석 요약"
+                  badge={
+                    <span
+                      style={{
+                        padding: "4px 10px",
+                        borderRadius: "6px",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        background:
+                          draft.summary_json?.overall_risk === "high"
+                            ? "rgba(239, 68, 68, 0.2)"
+                            : draft.summary_json?.overall_risk === "mid" ||
+                                draft.summary_json?.overall_risk === "medium"
+                              ? "rgba(245, 158, 11, 0.2)"
+                              : "rgba(16, 185, 129, 0.2)",
+                        color:
+                          draft.summary_json?.overall_risk === "high"
+                            ? "#ef4444"
+                            : draft.summary_json?.overall_risk === "mid" ||
+                                draft.summary_json?.overall_risk === "medium"
+                              ? "#f59e0b"
+                              : "#10b981",
+                      }}
+                    >
+                      위험도{" "}
+                      {draft.summary_json?.overall_risk
+                        ? String(draft.summary_json.overall_risk).toUpperCase()
+                        : "LOW"}
                     </span>
-                  </div>
-                  <h4 style={{ fontSize: "16px", fontWeight: "bold", margin: "0 0 8px 0" }}>요약 가이드</h4>
-                  <p style={{ margin: 0, fontSize: "14px", color: "#cbd5e1", lineHeight: "1.6" }}>
-                    {draft.draft_text}
-                  </p>
-                </div>
-
-                {/* Structured JSON display */}
-                {draft.summary_json && (
-                  <div>
-                    <h4 style={{ fontSize: "15px", fontWeight: "bold", margin: "0 0 10px 0" }}>권장 현장 대처 조치</h4>
-                    <ul style={{ paddingLeft: "20px", margin: 0, fontSize: "13px", color: "#94a3b8", display: "flex", flexDirection: "column", gap: "6px" }}>
-                      {draft.summary_json.recommended_actions?.map((act: string, idx: number) => (
-                        <li key={idx} style={{ color: "#cbd5e1" }}>{act}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                  }
+                  rows={[
+                    {
+                      label: "요약 가이드",
+                      value: draft.draft_text || "-",
+                    },
+                    ...(draft.summary_json?.key_findings?.length
+                      ? [
+                          {
+                            label: "주요 발견",
+                            value: (
+                              <SummaryList items={draft.summary_json.key_findings} />
+                            ),
+                          },
+                        ]
+                      : []),
+                    ...(draft.summary_json?.recommended_actions?.length
+                      ? [
+                          {
+                            label: "권장 현장 대처 조치",
+                            value: (
+                              <SummaryList
+                                items={draft.summary_json.recommended_actions}
+                                ordered
+                              />
+                            ),
+                          },
+                        ]
+                      : []),
+                  ]}
+                />
 
                 {/* Save Block */}
                 {saveSuccess ? (

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { getApiUrl, getTenantId, readApiError } from "../utils";
 import AiUsageBadge, { AiUsageLike } from "../components/AiUsageBadge";
 import AiProgressSteps from "../components/AiProgressSteps";
+import AiResultSummaryCard from "../components/AiResultSummaryCard";
 
 interface PartItem {
   part_name: string;
@@ -388,13 +389,13 @@ export default function QuotationPage() {
               {draft.ai_usage && <AiUsageBadge usage={draft.ai_usage} />}
               
               {/* AI Diagnosis details */}
-              <section className="glass-panel" style={{ padding: "24px" }}>
-                <h3 style={{ fontSize: "16px", fontWeight: "bold", marginBottom: "12px", color: "#06b6d4" }}>🔍 AI 고장 진단 요약</h3>
-                <div style={{ fontSize: "14px", lineHeight: "1.6", color: "#cbd5e1" }}>
-                  <div style={{ marginBottom: "8px" }}><strong style={{ color: "#f8fafc" }}>증상 요약:</strong> {draft.symptom_summary}</div>
-                  <div><strong style={{ color: "#f8fafc" }}>예상 원인:</strong> {draft.likely_cause}</div>
-                </div>
-              </section>
+              <AiResultSummaryCard
+                title="🔍 AI 고장 진단 요약"
+                rows={[
+                  { label: "증상 요약", value: draft.symptom_summary },
+                  { label: "예상 원인", value: draft.likely_cause },
+                ]}
+              />
 
               {/* Editable Parts Table */}
               <section className="glass-panel" style={{ padding: "24px" }}>
