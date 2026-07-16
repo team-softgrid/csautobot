@@ -15,6 +15,10 @@ module.exports = {
       interpreter: 'none',
       env: {
         PYTHONUNBUFFERED: '1',
+        // Chroma index is nomic-embed-text (768-d). Keep in sync even if .env is rewritten.
+        USE_OLLAMA_EMBEDDING: 'true',
+        OLLAMA_EMBED_MODEL: 'nomic-embed-text',
+        OLLAMA_BASE_URL: 'http://localhost:11434',
       },
       log_date_format: 'YYYY-MM-DD HH:mm Z',
     },
