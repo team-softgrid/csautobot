@@ -58,6 +58,20 @@ class TestTaskRouting:
         assert chain == ["groq", "ollama", "gemini"]
         assert "ollama" in chain
 
+    def test_user_hybrid_order_respected_for_inspection_detail(self):
+        """UI Hybrid 순서(groq→ollama→gemini…)가 task 기본(groq→gemini)에 덮이지 않아야 함."""
+        from services.ai_provider import AiProviderConfigPayload, _provider_chain
+
+        user_cfg = AiProviderConfigPayload(
+            provider="hybrid",
+            hybrid_providers=["groq", "ollama", "gemini", "openai", "claude"],
+        )
+        cfg = route_by_task("inspection_detail", user_cfg)
+        chain = _provider_chain(cfg)
+        assert chain == ["groq", "ollama", "gemini", "openai", "claude"]
+        # 태스크 모델 오버라이드(70B)는 유지
+        assert cfg.models.get("groq") == "llama-3.3-70b-versatile"
+
     def test_ensure_groq_first_from_legacy_order(self):
         from services.ai_provider import ensure_groq_first_hybrid_order
 

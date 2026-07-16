@@ -289,11 +289,15 @@ def route_by_task(
     """Return hybrid config tuned for the given task (Korean quality vs speed).
 
     base_config를 안 넘기면(bare default) 태스크 전용 짧은 체인(예: quotation_simple의
-    groq+gemini)만 써야 하는데, `AiProviderConfigPayload()`의 hybrid_providers가
-    기본값으로 이미 전체 5-provider 리스트라서, 아래에서 무조건 병합해버리면 항상
-    5개 전부가 붙어 "짧은 체인" 의도가 무력화되던 기존 버그(2026-07-14, CI에서 발견).
-    base_config가 실제로 넘어온 경우(호출자가 명시적으로 provider를 지정한 경우)에만
-    그 목록을 태스크 목록과 병합한다.
+    groq+gemini)만 쓴다 — `AiProviderConfigPayload()` 기본 hybrid_providers(5개)를
+    무조건 병합하면 짧은 체인 의도가 무력화된다(2026-07-14).
+
+    base_config가 넘어온 경우(테넌트/UI Hybrid 설정)에는 **사용자가 정한
+    hybrid_providers 순서를 우선**한다. 예전에는 task_providers를 앞에 두고
+    사용자 목록을 뒤에만 append해서, 예: 설정이 groq→ollama→gemini 여도
+    inspection_detail이 groq→gemini→ollama로 뒤바뀌었다(2026-07-16).
+    태스크에만 있는 provider는 사용자 목록 뒤에 보충하고, 모델 오버라이드
+    (예: inspection_detail의 Groq 70B)는 계속 적용한다.
     """
     task_providers, model_overrides = TASK_ROUTING.get(task_type, TASK_ROUTING["general"])
     cfg = base_config or AiProviderConfigPayload()
@@ -310,10 +314,17 @@ def route_by_task(
     if base_config is None:
         merged_providers = list(task_providers)
     else:
-        merged_providers = list(task_providers)
-        for p in cfg.hybrid_providers:
-            if p not in merged_providers:
-                merged_providers.append(p)
+        user_order = [
+            p for p in (cfg.hybrid_providers or [])
+            if p in DEFAULT_MODELS  # type: ignore[comparison-overlap]
+        ]
+        if user_order:
+            merged_providers = list(user_order)
+            for p in task_providers:
+                if p not in merged_providers:
+                    merged_providers.append(p)
+        else:
+            merged_providers = list(task_providers)
 
     return AiProviderConfigPayload(
         provider="hybrid",
@@ -554,7 +565,7 @@ def invoke_with_fallback(
     )
     chain_providers = _provider_chain(cfg)
     attempts: list[ProviderAttempt] = []
-    fallback_provider: str | None = None
+    failed_providers: list[str] = []
     total_latency_ms = 0
 
     for provider in chain_providers:
@@ -574,9 +585,12 @@ def invoke_with_fallback(
                 inputs=inputs,
             )
             total_latency_ms += usage.latency_ms
+            # 실패 경로 전체를 라벨에 남겨 UI에서 "gemini->ollama"처럼
+            # 중간만 보이던 오해를 줄인다 (예: groq->gemini->ollama:qwen2.5:3b).
             label = f"{provider}:{model}"
-            if fallback_provider:
-                label = f"{fallback_provider}->{provider}:{model}"
+            if failed_providers:
+                label = f"{'->'.join(failed_providers)}->{provider}:{model}"
+            fallback_provider = failed_providers[-1] if failed_providers else None
             usage = usage.with_label(label, fallback_provider=fallback_provider)
             usage.latency_ms = total_latency_ms
             return result, usage
@@ -590,9 +604,7 @@ def invoke_with_fallback(
                 rate_limited=_is_rate_limit_error(exc),
                 error=err_str,
             ))
-            # Approximate failed-attempt latency is not tracked separately;
-            # mark next provider as fallback of the one that failed.
-            fallback_provider = provider
+            failed_providers.append(provider)
             print(f"[ai_provider] {provider} failed: {exc}")
 
     raise AllProvidersFailedError(attempts)
